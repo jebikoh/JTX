@@ -1,4 +1,6 @@
-# Prerequisites
+.vscode/
+
+ Prerequisites
 *.d
 
 # Object files

@@ -18,4 +18,10 @@ typedef enum {
     Z = 2
 } Axis;
 
+typedef struct {
+    float m[4][4];
+} Mat4;
+
+void build_rotation(Mat4 *m, float rad, Axis axis);
+
 #endif // UTIL_H

@@ -28,14 +28,33 @@ void normalize_vec3(Vec3 *v) {
 }
 
 void build_rotation(Mat4 *m, float rad, Axis axis) {
-  float c = cos(rad);
-  float s = sin(rad);
+  for (int i = 0; i < 4; ++i) {
+    for (int j = 0; j < 4; ++j) {
+      m->m[i][j] = (i == j) ? 1.0f : 0.0f;
+    }
+  }
 
-  if (axis == X) {
-    m->m = (float[16]){1, 0, 0, 0, 0, c, -s, 0, 0, s, c, 0, 0, 0, 0, 1};
-  } else if (axis = Y) {
-    m->m = (float[16]){c, 0, s, 0, 0, 1, 0, 0, -s, 0, c, 0, 0, 0, 0, 1};
-  } else {
-    m->m = (float[16]){c, -s, 0, 0, s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+  float c = cosf(rad);
+  float s = sinf(rad);
+
+  switch (axis) {
+    case X:
+      m->m[1][1] = c;
+      m->m[1][2] = -s;
+      m->m[2][1] = s;
+      m->m[2][2] = c;
+      break;
+    case Y:
+      m->m[0][0] = c;
+      m->m[0][2] = s;
+      m->m[2][0] = -s;
+      m->m[2][2] = c;
+      break;
+    case Z:
+      m->m[0][0] = c;
+      m->m[0][1] = -s;
+      m->m[1][0] = s;
+      m->m[1][1] = c;
+      break;
   }
 }

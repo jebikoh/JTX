@@ -8,8 +8,8 @@ typedef struct {
 } Vec3;
 
 void init_vec3(Vec3 *v, float x, float y, float z);
-Vec3 add_vec3(const Vec3 *v1, const Vec3 *v2);
-Vec3 sub_vec3(const Vec3 *v1, const Vec3 *v2);
+void add_vec3(Vec3 *v1, const Vec3 *v2);
+void sub_vec3(Vec3 *v1, const Vec3 *v2);
 void normalize_vec3(Vec3 *v);
 
 typedef enum {

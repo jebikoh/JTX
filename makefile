@@ -1,45 +1,43 @@
-# Compiler and flags
-CC = gcc
-CFLAGS = -Iinclude -Wall
+CC=gcc
+CFLAGS=-Wall -g
+LDFLAGS=-L./lib -L/opt/homebrew/lib
+LDLIBS=-ltgec -lm -lcheck
+INCLUDES=-I./include -I/opt/homebrew/include
 
-# Directory structure
-SRCDIR = src
-BINDIR = bin
-LIBDIR = lib
-TESTDIR = test
-OBJDIR = obj
+# Directory for object files
+OBJDIR=./obj
 
-# Executable name
-EXEC = $(BINDIR)/yourprogram
-TEST_EXEC = $(BINDIR)/test_yourprogram
+# Your library path and name
+LIBDIR=./lib
+LIBNAME=libtgec.so
 
-# Source and object files
-SOURCES = $(wildcard $(SRCDIR)/*.c)
-OBJECTS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SOURCES))
-TEST_SOURCES = $(wildcard $(TESTDIR)/*.c)
-TEST_OBJECTS = $(patsubst $(TESTDIR)/%.c, $(OBJDIR)/%.o, $(TEST_SOURCES))
+# Source and object files for your library
+SRCS=$(wildcard ./src/*.c)
+OBJS=$(patsubst ./src/%.c, $(OBJDIR)/%.o, $(SRCS))
 
-# Default target
-all: $(EXEC)
+# Test files
+TEST_SRCS=$(wildcard test/*.c)
+TEST_OBJS=$(patsubst test/%.c, $(OBJDIR)/%.o, $(TEST_SRCS))
+TEST_BINS=$(patsubst test/%.c, bin/%, $(TEST_SRCS))
 
-# Main executable
-$(EXEC): $(OBJECTS)
-	$(CC) $(CFLAGS) $^ -o $@ -lm
+.PHONY: all clean test
 
-# Object files
-$(OBJDIR)/%.o: $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
+all: $(LIBDIR)/$(LIBNAME) $(TEST_BINS)
 
-# Test executable
-test: $(TEST_EXEC)
+$(LIBDIR)/$(LIBNAME): $(OBJS)
+	$(CC) $(CFLAGS) -shared -o $@ $(OBJS)
 
-$(TEST_EXEC): $(OBJECTS) $(TEST_OBJECTS)
-	$(CC) $(CFLAGS) $^ -o $@ -lcheck -lm
-	./$(TEST_EXEC)
+$(OBJDIR)/%.o: ./src/%.c
+	$(CC) $(CFLAGS) $(INCLUDES) -fPIC -c $< -o $@
 
-# Cleaning up
+bin/%: $(OBJDIR)/%.o
+	$(CC) $(LDFLAGS) $(CFLAGS) $< -o $@ $(LDLIBS)
+
+$(OBJDIR)/%.o: test/%.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+test: $(TEST_BINS)
+	for test_bin in $(TEST_BINS); do ./$$test_bin; done
+
 clean:
-	rm -f $(OBJDIR)/*.o $(BINDIR)/*
-
-# Phony targets
-.PHONY: all test clean
+	rm -f $(LIBDIR)/$(LIBNAME) $(OBJS) $(TEST_OBJS) $(TEST_BINS)

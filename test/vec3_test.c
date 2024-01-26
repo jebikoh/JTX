@@ -39,11 +39,78 @@ START_TEST(test_normalize_vec3) {
   ck_assert_float_eq_tol(length, 1.0, 0.0001);
 }
 
-Suite *vec3_suite(void) {
+START_TEST(test_deg_to_rad) {
+  ck_assert_float_eq_tol(deg_to_rad(90.0), M_PI / 2.0, 0.0001);
+}
+
+START_TEST(test_rmat_90_x) {
+  Mat4 m;
+  build_rotation(&m, deg_to_rad(90.0), X);
+  ck_assert_float_eq_tol(m.m[0][0], 1.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[0][1], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[0][2], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[0][3], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[1][0], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[1][1], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[1][2], -1.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[1][3], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[2][0], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[2][1], 1.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[2][2], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[2][3], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[3][0], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[3][1], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[3][2], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[3][3], 1.0, 0.0001);
+}
+
+START_TEST(test_rmat_90_y) {
+  Mat4 m;
+  build_rotation(&m, deg_to_rad(90.0), Y);
+  ck_assert_float_eq_tol(m.m[0][0], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[0][1], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[0][2], 1.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[0][3], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[1][0], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[1][1], 1.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[1][2], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[1][3], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[2][0], -1.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[2][1], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[2][2], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[2][3], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[3][0], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[3][1], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[3][2], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[3][3], 1.0, 0.0001);
+}
+
+START_TEST(test_rmat_90_z) {
+  Mat4 m;
+  build_rotation(&m, deg_to_rad(90.0), Z);
+  ck_assert_float_eq_tol(m.m[0][0], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[0][1], -1.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[0][2], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[0][3], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[1][0], 1.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[1][1], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[1][2], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[1][3], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[2][0], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[2][1], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[2][2], 1.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[2][3], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[3][0], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[3][1], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[3][2], 0.0, 0.0001);
+  ck_assert_float_eq_tol(m.m[3][3], 1.0, 0.0001);
+}
+
+Suite *util_suite(void) {
   Suite *s;
   TCase *tc_core;
 
-  s = suite_create("Vec3");
+  s = suite_create("util");
 
   tc_core = tcase_create("Core");
 
@@ -51,6 +118,10 @@ Suite *vec3_suite(void) {
   tcase_add_test(tc_core, test_add_vec3);
   tcase_add_test(tc_core, test_sub_vec3);
   tcase_add_test(tc_core, test_normalize_vec3);
+  tcase_add_test(tc_core, test_deg_to_rad);
+  tcase_add_test(tc_core, test_rmat_90_x);
+  tcase_add_test(tc_core, test_rmat_90_y);
+  tcase_add_test(tc_core, test_rmat_90_z);
   suite_add_tcase(s, tc_core);
 
   return s;
@@ -61,7 +132,7 @@ int main(void) {
   Suite *s;
   SRunner *sr;
 
-  s = vec3_suite();
+  s = util_suite();
   sr = srunner_create(s);
 
   srunner_run_all(sr, CK_NORMAL);

@@ -27,6 +27,8 @@ void normalize_vec3(Vec3 *v) {
   }
 }
 
+float deg_to_rad(float deg) { return deg * M_PI / 180.0f; }
+
 void build_rotation(Mat4 *m, float rad, Axis axis) {
   for (int i = 0; i < 4; ++i) {
     for (int j = 0; j < 4; ++j) {

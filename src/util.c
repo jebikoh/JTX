@@ -29,12 +29,16 @@ void normalize_vec3(Vec3 *v) {
 
 float deg_to_rad(float deg) { return deg * M_PI / 180.0f; }
 
-void build_rotation(Mat4 *m, float rad, Axis axis) {
+void set_identity_mat(Mat4 *m) {
   for (int i = 0; i < 4; ++i) {
     for (int j = 0; j < 4; ++j) {
       m->m[i][j] = (i == j) ? 1.0f : 0.0f;
     }
   }
+}
+
+void build_rotation(Mat4 *m, float rad, Axis axis) {
+  set_identity_mat(m);
 
   float c = cosf(rad);
   float s = sinf(rad);
@@ -59,4 +63,18 @@ void build_rotation(Mat4 *m, float rad, Axis axis) {
       m->m[1][1] = c;
       break;
   }
+}
+
+void build_translation(Mat4 *m, float x, float y, float z) {
+  set_identity_mat(m);
+  m->m[0][3] = x;
+  m->m[1][3] = y;
+  m->m[2][3] = z;
+}
+
+void build_scale(Mat4 *m, float x, float y, float z) {
+  set_identity_mat(m);
+  m->m[0][0] = x;
+  m->m[1][1] = y;
+  m->m[2][2] = z;
 }

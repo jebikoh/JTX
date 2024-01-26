@@ -23,6 +23,9 @@ typedef struct {
 } Mat4;
 
 float deg_to_rad(float deg);
+void set_identity_mat(Mat4 *m);
 void build_rotation(Mat4 *m, float rad, Axis axis);
+void build_translation(Mat4 *m, float x, float y, float z);
+void build_scale(Mat4 *m, float x, float y, float z);
 
 #endif // UTIL_H

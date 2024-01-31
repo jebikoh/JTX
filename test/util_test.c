@@ -194,6 +194,60 @@ START_TEST(test_mult_smat_tmat) {
   ck_assert_float_eq_tol(out.m[3][3], 1.0, 0.0001);
 }
 
+START_TEST(test_cond_mat_id) {
+  Mat4 trans[4];
+  Mat4 out;
+  int n = 4;
+
+  for (int i = 0; i < n; ++i) {
+    build_identity(&trans[i]);
+  }
+  cond_mat4(trans, n, &out);
+  ck_assert_float_eq_tol(out.m[0][0], 1.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[0][1], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[0][2], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[0][3], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[1][0], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[1][1], 1.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[1][2], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[1][3], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[2][0], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[2][1], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[2][2], 1.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[2][3], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[3][0], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[3][1], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[3][2], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[3][3], 1.0, 0.0001);
+}
+
+START_TEST(test_cond_2smat_tmat) {
+  Mat4 trans[3];
+  Mat4 out;
+  int n = 3;
+
+  build_smat(&trans[0], 2.0, 2.0, 2.0);
+  build_smat(&trans[1], 3.0, 3.0, 3.0);
+  build_tmat(&trans[2], 1.0, 1.0, 1.0);
+  cond_mat4(trans, n, &out);
+  ck_assert_float_eq_tol(out.m[0][0], 6.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[0][1], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[0][2], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[0][3], 6.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[1][0], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[1][1], 6.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[1][2], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[1][3], 6.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[2][0], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[2][1], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[2][2], 6.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[2][3], 6.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[3][0], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[3][1], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[3][2], 0.0, 0.0001);
+  ck_assert_float_eq_tol(out.m[3][3], 1.0, 0.0001);
+}
+
 Suite *util_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -214,6 +268,8 @@ Suite *util_suite(void) {
   tcase_add_test(tc_core, test_smat);
   tcase_add_test(tc_core, test_mult_id);
   tcase_add_test(tc_core, test_mult_smat_tmat);
+  tcase_add_test(tc_core, test_cond_mat_id);
+  tcase_add_test(tc_core, test_cond_2smat_tmat);
   suite_add_tcase(s, tc_core);
 
   return s;

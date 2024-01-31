@@ -1,5 +1,7 @@
 #include "util.h"
 
+#include <string.h>
+
 void init_vec3(Vec3 *v, float x, float y, float z) {
   v->x = x;
   v->y = y;
@@ -82,4 +84,16 @@ void build_smat(Mat4 *m, float x, float y, float z) {
 void mult_mat4(const Mat4 *m1, const Mat4 *m2, Mat4 *out) {
   cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 4, 4, 4, 1.0f,
               (float *)m1->m, 4, (float *)m2->m, 4, 0.0f, (float *)out->m, 4);
+}
+
+void cond_mat4(const Mat4 *m, int n, Mat4 *out) {
+  build_identity(out);
+
+  Mat4 tmp;
+  for (int i = 0; i < n; i++) {
+    cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 4, 4, 4, 1.0f,
+                (float *)out->m, 4, (float *)m[i].m, 4, 0.0f, (float *)tmp.m,
+                4);
+    memcpy(out, &tmp, sizeof(Mat4));
+  }
 }

@@ -1,8 +1,8 @@
 CC=gcc
 CFLAGS=-Wall -g
-LDFLAGS=-L./lib -L/opt/homebrew/lib
-LDLIBS=-ltgec -lm -lcheck
-INCLUDES=-I./include -I/opt/homebrew/include
+LDFLAGS=-L./lib -L/opt/homebrew/lib -L/opt/homebrew/opt/openblas/lib
+LDLIBS=-lm -lcheck -lopenblas
+INCLUDES=-I./include -I/opt/homebrew/include -I/opt/homebrew/opt/openblas/include
 
 # Directory for object files
 OBJDIR=./obj
@@ -25,13 +25,13 @@ TEST_BINS=$(patsubst test/%.c, bin/%, $(TEST_SRCS))
 all: $(LIBDIR)/$(LIBNAME) $(TEST_BINS)
 
 $(LIBDIR)/$(LIBNAME): $(OBJS)
-	$(CC) $(CFLAGS) -shared -o $@ $(OBJS)
+	$(CC) $(LDFLAGS) -shared -o $@ $(OBJS) $(LDLIBS)
 
 $(OBJDIR)/%.o: ./src/%.c
 	$(CC) $(CFLAGS) $(INCLUDES) -fPIC -c $< -o $@
 
 bin/%: $(OBJDIR)/%.o
-	$(CC) $(LDFLAGS) $(CFLAGS) $< -o $@ $(LDLIBS)
+	$(CC) $(LDFLAGS) $(CFLAGS) $< -o $@ $(LDLIBS) -ltgec
 
 $(OBJDIR)/%.o: test/%.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@

@@ -48,7 +48,8 @@ void load_model(Model *m, const char *path) {
         f = realloc(f, f_capacity * sizeof(Face));
       }
       Face face;
-      if (sscanf(line, "f %d %d %d", &face.v1, &face.v1, &face.v1) == 3) {
+      if (sscanf(line, "f %d/%*d/%*d %d/%*d/%*d %d/%*d/%*d", &face.v1, &face.v2,
+                 &face.v3) == 3) {
         face.v1--;
         face.v2--;
         face.v3--;

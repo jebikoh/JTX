@@ -5,7 +5,7 @@
 
 START_TEST(test_init_vec3) {
   Vec3 v;
-  init_vec3(&v, 1, 2, 3);
+  vec3_init(&v, 1, 2, 3);
   ck_assert(v.x == 1);
   ck_assert(v.y == 2);
   ck_assert(v.z == 3);
@@ -13,9 +13,9 @@ START_TEST(test_init_vec3) {
 
 START_TEST(test_add_vec3) {
   Vec3 a, b;
-  init_vec3(&a, 1, 2, 3);
-  init_vec3(&b, 4, 5, 6);
-  add_vec3(&a, &b);
+  vec3_init(&a, 1, 2, 3);
+  vec3_init(&b, 4, 5, 6);
+  vec3_add(&a, &b);
   ck_assert(a.x == 5);
   ck_assert(a.y == 7);
   ck_assert(a.z == 9);
@@ -23,9 +23,9 @@ START_TEST(test_add_vec3) {
 
 START_TEST(test_sub_vec3) {
   Vec3 a, b;
-  init_vec3(&a, 5, 4, 3);
-  init_vec3(&b, 1, 2, 3);
-  sub_vec3(&a, &b);
+  vec3_init(&a, 5, 4, 3);
+  vec3_init(&b, 1, 2, 3);
+  vec3_sub(&a, &b);
   ck_assert(a.x == 4);
   ck_assert(a.y == 2);
   ck_assert(a.z == 0);
@@ -33,8 +33,8 @@ START_TEST(test_sub_vec3) {
 
 START_TEST(test_normalize_vec3) {
   Vec3 a;
-  init_vec3(&a, 3.0, 4.0, 0.0);
-  normalize_vec3(&a);
+  vec3_init(&a, 3.0, 4.0, 0.0);
+  vec3_normalize(&a);
   float length = sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
   ck_assert_float_eq_tol(length, 1.0, 0.0001);
 }

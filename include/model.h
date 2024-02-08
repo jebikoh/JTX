@@ -21,8 +21,10 @@ typedef struct {
     Vertex *n;
 } Model;
 
-void init_model(Model *m, int num_v, int num_f);
-void free_model(Model *m);
-void load_model(Model *m, const char *path);
+void model_init(Model *m, int num_v, int num_f);
+void model_free(Model *m);
+void model_load(Model *m, const char *path);
+void model_apply_transf(Model *m, const Mat4 *tf);
+void model_comp_norms(Model *m);
 
 #endif // MODEL_H

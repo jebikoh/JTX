@@ -2,7 +2,7 @@
 
 static const int INITIAL_CAPACITY = 100;
 
-void init_model(Model *m, int num_v, int num_f) {
+void model_init(Model *m, int num_v, int num_f) {
   m->v = (Vertex *)malloc(num_v * sizeof(Vertex));
   m->num_f = num_f;
   m->f = (Face *)malloc(num_f * sizeof(Face));
@@ -10,13 +10,13 @@ void init_model(Model *m, int num_v, int num_f) {
   m->n = (Vertex *)malloc(num_v * sizeof(Vertex));
 }
 
-void free_model(Model *m) {
+void model_free(Model *m) {
   free(m->v);
   free(m->f);
   free(m->n);
 }
 
-void load_model(Model *m, const char *path) {
+void model_load(Model *m, const char *path) {
   FILE *file = fopen(path, "r");
   if (file == NULL) {
     perror("Error opening file");

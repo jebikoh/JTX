@@ -5,15 +5,15 @@
 
 START_TEST(test_init_model) {
   Model m;
-  init_model(&m, 10, 20);
+  model_init(&m, 10, 20);
   ck_assert_int_eq(m.num_v, 10);
   ck_assert_int_eq(m.num_f, 20);
-  free_model(&m);
+  model_free(&m);
 }
 
 START_TEST(test_load_model) {
   Model m;
-  load_model(&m, "models/cube.obj");
+  model_load(&m, "models/cube.obj");
   // Check num vertices and faces
   ck_assert_int_eq(m.num_v, 8);
   ck_assert_int_eq(m.num_f, 12);
@@ -33,7 +33,7 @@ START_TEST(test_load_model) {
   ck_assert_int_eq(m.f[11].v1, 4);
   ck_assert_int_eq(m.f[11].v2, 0);
   ck_assert_int_eq(m.f[11].v3, 7);
-  free_model(&m);
+  model_free(&m);
 }
 
 Suite *model_suite(void) {

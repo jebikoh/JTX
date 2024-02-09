@@ -74,3 +74,18 @@ void model_load(Model *m, const char *path) {
 }
 
 float *model_get_v(const Model *m, int i) { return m->v + 4 * i; }
+
+void model_apply_transf(Model *m, const Mat4 *tf) {
+  int size = 4 * m->num_v;
+  float *new_v = malloc(size * sizeof(float));
+  if (!new_v) {
+    perror("Failed to allocate memory for transformed vertices");
+    return;
+  }
+
+  cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasTrans, m->num_v, 4, 4, 1.0f,
+              m->v, 4, (float *)tf->m, 4, 0.0f, new_v, 4);
+
+  free(m->v);
+  m->v = new_v;
+}

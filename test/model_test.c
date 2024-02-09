@@ -53,6 +53,86 @@ START_TEST(test_model_load) {
   model_free(&m);
 }
 
+START_TEST(test_model_apply_smat) {
+  Model m;
+  model_load(&m, "models/cube.obj");
+  Mat4 scale;
+  build_smat(&scale, 2.0f, 2.0f, 2.0f);
+  model_apply_transf(&m, &scale);
+  // Check first vertex
+  float *v1 = model_get_v(&m, 0);
+  ck_assert_float_eq(v1[0], 2.0f);
+  ck_assert_float_eq(v1[1], -2.0f);
+  ck_assert_float_eq(v1[2], -2.0f);
+  // Check last vertex
+  float *v8 = model_get_v(&m, 7);
+  ck_assert_float_eq(v8[0], -2.0f);
+  ck_assert_float_eq(v8[1], 2.0f);
+  ck_assert_float_eq(v8[2], -2.0f);
+  model_free(&m);
+}
+
+START_TEST(test_model_apply_tmat) {
+  Model m;
+  model_load(&m, "models/cube.obj");
+  Mat4 translate;
+  build_tmat(&translate, 1.0f, 2.0f, 3.0f);
+  model_apply_transf(&m, &translate);
+  // Check first vertex
+  float *v1 = model_get_v(&m, 0);
+  ck_assert_float_eq(v1[0], 2.0f);
+  ck_assert_float_eq(v1[1], 1.0f);
+  ck_assert_float_eq(v1[2], 2.0f);
+  // Check last vertex
+  float *v8 = model_get_v(&m, 7);
+  ck_assert_float_eq(v8[0], 0.0f);
+  ck_assert_float_eq(v8[1], 3.0f);
+  ck_assert_float_eq(v8[2], 2.0f);
+  model_free(&m);
+}
+
+START_TEST(test_model_apply_rmat) {
+  Model m;
+  model_load(&m, "models/cube.obj");
+  Mat4 rotate;
+  build_rmat(&rotate, deg_to_rad(90.0f), X);
+  model_apply_transf(&m, &rotate);
+  // Check first vertex
+  float *v1 = model_get_v(&m, 0);
+  ck_assert_float_eq_tol(v1[0], 1.0f, 0.0001);
+  ck_assert_float_eq_tol(v1[1], 1.0f, 0.0001);
+  ck_assert_float_eq_tol(v1[2], -1.0f, 0.0001);
+  // Check last vertex
+  float *v8 = model_get_v(&m, 7);
+  ck_assert_float_eq_tol(v8[0], -1.0f, 0.0001);
+  ck_assert_float_eq_tol(v8[1], 1.0f, 0.0001);
+  ck_assert_float_eq_tol(v8[2], 1.0f, 0.0001);
+  model_free(&m);
+}
+
+START_TEST(test_model_apply_cond) {
+  Model m;
+  model_load(&m, "models/cube.obj");
+  Mat4 mats[3];
+  build_smat(&mats[0], 2.0f, 2.0f, 2.0f);
+  build_tmat(&mats[1], 1.0f, 2.0f, 3.0f);
+  build_rmat(&mats[2], deg_to_rad(90.0f), X);
+  Mat4 tf;
+  cond_mat4(mats, 3, &tf);
+  model_apply_transf(&m, &tf);
+  // Check first vertex
+  float *v1 = model_get_v(&m, 0);
+  ck_assert_float_eq_tol(v1[0], 4.0f, 0.0001);
+  ck_assert_float_eq_tol(v1[1], 6.0f, 0.0001);
+  ck_assert_float_eq_tol(v1[2], 4.0f, 0.0001);
+  // Check last vertex
+  float *v8 = model_get_v(&m, 7);
+  ck_assert_float_eq_tol(v8[0], 0.0f, 0.0001);
+  ck_assert_float_eq_tol(v8[1], 6.0f, 0.0001);
+  ck_assert_float_eq_tol(v8[2], 8.0f, 0.0001);
+  model_free(&m);
+}
+
 Suite *model_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -64,6 +144,10 @@ Suite *model_suite(void) {
   tcase_add_test(tc_core, test_model_init);
   tcase_add_test(tc_core, test_model_get_v);
   tcase_add_test(tc_core, test_model_load);
+  tcase_add_test(tc_core, test_model_apply_smat);
+  tcase_add_test(tc_core, test_model_apply_tmat);
+  tcase_add_test(tc_core, test_model_apply_rmat);
+  tcase_add_test(tc_core, test_model_apply_cond);
   suite_add_tcase(s, tc_core);
 
   return s;

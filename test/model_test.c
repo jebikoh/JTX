@@ -3,7 +3,7 @@
 #include <check.h>
 #include <stdlib.h>
 
-START_TEST(test_init_model) {
+START_TEST(test_model_init) {
   Model m;
   model_init(&m, 10, 20);
   ck_assert_int_eq(m.num_v, 10);
@@ -11,25 +11,42 @@ START_TEST(test_init_model) {
   model_free(&m);
 }
 
-START_TEST(test_load_model) {
+START_TEST(test_model_get_v) {
+  Model m;
+  model_init(&m, 2, 0);
+  m.v[4] = 1.0f;
+  m.v[5] = 2.0f;
+  m.v[6] = 3.0f;
+  m.v[7] = 4.0f;
+  float *v = model_get_v(&m, 1);
+  ck_assert_float_eq(v[0], 1.0f);
+  ck_assert_float_eq(v[1], 2.0f);
+  ck_assert_float_eq(v[2], 3.0f);
+  ck_assert_float_eq(v[3], 4.0f);
+  model_free(&m);
+}
+
+START_TEST(test_model_load) {
   Model m;
   model_load(&m, "models/cube.obj");
   // Check num vertices and faces
   ck_assert_int_eq(m.num_v, 8);
   ck_assert_int_eq(m.num_f, 12);
-  // Check first vertex
-  ck_assert_float_eq(m.v[0].x, 1.0f);
-  ck_assert_float_eq(m.v[0].y, -1.0f);
-  ck_assert_float_eq(m.v[0].z, -1.0f);
-  // Check last vertex
-  ck_assert_float_eq(m.v[7].x, -1.0f);
-  ck_assert_float_eq(m.v[7].y, 1.0f);
-  ck_assert_float_eq(m.v[7].z, -1.0f);
-  // Check first face
+  // // Check first vertex
+  float *v1 = model_get_v(&m, 0);
+  ck_assert_float_eq(v1[0], 1.0f);
+  ck_assert_float_eq(v1[1], -1.0f);
+  ck_assert_float_eq(v1[2], -1.0f);
+  // // Check last vertex
+  float *v8 = model_get_v(&m, 7);
+  ck_assert_float_eq(v8[0], -1.0f);
+  ck_assert_float_eq(v8[1], 1.0f);
+  ck_assert_float_eq(v8[2], -1.0f);
+  // // Check first face
   ck_assert_int_eq(m.f[0].v1, 1);
   ck_assert_int_eq(m.f[0].v2, 2);
   ck_assert_int_eq(m.f[0].v3, 3);
-  // Check last face
+  // // Check last face
   ck_assert_int_eq(m.f[11].v1, 4);
   ck_assert_int_eq(m.f[11].v2, 0);
   ck_assert_int_eq(m.f[11].v3, 7);
@@ -44,8 +61,9 @@ Suite *model_suite(void) {
 
   tc_core = tcase_create("Core");
 
-  tcase_add_test(tc_core, test_init_model);
-  tcase_add_test(tc_core, test_load_model);
+  tcase_add_test(tc_core, test_model_init);
+  tcase_add_test(tc_core, test_model_get_v);
+  tcase_add_test(tc_core, test_model_load);
   suite_add_tcase(s, tc_core);
 
   return s;

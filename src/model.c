@@ -3,11 +3,11 @@
 static const int INITIAL_CAPACITY = 100;
 
 void model_init(Model *m, int num_v, int num_f) {
-  m->v = (Vertex *)malloc(num_v * sizeof(Vertex));
+  m->v = (float *)malloc(4 * num_v * sizeof(float));
   m->num_f = num_f;
   m->f = (Face *)malloc(num_f * sizeof(Face));
   m->num_v = num_v;
-  m->n = (Vertex *)malloc(num_v * sizeof(Vertex));
+  m->n = (float *)malloc(4 * num_v * sizeof(float));
 }
 
 void model_free(Model *m) {
@@ -24,7 +24,7 @@ void model_load(Model *m, const char *path) {
   }
 
   char line[128];
-  Vertex *v = malloc(INITIAL_CAPACITY * sizeof(Vertex));
+  float *v = malloc(4 * INITIAL_CAPACITY * sizeof(float));
   int num_v = 0;
   int v_capacity = INITIAL_CAPACITY;
   Face *f = malloc(INITIAL_CAPACITY * sizeof(Face));
@@ -35,12 +35,16 @@ void model_load(Model *m, const char *path) {
     if (strncmp(line, "v ", 2) == 0) {
       if (num_v == v_capacity) {
         v_capacity *= 2;
-        v = realloc(v, v_capacity * sizeof(Vertex));
+        v = realloc(v, 4 * v_capacity * sizeof(float));
       }
-      Vertex vert;
-      if (sscanf(line, "v %f %f %f", &vert.x, &vert.y, &vert.z) == 3) {
-        vert.w = 1.0f;
-        v[num_v++] = vert;
+      float x, y, z;
+      if (sscanf(line, "v %f %f %f", &x, &y, &z) == 3) {
+        int i = 4 * num_v;
+        v[i] = x;
+        v[i + 1] = y;
+        v[i + 2] = z;
+        v[i + 3] = 1.0f;
+        num_v++;
       }
     } else if (strncmp(line, "f ", 2) == 0) {
       if (num_f == f_capacity) {
@@ -59,12 +63,14 @@ void model_load(Model *m, const char *path) {
   }
 
   fclose(file);
-  v = realloc(v, num_v * sizeof(Vertex));
+  v = realloc(v, 4 * num_v * sizeof(float));
   f = realloc(f, num_f * sizeof(Face));
 
   m->v = v;
   m->num_v = num_v;
   m->f = f;
   m->num_f = num_f;
-  m->n = malloc(num_v * sizeof(Vertex));
+  m->n = malloc(4 * num_v * sizeof(float));
 }
+
+float *model_get_v(const Model *m, int i) { return m->v + 4 * i; }

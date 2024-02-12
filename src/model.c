@@ -73,7 +73,13 @@ void model_load(Model *m, const char *path) {
   m->n = malloc(4 * num_v * sizeof(float));
 }
 
-float *model_get_v(const Model *m, int i) { return m->v + 4 * i; }
+float *model_get_v(const Model *m, int i) {
+  if (i >= m->num_v) {
+    return NULL;
+  }
+
+  return m->v + 4 * i;
+}
 
 void model_apply_transf(Model *m, const Mat4 *tf) {
   int size = 4 * m->num_v;

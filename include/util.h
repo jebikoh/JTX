@@ -9,8 +9,8 @@ typedef struct {
 } Vec3;
 
 void vec3_init(Vec3 *v, float x, float y, float z);
-void vec3_add(Vec3 *v1, const Vec3 *v2);
-void vec3_sub(Vec3 *v1, const Vec3 *v2);
+void vec3_add(const Vec3 *v1, const Vec3 *v2, Vec3 *out);
+void vec3_sub(const Vec3 *v1, const Vec3 *v2, Vec3 *out);
 void vec3_normalize(Vec3 *v);
 
 typedef enum {

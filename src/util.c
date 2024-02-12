@@ -8,16 +8,16 @@ void vec3_init(Vec3 *v, float x, float y, float z) {
   v->z = z;
 }
 
-void vec3_add(Vec3 *a, const Vec3 *b) {
-  a->x = a->x + b->x;
-  a->y = a->y + b->y;
-  a->z = a->z + b->z;
+void vec3_add(const Vec3 *a, const Vec3 *b, Vec3 *out) {
+  out->x = a->x + b->x;
+  out->y = a->y + b->y;
+  out->z = a->z + b->z;
 }
 
-void vec3_sub(Vec3 *a, const Vec3 *b) {
-  a->x = a->x - b->x;
-  a->y = a->y - b->y;
-  a->z = a->z - b->z;
+void vec3_sub(const Vec3 *a, const Vec3 *b, Vec3 *out) {
+  out->x = a->x - b->x;
+  out->y = a->y - b->y;
+  out->z = a->z - b->z;
 }
 
 void vec3_normalize(Vec3 *v) {

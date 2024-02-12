@@ -12,23 +12,23 @@ START_TEST(test_init_vec3) {
 }
 
 START_TEST(test_add_vec3) {
-  Vec3 a, b;
+  Vec3 a, b, o;
   vec3_init(&a, 1, 2, 3);
   vec3_init(&b, 4, 5, 6);
-  vec3_add(&a, &b);
-  ck_assert(a.x == 5);
-  ck_assert(a.y == 7);
-  ck_assert(a.z == 9);
+  vec3_add(&a, &b, &o);
+  ck_assert(o.x == 5);
+  ck_assert(o.y == 7);
+  ck_assert(o.z == 9);
 }
 
 START_TEST(test_sub_vec3) {
-  Vec3 a, b;
+  Vec3 a, b, o;
   vec3_init(&a, 5, 4, 3);
   vec3_init(&b, 1, 2, 3);
-  vec3_sub(&a, &b);
-  ck_assert(a.x == 4);
-  ck_assert(a.y == 2);
-  ck_assert(a.z == 0);
+  vec3_sub(&a, &b, &o);
+  ck_assert(o.x == 4);
+  ck_assert(o.y == 2);
+  ck_assert(o.z == 0);
 }
 
 START_TEST(test_normalize_vec3) {

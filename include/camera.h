@@ -3,6 +3,8 @@
 
 #include "util.h"
 
+#include <math.h>
+
 typedef enum {
     PERSPECTIVE = 0,
     ORTHOGRAPHIC = 1
@@ -15,7 +17,7 @@ typedef struct {
     float fov;
     float near;
     float far;
-};
+} Camera;
 
 void camera_init(Camera *c, Vec3 pos, Vec3 target, Vec3 up, float fov, float near, float far);
 void camera_get_view_mat(const Camera *c, Mat4 *m);

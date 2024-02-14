@@ -20,6 +20,16 @@ void vec3_sub(const Vec3 *a, const Vec3 *b, Vec3 *out) {
   out->z = a->z - b->z;
 }
 
+void vec3_cross(const Vec3 *a, const Vec3 *b, Vec3 *out) {
+  out->x = a->y * b->z - a->z * b->y;
+  out->y = a->z * b->x - a->x * b->z;
+  out->z = a->x * b->y - a->y * b->x;
+}
+
+float vec3_dot(const Vec3 *a, const Vec3 *b) {
+  return a->x * b->x + a->y * b->y + a->z * b->z;
+}
+
 void vec3_normalize(Vec3 *v) {
   float len = sqrt(v->x * v->x + v->y * v->y + v->z * v->z);
   if (len != 0) {

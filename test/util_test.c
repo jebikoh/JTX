@@ -39,6 +39,24 @@ START_TEST(test_normalize_vec3) {
   ck_assert_float_eq_tol(length, 1.0, 0.0001);
 }
 
+START_TEST(test_cross_vec3) {
+  Vec3 a, b, o;
+  vec3_init(&a, 0.0, 0.0, -1.0);
+  vec3_init(&b, 0.0, 1.0, 0.0);
+  vec3_cross(&a, &b, &o);
+  ck_assert(o.x == 1.0);
+  ck_assert(o.y == 0.0);
+  ck_assert(o.z == 0.0);
+}
+
+START_TEST(test_dot_vec3) {
+  Vec3 a, b;
+  vec3_init(&a, 1.0, 2.0, 3.0);
+  vec3_init(&b, 4.0, 5.0, 6.0);
+  float dot = vec3_dot(&a, &b);
+  ck_assert_float_eq_tol(dot, 32.0, 0.0001);
+}
+
 START_TEST(test_deg_to_rad) {
   ck_assert_float_eq_tol(deg_to_rad(90.0), M_PI / 2.0, 0.0001);
 }
@@ -260,6 +278,8 @@ Suite *util_suite(void) {
   tcase_add_test(tc_core, test_add_vec3);
   tcase_add_test(tc_core, test_sub_vec3);
   tcase_add_test(tc_core, test_normalize_vec3);
+  tcase_add_test(tc_core, test_cross_vec3);
+  tcase_add_test(tc_core, test_dot_vec3);
   tcase_add_test(tc_core, test_deg_to_rad);
   tcase_add_test(tc_core, test_rmat_90_x);
   tcase_add_test(tc_core, test_rmat_90_y);

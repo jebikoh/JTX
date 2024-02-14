@@ -11,21 +11,28 @@ START_TEST(test_init_vec3) {
   ck_assert(v.z == 3);
 }
 
+START_TEST(test_new_vec3) {
+  Vec3 v = vec3_new(1, 2, 3);
+  ck_assert(v.x == 1);
+  ck_assert(v.y == 2);
+  ck_assert(v.z == 3);
+}
+
 START_TEST(test_add_vec3) {
-  Vec3 a, b, o;
+  Vec3 a, b;
   vec3_init(&a, 1, 2, 3);
   vec3_init(&b, 4, 5, 6);
-  vec3_add(&a, &b, &o);
+  Vec3 o = vec3_add(a, b);
   ck_assert(o.x == 5);
   ck_assert(o.y == 7);
   ck_assert(o.z == 9);
 }
 
 START_TEST(test_sub_vec3) {
-  Vec3 a, b, o;
+  Vec3 a, b;
   vec3_init(&a, 5, 4, 3);
   vec3_init(&b, 1, 2, 3);
-  vec3_sub(&a, &b, &o);
+  Vec3 o = vec3_sub(a, b);
   ck_assert(o.x == 4);
   ck_assert(o.y == 2);
   ck_assert(o.z == 0);
@@ -40,10 +47,10 @@ START_TEST(test_normalize_vec3) {
 }
 
 START_TEST(test_cross_vec3) {
-  Vec3 a, b, o;
+  Vec3 a, b;
   vec3_init(&a, 0.0, 0.0, -1.0);
   vec3_init(&b, 0.0, 1.0, 0.0);
-  vec3_cross(&a, &b, &o);
+  Vec3 o = vec3_cross(a, b);
   ck_assert(o.x == 1.0);
   ck_assert(o.y == 0.0);
   ck_assert(o.z == 0.0);
@@ -53,7 +60,7 @@ START_TEST(test_dot_vec3) {
   Vec3 a, b;
   vec3_init(&a, 1.0, 2.0, 3.0);
   vec3_init(&b, 4.0, 5.0, 6.0);
-  float dot = vec3_dot(&a, &b);
+  float dot = vec3_dot(a, b);
   ck_assert_float_eq_tol(dot, 32.0, 0.0001);
 }
 
@@ -275,6 +282,7 @@ Suite *util_suite(void) {
   tc_core = tcase_create("Core");
 
   tcase_add_test(tc_core, test_init_vec3);
+  tcase_add_test(tc_core, test_new_vec3);
   tcase_add_test(tc_core, test_add_vec3);
   tcase_add_test(tc_core, test_sub_vec3);
   tcase_add_test(tc_core, test_normalize_vec3);

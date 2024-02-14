@@ -8,12 +8,13 @@ typedef struct {
     float x, y, z;
 } Vec3;
 
-void vec3_init(Vec3 *v, float x, float y, float z);
-void vec3_add(const Vec3 *v1, const Vec3 *v2, Vec3 *out);
-void vec3_sub(const Vec3 *v1, const Vec3 *v2, Vec3 *out);
-void vec3_cross(const Vec3 *v1, const Vec3 *v2, Vec3 *out);
+void vec3_init(Vec3* v, float x, float y, float z);
+Vec3 vec3_new(float x, float y, float z);
+Vec3 vec3_add(const Vec3 v1, const Vec3 v2);
+Vec3 vec3_sub(const Vec3 v1, const Vec3 v2);
+Vec3 vec3_cross(const Vec3 v1, const Vec3 v2);
+float vec3_dot(const Vec3 v1, const Vec3 v2);
 void vec3_normalize(Vec3 *v);
-float vec3_dot(const Vec3 *v1, const Vec3 *v2);
 
 typedef enum {
     X = 0,

@@ -14,6 +14,7 @@ Vec3 vec3_add(const Vec3 v1, const Vec3 v2);
 Vec3 vec3_sub(const Vec3 v1, const Vec3 v2);
 Vec3 vec3_cross(const Vec3 v1, const Vec3 v2);
 float vec3_dot(const Vec3 v1, const Vec3 v2);
+float vec3_dot_f(const Vec3 v, float x, float y, float z);
 void vec3_normalize(Vec3 *v);
 
 typedef enum {

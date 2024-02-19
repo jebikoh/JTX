@@ -27,6 +27,10 @@ float vec3_dot(const Vec3 a, const Vec3 b) {
   return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
+float vec3_dot_f(const Vec3 v, float x, float y, float z) {
+  return v.x * x + v.y * y + v.z * z;
+}
+
 void vec3_normalize(Vec3 *v) {
   float len = sqrt(v->x * v->x + v->y * v->y + v->z * v->z);
   if (len != 0) {

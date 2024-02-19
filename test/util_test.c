@@ -64,6 +64,13 @@ START_TEST(test_dot_vec3) {
   ck_assert_float_eq_tol(dot, 32.0, 0.0001);
 }
 
+START_TEST(test_dot_vec3_f) {
+  Vec3 a = vec3_new(1.0, 2.0, 3.0);
+  float x = 4.0, y = 5.0, z = 6.0;
+  float dot = vec3_dot_f(a, x, y, z);
+  ck_assert_float_eq_tol(dot, 32.0, 0.0001);
+}
+
 START_TEST(test_deg_to_rad) {
   ck_assert_float_eq_tol(deg_to_rad(90.0), M_PI / 2.0, 0.0001);
 }
@@ -288,6 +295,7 @@ Suite *util_suite(void) {
   tcase_add_test(tc_core, test_normalize_vec3);
   tcase_add_test(tc_core, test_cross_vec3);
   tcase_add_test(tc_core, test_dot_vec3);
+  tcase_add_test(tc_core, test_dot_vec3_f);
   tcase_add_test(tc_core, test_deg_to_rad);
   tcase_add_test(tc_core, test_rmat_90_x);
   tcase_add_test(tc_core, test_rmat_90_y);

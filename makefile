@@ -22,7 +22,10 @@ TEST_BINS=$(patsubst test/%.c, bin/%, $(TEST_SRCS))
 
 .PHONY: all clean test
 
-all: $(LIBDIR)/$(LIBNAME) $(TEST_BINS)
+all: directories $(LIBDIR)/$(LIBNAME) $(TEST_BINS)
+
+directories:
+	mkdir -p $(OBJDIR) $(BINDIR) $(LIBDIR) bin
 
 $(LIBDIR)/$(LIBNAME): $(OBJS)
 	$(CC) $(LDFLAGS) -shared -o $@ $(OBJS) $(LDLIBS)

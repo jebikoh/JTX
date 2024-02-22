@@ -1,8 +1,8 @@
-#include "model.h"
+#include "primitive.h"
 
 static const int INITIAL_CAPACITY = 100;
 
-void model_init(Model *m, int num_v, int num_f) {
+void prim_init(Primitive *m, int num_v, int num_f) {
   m->v = (float *)malloc(4 * num_v * sizeof(float));
   m->num_f = num_f;
   m->f = (Face *)malloc(num_f * sizeof(Face));
@@ -10,13 +10,13 @@ void model_init(Model *m, int num_v, int num_f) {
   m->n = (float *)malloc(4 * num_v * sizeof(float));
 }
 
-void model_free(Model *m) {
+void prim_free(Primitive *m) {
   free(m->v);
   free(m->f);
   free(m->n);
 }
 
-void model_load(Model *m, const char *path) {
+void prim_load(Primitive *m, const char *path) {
   FILE *file = fopen(path, "r");
   if (file == NULL) {
     perror("Error opening file");
@@ -73,7 +73,7 @@ void model_load(Model *m, const char *path) {
   m->n = malloc(4 * num_v * sizeof(float));
 }
 
-float *model_get_v(const Model *m, int i) {
+float *prim_get_v(const Primitive *m, int i) {
   if (i >= m->num_v) {
     return NULL;
   }
@@ -81,7 +81,7 @@ float *model_get_v(const Model *m, int i) {
   return m->v + 4 * i;
 }
 
-void model_apply_transf(Model *m, const Mat4 *tf) {
+void prim_apply_transf(Primitive *m, const Mat4 *tf) {
   int size = 4 * m->num_v;
   float *new_v = malloc(size * sizeof(float));
   if (!new_v) {

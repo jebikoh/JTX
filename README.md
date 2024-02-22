@@ -1,5 +1,5 @@
-# TGE-C
+# JAE
 
-TGE, but written in C.
+My own graphics engine.
 
 Compile with `make clean; make`. Run tests with `make test`.

@@ -24,6 +24,26 @@ START_TEST(test_camera_init) {
   ck_assert_float_eq(c.far, 100.0f);
 }
 
+START_TEST(test_camera_new) {
+  Vec3 pos, target, up;
+  vec3_init(&pos, 0.0f, 0.0f, 30.0f);
+  vec3_init(&target, 0.0f, 0.0f, 0.0f);
+  vec3_init(&up, 0.0f, 1.0f, 0.0f);
+  Camera c = camera_new(pos, target, up, 1.0472f, 0.1f, 100.0f);
+  ck_assert_float_eq(c.pos.x, 0.0f);
+  ck_assert_float_eq(c.pos.y, 0.0f);
+  ck_assert_float_eq(c.pos.z, 30.0f);
+  ck_assert_float_eq(c.dir.x, 0.0f);
+  ck_assert_float_eq(c.dir.y, 0.0f);
+  ck_assert_float_eq(c.dir.z, -1.0f);
+  ck_assert_float_eq(c.up.x, 0.0f);
+  ck_assert_float_eq(c.up.y, 1.0f);
+  ck_assert_float_eq(c.up.z, 0.0f);
+  ck_assert_float_eq(c.fov, 1.0472f);
+  ck_assert_float_eq(c.near, 0.1f);
+  ck_assert_float_eq(c.far, 100.0f);
+}
+
 START_TEST(test_get_view_mat) {
   Camera c;
   Vec3 pos, target, up;
@@ -88,6 +108,7 @@ Suite *camera_suite(void) {
   tc_core = tcase_create("Core");
 
   tcase_add_test(tc_core, test_camera_init);
+  tcase_add_test(tc_core, test_camera_new);
   tcase_add_test(tc_core, test_get_view_mat);
   tcase_add_test(tc_core, test_get_proj_mat);
   suite_add_tcase(s, tc_core);

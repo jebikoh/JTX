@@ -15,6 +15,13 @@ void camera_init(Camera *c, const Vec3 pos, const Vec3 target, const Vec3 up,
   c->far = far;
 }
 
+Camera camera_new(const Vec3 pos, const Vec3 target, const Vec3 up, float fov,
+                  float near, float far) {
+  Camera c;
+  camera_init(&c, pos, target, up, fov, near, far);
+  return c;
+}
+
 void camera_get_view_mat(const Camera *c, Mat4 *m) {
   Vec3 right = vec3_cross(c->dir, c->up);
   vec3_normalize(&right);

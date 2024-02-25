@@ -1,4 +1,4 @@
-# JAE
+# JTX
 
 A basic renderer.
 

@@ -35,3 +35,12 @@ void renderer_free(Renderer *r, int free_fb) {
   }
   free(r->zbuf);
 }
+
+void renderer_clear(Renderer *r) {
+  // Optimize this loop later
+  // Needs to be called every frame
+  for (int i = 0; i < r->w * r->h; i++) {
+    r->zbuf[i] = -INFINITY;
+    r->fb[i] = 0.0f;
+  }
+}

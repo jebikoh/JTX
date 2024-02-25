@@ -10,6 +10,7 @@ START_TEST(test_init_vec3) {
   ck_assert(v.y == 2);
   ck_assert(v.z == 3);
 }
+END_TEST
 
 START_TEST(test_new_vec3) {
   Vec3 v = vec3_new(1, 2, 3);
@@ -17,6 +18,7 @@ START_TEST(test_new_vec3) {
   ck_assert(v.y == 2);
   ck_assert(v.z == 3);
 }
+END_TEST
 
 START_TEST(test_add_vec3) {
   Vec3 a, b;
@@ -27,6 +29,7 @@ START_TEST(test_add_vec3) {
   ck_assert(o.y == 7);
   ck_assert(o.z == 9);
 }
+END_TEST
 
 START_TEST(test_sub_vec3) {
   Vec3 a, b;
@@ -37,6 +40,7 @@ START_TEST(test_sub_vec3) {
   ck_assert(o.y == 2);
   ck_assert(o.z == 0);
 }
+END_TEST
 
 START_TEST(test_normalize_vec3) {
   Vec3 a;
@@ -45,6 +49,7 @@ START_TEST(test_normalize_vec3) {
   float length = sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
   ck_assert_float_eq_tol(length, 1.0, 0.0001);
 }
+END_TEST
 
 START_TEST(test_cross_vec3) {
   Vec3 a, b;
@@ -55,6 +60,7 @@ START_TEST(test_cross_vec3) {
   ck_assert(o.y == 0.0);
   ck_assert(o.z == 0.0);
 }
+END_TEST
 
 START_TEST(test_dot_vec3) {
   Vec3 a, b;
@@ -63,6 +69,7 @@ START_TEST(test_dot_vec3) {
   float dot = vec3_dot(a, b);
   ck_assert_float_eq_tol(dot, 32.0, 0.0001);
 }
+END_TEST
 
 START_TEST(test_dot_vec3_f) {
   Vec3 a = vec3_new(1.0, 2.0, 3.0);
@@ -70,10 +77,12 @@ START_TEST(test_dot_vec3_f) {
   float dot = vec3_dot_f(a, x, y, z);
   ck_assert_float_eq_tol(dot, 32.0, 0.0001);
 }
+END_TEST
 
 START_TEST(test_deg_to_rad) {
   ck_assert_float_eq_tol(deg_to_rad(90.0), M_PI / 2.0, 0.0001);
 }
+END_TEST
 
 START_TEST(test_rmat_90_x) {
   Mat4 m;
@@ -95,6 +104,7 @@ START_TEST(test_rmat_90_x) {
   ck_assert_float_eq_tol(m.m[3][2], 0.0, 0.0001);
   ck_assert_float_eq_tol(m.m[3][3], 1.0, 0.0001);
 }
+END_TEST
 
 START_TEST(test_rmat_90_y) {
   Mat4 m;
@@ -116,6 +126,7 @@ START_TEST(test_rmat_90_y) {
   ck_assert_float_eq_tol(m.m[3][2], 0.0, 0.0001);
   ck_assert_float_eq_tol(m.m[3][3], 1.0, 0.0001);
 }
+END_TEST
 
 START_TEST(test_rmat_90_z) {
   Mat4 m;
@@ -137,6 +148,7 @@ START_TEST(test_rmat_90_z) {
   ck_assert_float_eq_tol(m.m[3][2], 0.0, 0.0001);
   ck_assert_float_eq_tol(m.m[3][3], 1.0, 0.0001);
 }
+END_TEST
 
 START_TEST(test_tmat) {
   Mat4 m;
@@ -158,6 +170,7 @@ START_TEST(test_tmat) {
   ck_assert_float_eq_tol(m.m[3][2], 0.0, 0.0001);
   ck_assert_float_eq_tol(m.m[3][3], 1.0, 0.0001);
 }
+END_TEST
 
 START_TEST(test_smat) {
   Mat4 m;
@@ -179,6 +192,7 @@ START_TEST(test_smat) {
   ck_assert_float_eq_tol(m.m[3][2], 0.0, 0.0001);
   ck_assert_float_eq_tol(m.m[3][3], 1.0, 0.0001);
 }
+END_TEST
 
 START_TEST(test_mult_id) {
   Mat4 m1, m2, out;
@@ -202,6 +216,7 @@ START_TEST(test_mult_id) {
   ck_assert_float_eq_tol(out.m[3][2], 0.0, 0.0001);
   ck_assert_float_eq_tol(out.m[3][3], 1.0, 0.0001);
 }
+END_TEST
 
 START_TEST(test_mult_smat_tmat) {
   Mat4 m1, m2, out;
@@ -225,6 +240,7 @@ START_TEST(test_mult_smat_tmat) {
   ck_assert_float_eq_tol(out.m[3][2], 0.0, 0.0001);
   ck_assert_float_eq_tol(out.m[3][3], 1.0, 0.0001);
 }
+END_TEST
 
 START_TEST(test_cond_mat_id) {
   Mat4 trans[4];
@@ -252,6 +268,7 @@ START_TEST(test_cond_mat_id) {
   ck_assert_float_eq_tol(out.m[3][2], 0.0, 0.0001);
   ck_assert_float_eq_tol(out.m[3][3], 1.0, 0.0001);
 }
+END_TEST
 
 START_TEST(test_cond_2smat_tmat) {
   Mat4 trans[3];
@@ -279,6 +296,7 @@ START_TEST(test_cond_2smat_tmat) {
   ck_assert_float_eq_tol(out.m[3][2], 0.0, 0.0001);
   ck_assert_float_eq_tol(out.m[3][3], 1.0, 0.0001);
 }
+END_TEST
 
 Suite *util_suite(void) {
   Suite *s;

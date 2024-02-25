@@ -23,6 +23,7 @@ START_TEST(test_camera_init) {
   ck_assert_float_eq(c.near, 0.1f);
   ck_assert_float_eq(c.far, 100.0f);
 }
+END_TEST
 
 START_TEST(test_camera_new) {
   Vec3 pos, target, up;
@@ -43,6 +44,7 @@ START_TEST(test_camera_new) {
   ck_assert_float_eq(c.near, 0.1f);
   ck_assert_float_eq(c.far, 100.0f);
 }
+END_TEST
 
 START_TEST(test_get_view_mat) {
   Camera c;
@@ -71,6 +73,7 @@ START_TEST(test_get_view_mat) {
   ck_assert_float_eq(m.m[3][2], 0.0f);
   ck_assert_float_eq(m.m[3][3], 1.0f);
 }
+END_TEST
 
 START_TEST(test_get_proj_mat) {
   Camera c;
@@ -98,6 +101,7 @@ START_TEST(test_get_proj_mat) {
   ck_assert_float_eq_tol(m.m[3][2], -1.0f, 0.0001);
   ck_assert_float_eq_tol(m.m[3][3], 0.0f, 0.0001);
 }
+END_TEST
 
 Suite *camera_suite(void) {
   Suite *s;

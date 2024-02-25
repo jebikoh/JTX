@@ -1,15 +1,15 @@
-CC=gcc
+CC=/opt/homebrew/opt/llvm/bin/clang
 CFLAGS=-Wall -g
-LDFLAGS=-L./lib -L/opt/homebrew/lib -L/opt/homebrew/opt/openblas/lib
+LDFLAGS=-L./lib -L/opt/homebrew/lib -L/opt/homebrew/opt/openblas/lib -L/opt/homebrew/opt/llvm/lib
 LDLIBS=-lm -lcheck -lopenblas
-INCLUDES=-I./include -I/opt/homebrew/include -I/opt/homebrew/opt/openblas/include
+INCLUDES=-I./include -I/opt/homebrew/include -I/opt/homebrew/opt/openblas/include -I/opt/homebrew/opt/llvm/include
 
 # Directory for object files
 OBJDIR=./obj
 
 # Your library path and name
 LIBDIR=./lib
-LIBNAME=libtgec.so
+LIBNAME=libjtx.so
 
 # Source and object files for your library
 SRCS=$(wildcard ./src/*.c)
@@ -34,7 +34,7 @@ $(OBJDIR)/%.o: ./src/%.c
 	$(CC) $(CFLAGS) $(INCLUDES) -fPIC -c $< -o $@
 
 bin/%: $(OBJDIR)/%.o
-	$(CC) $(LDFLAGS) $(CFLAGS) $< -o $@ $(LDLIBS) -ltgec
+	$(CC) $(LDFLAGS) $(CFLAGS) $< -o $@ $(LDLIBS) -ljtx
 
 $(OBJDIR)/%.o: test/%.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@

@@ -21,6 +21,7 @@ START_TEST(test_renderer_init) {
 
   renderer_free(&r, 1);
 }
+END_TEST
 
 START_TEST(test_renderer_init_extfb) {
   Renderer r;
@@ -40,6 +41,7 @@ START_TEST(test_renderer_init_extfb) {
   ck_assert_float_eq(r.zbuf[0], -INFINITY);
   renderer_free(&r, 1);
 }
+END_TEST
 
 START_TEST(test_renderer_clear) {
   Renderer r;
@@ -55,8 +57,7 @@ START_TEST(test_renderer_clear) {
   ck_assert_float_eq(r.zbuf[0], -INFINITY);
   renderer_free(&r, 1);
 }
-
-START_TEST(test_leak) { float *fb = calloc(100 * 50, sizeof(float)); }
+END_TEST
 
 Suite *renderer_suite(void) {
   Suite *s;
@@ -71,11 +72,11 @@ Suite *renderer_suite(void) {
   tcase_add_test(tc_core, test_renderer_init);
   tcase_add_test(tc_core, test_renderer_init_extfb);
   tcase_add_test(tc_core, test_renderer_clear);
-  tcase_add_test(tc_core, test_leak);
   suite_add_tcase(s, tc_core);
 
   return s;
 }
+END_TEST
 
 int main(void) {
   int number_failed;

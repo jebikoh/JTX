@@ -10,6 +10,7 @@ START_TEST(test_prim_init) {
   ck_assert_int_eq(m.num_f, 20);
   prim_free(&m);
 }
+END_TEST
 
 START_TEST(test_prim_get_v) {
   Primitive m;
@@ -25,6 +26,7 @@ START_TEST(test_prim_get_v) {
   ck_assert_float_eq(v[3], 4.0f);
   prim_free(&m);
 }
+END_TEST
 
 START_TEST(test_prim_load) {
   Primitive m;
@@ -52,6 +54,7 @@ START_TEST(test_prim_load) {
   ck_assert_int_eq(m.f[11].v3, 7);
   prim_free(&m);
 }
+END_TEST
 
 START_TEST(test_prim_apply_smat) {
   Primitive m;
@@ -71,6 +74,7 @@ START_TEST(test_prim_apply_smat) {
   ck_assert_float_eq(v8[2], -2.0f);
   prim_free(&m);
 }
+END_TEST
 
 START_TEST(test_prim_apply_tmat) {
   Primitive m;
@@ -90,6 +94,7 @@ START_TEST(test_prim_apply_tmat) {
   ck_assert_float_eq(v8[2], 2.0f);
   prim_free(&m);
 }
+END_TEST
 
 START_TEST(test_prim_apply_rmat) {
   Primitive m;
@@ -109,6 +114,7 @@ START_TEST(test_prim_apply_rmat) {
   ck_assert_float_eq_tol(v8[2], 1.0f, 0.0001);
   prim_free(&m);
 }
+END_TEST
 
 START_TEST(test_prim_apply_cond) {
   Primitive m;
@@ -132,6 +138,7 @@ START_TEST(test_prim_apply_cond) {
   ck_assert_float_eq_tol(v8[2], 8.0f, 0.0001);
   prim_free(&m);
 }
+END_TEST
 
 Suite *prim_suite(void) {
   Suite *s;

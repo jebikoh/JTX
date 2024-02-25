@@ -10,6 +10,7 @@ START_TEST(test_dirlight_init) {
   ck_assert_float_eq(l.dir.y, 0.57735026f);
   ck_assert_float_eq(l.dir.z, 0.57735026f);
 }
+END_TEST
 
 START_TEST(test_dirlight_init_vec3) {
   DirLight l;
@@ -19,6 +20,7 @@ START_TEST(test_dirlight_init_vec3) {
   ck_assert_float_eq(l.dir.y, 0.57735026f);
   ck_assert_float_eq(l.dir.z, 0.57735026f);
 }
+END_TEST
 
 START_TEST(test_dirlight_new) {
   DirLight l = dirlight_new(1.0f, 1.0f, 1.0f);
@@ -26,6 +28,7 @@ START_TEST(test_dirlight_new) {
   ck_assert_float_eq(l.dir.y, 0.57735026f);
   ck_assert_float_eq(l.dir.z, 0.57735026f);
 }
+END_TEST
 
 START_TEST(test_dirlight_new_vec3) {
   Vec3 dir = vec3_new(1.0f, 1.0f, 1.0f);
@@ -34,18 +37,21 @@ START_TEST(test_dirlight_new_vec3) {
   ck_assert_float_eq(l.dir.y, 0.57735026f);
   ck_assert_float_eq(l.dir.z, 0.57735026f);
 }
+END_TEST
 
 START_TEST(test_dirlight_intensity) {
   DirLight l = dirlight_new(1.0f, 1.0f, 1.0f);
   ck_assert_float_eq(dirlight_intensity(&l, -1.0f, -1.0f, -1.0f),
                      1.7320508075688776f);
 }
+END_TEST
 
 START_TEST(test_dirlight_intensity_vec3) {
   Vec3 n = vec3_new(-1.0f, -1.0f, -1.0f);
   DirLight l = dirlight_new(1.0f, 1.0f, 1.0f);
   ck_assert_float_eq(dirlight_intensity_vec3(&l, n), 1.7320508075688776f);
 }
+END_TEST
 
 Suite *lights_suite(void) {
   Suite *s;

@@ -14,6 +14,7 @@ START_TEST(test_scene_init_free) {
   ck_assert_int_eq(s.num_free_ids_l, 20);
   scene_free(&s, 0);
 }
+END_TEST
 
 START_TEST(test_scene_add_prim) {
   Primitive p;
@@ -27,6 +28,7 @@ START_TEST(test_scene_add_prim) {
   scene_free(&s, 0);
   prim_free(&p);
 }
+END_TEST
 
 START_TEST(test_scene_free_prim) {
   Primitive p;
@@ -36,6 +38,7 @@ START_TEST(test_scene_free_prim) {
   scene_add_prim(&s, &p);
   scene_free(&s, 1);
 }
+END_TEST
 
 START_TEST(test_scene_remove_prim) {
   Primitive p;
@@ -49,6 +52,7 @@ START_TEST(test_scene_remove_prim) {
   scene_free(&s, 0);
   prim_free(&p);
 }
+END_TEST
 
 START_TEST(test_scene_remove_free_prim) {
   Primitive p;
@@ -61,6 +65,7 @@ START_TEST(test_scene_remove_free_prim) {
   ck_assert_int_eq(s.num_free_ids_p, 10);
   scene_free(&s, 0);
 }
+END_TEST
 
 START_TEST(test_scene_add_dirlight) {
   DirLight l = dirlight_new(1.0f, 1.0f, 1.0f);
@@ -72,6 +77,7 @@ START_TEST(test_scene_add_dirlight) {
   ck_assert_int_eq(id, 9);
   scene_free(&s, 0);
 }
+END_TEST
 
 START_TEST(test_scene_remove_dirlight) {
   DirLight l = dirlight_new(1.0f, 1.0f, 1.0f);
@@ -83,6 +89,7 @@ START_TEST(test_scene_remove_dirlight) {
   ck_assert_int_eq(s.num_free_ids_l, 10);
   scene_free(&s, 0);
 }
+END_TEST
 
 Suite *scene_suite(void) {
   Suite *s;

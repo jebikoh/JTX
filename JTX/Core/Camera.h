@@ -18,6 +18,7 @@ namespace JTX::Core {
             this->near = near;
             this->far = far;
         }
+        ~Camera() = default;
 
         [[nodiscard]] JTX::Util::Mat4 getViewMatrix() const {
             JTX::Util::Vec3 right = this->lookAt.cross(this->up);

@@ -16,7 +16,6 @@ add_library(JTX
         JTX/Core/Primitive.h
         JTX/Core/Core.h
         JTX/Core/Lights.h
-        JTX/Core/Scene.cpp
         JTX/Core/Scene.h
         JTX/Core/Camera.h
 )

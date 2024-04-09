@@ -18,6 +18,8 @@ add_library(JTX
         JTX/Core/Lights.h
         JTX/Core/Scene.h
         JTX/Core/Camera.h
+        JTX/Core/Renderer.cpp
+        JTX/Core/Renderer.h
 )
 
 target_include_directories(JTX PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

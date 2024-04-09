@@ -6,6 +6,7 @@
 #include "JTX/Util/Util.h"
 
 namespace JTX::Core {
+    // Note to self: re-think out the design of primitive/light/camera ownership
     class Scene {
     public:
         using PrimitiveID = uint64_t;
@@ -56,6 +57,9 @@ namespace JTX::Core {
         }
 
         JTX::Core::Camera &getCamera() { return camera; }
+
+        int getNumPrimitives() { return (int)this->primitives.size(); }
+        int getNumLights() { return (int)this->lights.size(); }
 
 
     private:

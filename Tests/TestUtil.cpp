@@ -320,3 +320,14 @@ TEST_CASE("Mat4 * operator identity matrix", "[mat4]") {
 
     REQUIRE(c == a);
 }
+
+TEST_CASE("Test IDPool", "[idpool]") {
+    JTX::Util::IDPool pool{};
+
+    REQUIRE(pool.getID() == 0);
+    REQUIRE(pool.getID() == 1);
+    REQUIRE(pool.getID() == 2);
+    pool.releaseID(1);
+    REQUIRE(pool.getID() == 1);
+    REQUIRE(pool.getID() == 3);
+}

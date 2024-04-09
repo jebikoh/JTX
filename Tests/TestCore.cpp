@@ -5,9 +5,11 @@
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include "JTX/Core/Core.h"
 
+const std::string CUBE_PATH = "../../Tests/Primitives/cube.obj";
+
 TEST_CASE("Primitive loads mesh from .obj file", "[Primitive]") {
     JTX::Core::Primitive p;
-    p.load("PATH_TO_OBJ_FILE");
+    p.load(CUBE_PATH);
 
     REQUIRE(p.getNumVertices() == 8);
     REQUIRE(p.getNumFaces() == 12);
@@ -55,7 +57,7 @@ TEST_CASE("Primitive loads mesh from .obj file", "[Primitive]") {
 
 TEST_CASE("Apply scale transformation to cube primitive", "[Primitive]") {
     JTX::Core::Primitive p;
-    p.load("PATH_TO_CUBE_OBJ_FILE");
+    p.load(CUBE_PATH);
 
     JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(2.0f, 2.0f, 2.0f);
     p.applyTransform(&scale);
@@ -172,4 +174,52 @@ TEST_CASE("Test camera perspective projection matrix", "[Camera]") {
     REQUIRE_THAT(pmat.data[3][1], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
     REQUIRE_THAT(pmat.data[3][2], Catch::Matchers::WithinAbs(-1.0f, 0.0001f));
     REQUIRE_THAT(pmat.data[3][3], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+}
+
+TEST_CASE("Test scene add primitive and dirlight", "[Scene]") {
+    JTX::Core::Camera cam(JTX::Util::Vec3(0.0f, 0.0f, 30.0f),
+                          JTX::Util::Vec3(0.0f, 0.0f, 0.0f),
+                          JTX::Util::Vec3(0.0f, 1.0f, 0.0f),
+                          1.0472f,
+                          0.1f,
+                          100.0f);
+    JTX::Core::Scene scene(cam);
+    JTX::Core::Primitive p;
+    p.load(CUBE_PATH);
+    JTX::Core::DirLight dl(JTX::Util::Vec3(1.0f, 1.0f, 1.0f));
+    auto cube = scene.addLight(dl);
+    auto l = scene.addPrimitive(p);
+
+    REQUIRE(scene.getNumPrimitives() == 1);
+    REQUIRE(scene.getNumLights() == 1);
+
+    REQUIRE(scene.getPrimitive(cube).getNumVertices() == 8);
+    REQUIRE(scene.getPrimitive(l).getNumFaces() == 12);
+
+    JTX::Util::Vec3 pos = scene.getCamera().getPos();
+
+    REQUIRE(pos.x == 0.0f);
+    REQUIRE(pos.y == 0.0f);
+    REQUIRE(pos.z == 30.0f);
+}
+
+TEST_CASE("Test scene remove primitive and dirlight", "[Scene]") {
+    JTX::Core::Camera cam(JTX::Util::Vec3(0.0f, 0.0f, 30.0f),
+                          JTX::Util::Vec3(0.0f, 0.0f, 0.0f),
+                          JTX::Util::Vec3(0.0f, 1.0f, 0.0f),
+                          1.0472f,
+                          0.1f,
+                          100.0f);
+    JTX::Core::Scene scene(cam);
+    JTX::Core::Primitive p;
+    p.load(CUBE_PATH);
+    JTX::Core::DirLight dl(JTX::Util::Vec3(1.0f, 1.0f, 1.0f));
+    auto cube = scene.addLight(dl);
+    auto l = scene.addPrimitive(p);
+
+    scene.removePrimitive(l);
+    scene.removeLight(cube);
+
+    REQUIRE(scene.getNumPrimitives() == 0);
+    REQUIRE(scene.getNumLights() == 0);
 }

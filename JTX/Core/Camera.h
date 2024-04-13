@@ -13,7 +13,7 @@ namespace JTX::Core {
             this->pos = pos;
             this->lookAt = target - pos;
             this->lookAt.normalize();
-            this->up = up.normalized();
+            this->up = up.normalize();
             this->fov = fov;
             this->near = near;
             this->far = far;
@@ -21,8 +21,7 @@ namespace JTX::Core {
         ~Camera() = default;
 
         [[nodiscard]] JTX::Util::Mat4 getViewMatrix() const {
-            JTX::Util::Vec3 right = this->lookAt.cross(this->up);
-            right.normalize();
+            JTX::Util::Vec3 right = this->lookAt.cross(this->up).normalize();
             JTX::Util::Vec3 vup = right.cross(this->lookAt);
 
             return {

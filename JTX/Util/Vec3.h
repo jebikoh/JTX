@@ -41,10 +41,11 @@ namespace JTX::Util {
 
         [[nodiscard]] float len() const { return std::sqrt(x * x + y * y + z * z); }
 
-        void normalize() {
+        inline Vec3& normalize() {
             float l = len();
             if (l != 0) { x /= l; y /= l; z /= l; }
             else { throw std::runtime_error("Cannot normalize a zero vector"); }
+            return *this;
         }
 
         [[nodiscard]] Vec3 normalized() const {

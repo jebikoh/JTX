@@ -22,6 +22,9 @@ namespace JTX::Core {
 
         void applyTransform(const JTX::Util::Mat4* tf);
 
+        void calculateNormals();
+
+        [[nodiscard]] const float* getNormal(int i) const;
         [[nodiscard]] const float* getVertex(int i) const;
         [[nodiscard]] int getNumVertices() const;
         [[nodiscard]] const Face* getFaces() const;

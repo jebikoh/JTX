@@ -4,7 +4,7 @@
 namespace JTX::Core {
     class DirLight {
     public:
-        explicit DirLight(JTX::Util::Vec3 direction) : direction(direction.normalized()) {}
+        explicit DirLight(JTX::Util::Vec3 direction) : direction(direction.normalize()) {}
         ~DirLight() = default;
 
         [[nodiscard]] const JTX::Util::Vec3& getDirection() const {

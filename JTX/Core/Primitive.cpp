@@ -67,7 +67,25 @@ namespace JTX::Core {
 
         v = reinterpret_cast<float*>(realloc(v, 4 * num_v * sizeof(float)));
         f = reinterpret_cast<Face*>(realloc(f, num_f * sizeof(Face)));
-        n = new float[4 * num_v];
+        n = new float[3 * num_f];
+    }
+
+    void Primitive::calculateNormals() {
+        for (int i = 0; i < this->num_f; i++) {
+            const auto& face = this->f[i];
+            const auto* v1 = this->getVertex(face.v1);
+            const auto* v2 = this->getVertex(face.v2);
+            const auto* v3 = this->getVertex(face.v3);
+
+            JTX::Util::Vec3 e1(v2[0] - v1[0], v2[1] - v1[1], v2[2] - v1[2]);
+            JTX::Util::Vec3 e2(v3[0] - v1[0], v3[1] - v1[1], v3[2] - v1[2]);
+
+            JTX::Util::Vec3 normal = e1.cross(e2).normalize();
+
+            this->n[3 * i] = normal.x;
+            this->n[3 * i + 1] = normal.y;
+            this->n[3 * i + 2] = normal.z;
+        }
     }
 
     void Primitive::applyTransform(const JTX::Util::Mat4* tf) {
@@ -92,5 +110,9 @@ namespace JTX::Core {
 
     int Primitive::getNumFaces() const {
         return num_f;
+    }
+
+    const float *Primitive::getNormal(int i) const {
+        return n + (3 * i);
     }
 } // JTX

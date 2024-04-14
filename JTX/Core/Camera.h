@@ -17,6 +17,8 @@ namespace JTX::Core {
             this->fov = fov;
             this->near = near;
             this->far = far;
+            this->t = JTX::Util::Mat4();
+            this->dirty = false;
         }
         ~Camera() = default;
 
@@ -46,12 +48,51 @@ namespace JTX::Core {
             }
         }
 
+        [[nodiscard]] JTX::Util::Mat4 getCameraMatrix(const float aspectRatio, ProjectionType projectionType) {
+            if (!this->dirty) { return this->t; }
+
+            this->t = JTX::Util::Mat4::matmul(this->getProjMatrix(aspectRatio, projectionType), this->getViewMatrix());
+            this->dirty = false;
+            return this->t;
+        }
+
         [[nodiscard]] JTX::Util::Vec3 getPos() const { return this->pos; }
         [[nodiscard]] JTX::Util::Vec3 getLookAt() const { return this->lookAt; }
         [[nodiscard]] JTX::Util::Vec3 getUp() const { return this->up; }
         [[nodiscard]] float getFov() const { return this->fov; }
         [[nodiscard]] float getNear() const { return this->near; }
         [[nodiscard]] float getFar() const { return this->far; }
+
+        void setPos(JTX::Util::Vec3 npos) {
+            this->pos = npos;
+            this->dirty = true;
+        }
+
+        void setLookAt(JTX::Util::Vec3 target) {
+            this->lookAt = target - this->pos;
+            this->lookAt.normalize();
+            this->dirty = true;
+        }
+
+        void setUp(JTX::Util::Vec3 nup) {
+            this->up = nup.normalize();
+            this->dirty = true;
+        }
+
+        void setFov(float nfov) {
+            this->fov = nfov;
+            this->dirty = true;
+        }
+
+        void setNear(float nnear) {
+            this->near = nnear;
+            this->dirty = true;
+        }
+
+        void setFar(float nfar) {
+            this->far = nfar;
+            this->dirty = true;
+        }
 
     private:
         JTX::Util::Vec3 pos;
@@ -60,5 +101,7 @@ namespace JTX::Core {
         float fov;
         float near;
         float far;
+        JTX::Util::Mat4 t;
+        bool dirty;
     };
 }

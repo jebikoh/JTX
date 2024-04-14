@@ -20,7 +20,7 @@ void JTX::Core::Renderer::clear() {
 }
 
 void JTX::Core::Renderer::render(JTX::Core::Scene *scene) {
-    // To-do
+    // TODO: decide if you want the render() method to clear the buffers
 }
 
 void JTX::Core::Renderer::drawLine(int x0, int y0, int x1, int y1, int ch, float val) {

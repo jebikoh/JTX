@@ -55,6 +55,19 @@ TEST_CASE("Primitive loads mesh from .obj file", "[Primitive]") {
     REQUIRE(p.getFaces()[11].v3 == 7);
 }
 
+TEST_CASE("Primitive normal calculations", "[Primitive]") {
+    JTX::Core::Primitive p;
+    p.load(CUBE_PATH);
+    p.calculateNormals();
+
+    REQUIRE_THAT(p.getNormal(0)[0], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+    REQUIRE_THAT(p.getNormal(0)[1], Catch::Matchers::WithinAbs(-1.0f, 0.0001f));
+    REQUIRE_THAT(p.getNormal(0)[2], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+    REQUIRE_THAT(p.getNormal(p.getNumFaces() - 1)[0], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+    REQUIRE_THAT(p.getNormal(p.getNumFaces() - 1)[1], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+    REQUIRE_THAT(p.getNormal(p.getNumFaces() - 1)[2], Catch::Matchers::WithinAbs(-1.0f, 0.0001f));
+}
+
 TEST_CASE("Apply scale transformation to cube primitive", "[Primitive]") {
     JTX::Core::Primitive p;
     p.load(CUBE_PATH);

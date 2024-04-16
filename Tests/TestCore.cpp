@@ -46,13 +46,13 @@ TEST_CASE("Primitive loads mesh from .obj file", "[Primitive]") {
     REQUIRE_THAT(p.getVertex(7)[1], Catch::Matchers::WithinAbs(1.0f, 0.0001f));
     REQUIRE_THAT(p.getVertex(7)[2], Catch::Matchers::WithinAbs(-1.0f, 0.0001f));
 
-    REQUIRE(p.getFaces()[0].v1 == 1);
-    REQUIRE(p.getFaces()[0].v2 == 2);
-    REQUIRE(p.getFaces()[0].v3 == 3);
+    REQUIRE(p.getFace(0)->v1 == 1);
+    REQUIRE(p.getFace(0)->v2 == 2);
+    REQUIRE(p.getFace(0)->v3 == 3);
 
-    REQUIRE(p.getFaces()[11].v1 == 4);
-    REQUIRE(p.getFaces()[11].v2 == 0);
-    REQUIRE(p.getFaces()[11].v3 == 7);
+    REQUIRE(p.getFace(11)->v1 == 4);
+    REQUIRE(p.getFace(11)->v2 == 0);
+    REQUIRE(p.getFace(11)->v3 == 7);
 }
 
 TEST_CASE("Primitive normal calculations", "[Primitive]") {
@@ -107,13 +107,13 @@ TEST_CASE("Apply scale transformation to cube primitive", "[Primitive]") {
     REQUIRE_THAT(p.getVertex(7)[1], Catch::Matchers::WithinAbs(2.0f, 0.0001f));
     REQUIRE_THAT(p.getVertex(7)[2], Catch::Matchers::WithinAbs(-2.0f, 0.0001f));
 
-    REQUIRE(p.getFaces()[0].v1 == 1);
-    REQUIRE(p.getFaces()[0].v2 == 2);
-    REQUIRE(p.getFaces()[0].v3 == 3);
+    REQUIRE(p.getFace(0)->v1 == 1);
+    REQUIRE(p.getFace(0)->v2 == 2);
+    REQUIRE(p.getFace(0)->v3 == 3);
 
-    REQUIRE(p.getFaces()[11].v1 == 4);
-    REQUIRE(p.getFaces()[11].v2 == 0);
-    REQUIRE(p.getFaces()[11].v3 == 7);
+    REQUIRE(p.getFace(11)->v1 == 4);
+    REQUIRE(p.getFace(11)->v2 == 0);
+    REQUIRE(p.getFace(11)->v3 == 7);
 }
 
 TEST_CASE("Test DirLight intensity", "[Lights]") {

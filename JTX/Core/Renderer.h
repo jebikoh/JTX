@@ -13,7 +13,7 @@ namespace JTX::Core {
         };
 
         void clear();
-        void render(Scene* scene, ProjectionType projType=PERSPECTIVE) const;
+        void render(Scene* scene, ProjectionType projType=PERSPECTIVE);
 
         inline void drawPixel(int x, int y, int channel, float val) {
             if (x < 0 || x >= this->w || y < 0 || y >= this->h || channel < 0 || channel >= this->c) {

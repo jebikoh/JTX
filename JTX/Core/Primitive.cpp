@@ -5,7 +5,7 @@ namespace JTX::Core {
 
     const int INITIAL_CAPACITY = 100;
 
-    Primitive::Primitive() : num_v(0), num_f(0), v(nullptr), f(nullptr), n(nullptr) {}
+    Primitive::Primitive() : num_v(0), num_f(0), v(nullptr), f(nullptr), n(nullptr), screen(nullptr) {}
 
     Primitive::~Primitive() {
         delete[] v;
@@ -99,10 +99,6 @@ namespace JTX::Core {
 
     int Primitive::getNumVertices() const {
         return num_v;
-    }
-
-    const Face* Primitive::getFaces() const {
-        return f;
     }
 
     int Primitive::getNumFaces() const {

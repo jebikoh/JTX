@@ -14,14 +14,14 @@ JTX::Core::Renderer::Renderer(int w, int h, int c) {
 }
 
 void JTX::Core::Renderer::clear() {
-    // TODO: optimize this later
+    // TODO: SIMD
     std::memset(fb, 0, c * h * w * sizeof(float));
     std::memset(zb, 1, h * w * sizeof(float));
 }
 
-void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projType) const {
-    // TODO: decide if you want the render() method to clear the buffers
-    // TODO: optimize with SIMD
+void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projType) {
+    // TODO: SIMD
+    this->clear();
     JTX::Util::Mat4 t = scene->getCamera().getCameraMatrix(this->ar, projType);
 
     auto wf = static_cast<float>(this->w);
@@ -41,6 +41,10 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projTyp
             s[0] = static_cast<int>(std::round((v[0] + 1.0f) * 0.5f * wf));
             s[1] = static_cast<int>(std::round((v[1] + 1.0f) * 0.5f * hf));
             v[2] = (v[2] + 1.0f) * 0.5f;
+        }
+
+        for (int i = 0; i < prim->getNumFaces(); i++) {
+            Face *f = prim->getFace(i);
         }
     }
 }

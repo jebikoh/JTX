@@ -25,14 +25,20 @@ namespace JTX::Core {
         void calculateNormals();
 
         [[nodiscard]] const float* getNormal(int i) const;
+
         inline float *getVertex(int i) {
             return v + 4 * i;
         }
+
         inline int *getScreen(int i) {
             return screen + 2 * i;
         }
+
+        inline Face *getFace(int i) {
+            return f + i;
+        }
+
         [[nodiscard]] int getNumVertices() const;
-        [[nodiscard]] const Face* getFaces() const;
         [[nodiscard]] int getNumFaces() const;
     private:
         int num_v, num_f;

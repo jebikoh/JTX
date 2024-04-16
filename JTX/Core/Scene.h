@@ -58,6 +58,8 @@ namespace JTX::Core {
 
         JTX::Core::Camera &getCamera() { return camera; }
 
+        std::unordered_map<PrimitiveID, JTX::Core::Primitive*> getPrimitives() { return this->primitives; }
+
         int getNumPrimitives() { return (int)this->primitives.size(); }
         int getNumLights() { return (int)this->lights.size(); }
 

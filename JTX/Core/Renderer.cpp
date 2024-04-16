@@ -19,8 +19,30 @@ void JTX::Core::Renderer::clear() {
     std::memset(zb, 1, h * w * sizeof(float));
 }
 
-void JTX::Core::Renderer::render(JTX::Core::Scene *scene) {
+void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projType) const {
     // TODO: decide if you want the render() method to clear the buffers
+    // TODO: optimize with SIMD
+    JTX::Util::Mat4 t = scene->getCamera().getCameraMatrix(this->ar, projType);
+
+    auto wf = static_cast<float>(this->w);
+    auto hf = static_cast<float>(this->h);
+    for (auto const & [id, prim] : scene->getPrimitives()) {
+        prim->applyTransform(&t);
+
+        for (int i = 0; i < prim->getNumVertices(); i++) {
+            float *v = prim->getVertex(i);
+            int *s = prim->getScreen(i);
+            // NDC
+            v[0] /= v[3];
+            v[1] /= v[3];
+            v[2] /= v[3];
+
+            // Screen space transformation
+            s[0] = static_cast<int>(std::round((v[0] + 1.0f) * 0.5f * wf));
+            s[1] = static_cast<int>(std::round((v[1] + 1.0f) * 0.5f * hf));
+            v[2] = (v[2] + 1.0f) * 0.5f;
+        }
+    }
 }
 
 void JTX::Core::Renderer::drawLine(int x0, int y0, int x1, int y1, int ch, float val) {

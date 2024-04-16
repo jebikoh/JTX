@@ -68,6 +68,7 @@ namespace JTX::Core {
         v = reinterpret_cast<float*>(realloc(v, 4 * num_v * sizeof(float)));
         f = reinterpret_cast<Face*>(realloc(f, num_f * sizeof(Face)));
         n = new float[3 * num_f];
+        screen = new int[2 * num_v];
     }
 
     void Primitive::calculateNormals() {
@@ -94,10 +95,6 @@ namespace JTX::Core {
                     v, 4, reinterpret_cast<const float*>(tf->data), 4, 0.0f, new_v, 4);
         delete[] v;
         v = new_v;
-    }
-
-    const float* Primitive::getVertex(int i) const {
-        return v + 4 * i;
     }
 
     int Primitive::getNumVertices() const {

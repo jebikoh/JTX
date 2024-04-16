@@ -13,41 +13,45 @@ namespace JTX::Util {
         Vec3(float x, float y, float z): x(x), y(y), z(z) {}
         ~Vec3() = default;
 
-        bool operator==(const Vec3& other) const {
+        inline bool operator==(const Vec3& other) const {
             return (x == other.x) && (y == other.y) && (z == other.z);
         }
-        bool operator!=(const Vec3& other) const {
+        inline bool operator!=(const Vec3& other) const {
             return !(*this == other);
         }
-        Vec3 operator+(const Vec3& other) const {
+        inline Vec3 operator+(const Vec3& other) const {
             return {x + other.x, y + other.y, z + other.z};
         }
 
-        Vec3 operator+=(const Vec3& other) {
+        inline Vec3 operator+=(const Vec3& other) {
             x += other.x;
             y += other.y;
             z += other.z;
             return *this;
         }
 
-        Vec3 operator-(const Vec3& other) const {
+        inline Vec3 operator-(const Vec3& other) const {
             return {x - other.x, y - other.y, z - other.z};
         }
-        Vec3 operator*(const Vec3& other) const {
+        inline Vec3 operator*(const Vec3& other) const {
             return {x * other.x, y * other.y, z * other.z};
         }
 
-        [[nodiscard]] Vec3 cross(const Vec3& other) const {
+        [[nodiscard]] inline Vec3 cross(const Vec3& other) const {
             return {y * other.z - z * other.y,
                         z * other.x - x * other.z,
                         x * other.y - y * other.x};
         }
 
-        [[nodiscard]] float dot(const Vec3& other) const {
+        [[nodiscard]] inline float dot(const Vec3& other) const {
             return x * other.x + y * other.y + z * other.z;
         }
 
-        [[nodiscard]] float len() const { return std::sqrt(x * x + y * y + z * z); }
+        [[nodiscard]] inline float dot(const float _x, const float _y, const float _z) const {
+            return this->x * x + this->y * y + this->z * z;
+        }
+
+        [[nodiscard]] inline float len() const { return std::sqrt(x * x + y * y + z * z); }
 
         inline Vec3& normalize() {
             float l = len();
@@ -56,7 +60,7 @@ namespace JTX::Util {
             return *this;
         }
 
-        [[nodiscard]] Vec3 normalized() const {
+        [[nodiscard]] inline Vec3 normalized() const {
             float l = len();
             if (l != 0) { return Vec3{ x / l, y / l, z / l}; }
             else { throw std::runtime_error("Cannot normalize a zero vector"); }

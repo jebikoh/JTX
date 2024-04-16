@@ -34,8 +34,12 @@ namespace JTX::Core {
             return screen + 2 * i;
         }
 
-        inline Face *getFace(int i) {
+        [[nodiscard]] inline Face *getFace(int i) const {
             return f + i;
+        }
+
+        inline float *getNormal(int i) {
+            return n + 3 * i;
         }
 
         [[nodiscard]] int getNumVertices() const;

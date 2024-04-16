@@ -44,7 +44,12 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projTyp
         }
 
         for (int i = 0; i < prim->getNumFaces(); i++) {
-            Face *f = prim->getFace(i);
+            float *n = prim->getNormal(i);
+
+            if (scene->getCamera().getLookAt().dot(n[0], n[1], n[2]) < 0) {
+                continue;
+            }
+            const Face *f = prim->getFace(i);
         }
     }
 }

@@ -74,7 +74,10 @@ TEST_CASE("Renderer drawLine() vertical", "[Renderer]") {
 }
 
 TEST_CASE("Renderer saveFb() with vertical line", "[Renderer]") {
-    JTX::Core::Renderer r(100, 100, 3);
-    r.drawLine(50, 0, 50, 99, 0, 1.0f);
+    JTX::Core::Renderer r(1000, 1000, 3);
+    r.drawLine(500, 0, 500, 999, 0, 1.0f);
+    r.drawLine(0, 500, 999, 500, 1, 1.0f);
+    r.drawLine(0, 0, 999, 999, 2, 1.0f);
+    r.drawLine(0, 999, 999, 0, 2, 1.0f);
     r.saveFb("vertical_line.png", 0);
 }

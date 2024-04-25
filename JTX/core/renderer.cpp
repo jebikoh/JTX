@@ -112,3 +112,28 @@ void JTX::Core::Renderer::drawLine(int x0, int y0, int x1, int y1, int ch, float
     }
 }
 
+void JTX::Core::Renderer::saveFb(const std::string &path, int compressionLevel) {
+    if (this->c != 3) {throw std::invalid_argument("Invalid number of channels");}
+    if (compressionLevel < 0 || compressionLevel > 9) {throw std::invalid_argument("Invalid compression level");}
+
+    auto *pixels = new unsigned char[3 * this->w * this->h];
+
+    for (int y = 0; y < this->h; ++y) {
+        for (int x = 0; x < this->w; ++x) {
+            for (int ch = 0; ch < this->c; ++ch) {
+                float val = this->getPixel(x, y, ch);
+                pixels[(y * this->w + x) * this->c + ch] = static_cast<unsigned char>(val * 255.0f);
+            }
+        }
+    }
+    bool success = fpng::fpng_encode_image_to_file(path.c_str(), pixels, this->w, this->h, this->c);
+
+    if (success) {
+        std::cout << "Image saved successfully: " << path << std::endl;
+    } else {
+        std::cerr << "Failed to save image: " << path << std::endl;
+    }
+
+    delete[] pixels;
+}
+

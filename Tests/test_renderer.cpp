@@ -73,4 +73,8 @@ TEST_CASE("Renderer drawLine() vertical", "[Renderer]") {
     REQUIRE(r.getPixel(4, 8, 0) == 1.0f);
 }
 
-
+TEST_CASE("Renderer saveFb() with vertical line", "[Renderer]") {
+    JTX::Core::Renderer r(100, 100, 3);
+    r.drawLine(50, 0, 50, 99, 0, 1.0f);
+    r.saveFb("vertical_line.png", 0);
+}

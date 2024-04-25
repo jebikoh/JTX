@@ -1,7 +1,9 @@
 #pragma once
 
 #include <stdexcept>
+#include <iostream>
 #include "JTX/core/scene.h"
+#include "external/fpng.h"
 
 namespace JTX::Core {
     class Renderer {
@@ -46,11 +48,14 @@ namespace JTX::Core {
         float *getFB() { return fb; }
         float *getZB() { return zb; }
 
+        void saveFb(const std::string &path, int compressionLevel);
+
     private:
         int w, h, c;
         float ar;
         float *fb;
         float *zb;
+
     };
 }
 

@@ -22,7 +22,10 @@ add_library(JTX
         JTX/core/renderer.h
 )
 
+add_library(fpng STATIC external/fpng.cpp)
+target_include_directories(fpng PRIVATE external)
+
 target_include_directories(JTX PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(JTX openblas)
+target_link_libraries(JTX PRIVATE openblas fpng)
 
 add_subdirectory(tests)

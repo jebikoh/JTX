@@ -1,5 +1,5 @@
 #pragma once
-#include "JTX/Util/Util.h"
+#include "JTX/util/util.h"
 
 namespace JTX::Core {
     class DirLight {

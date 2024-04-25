@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
-#include "JTX/Util/Util.h"
+#include "JTX/util/util.h"
 
 TEST_CASE("Vec3 default constructor is zero vector", "[vec3]") {
     JTX::Util::Vec3 a{};

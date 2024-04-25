@@ -1,4 +1,4 @@
-#include "Primitive.h"
+#include "primitive.h"
 
 
 namespace JTX::Core {

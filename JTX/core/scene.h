@@ -1,9 +1,9 @@
 #pragma once
 
-#include "JTX/Core/Primitive.h"
-#include "JTX/Core/Lights.h"
-#include "JTX/Core/Camera.h"
-#include "JTX/Util/Util.h"
+#include "JTX/core/primitive.h"
+#include "JTX/core/lights.h"
+#include "JTX/core/camera.h"
+#include "JTX/util/util.h"
 
 namespace JTX::Core {
     // Note to self: re-think out the design of primitive/light/camera ownership

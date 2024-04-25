@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdexcept>
-#include "JTX/Core/Scene.h"
+#include "JTX/core/scene.h"
 
 namespace JTX::Core {
     class Renderer {

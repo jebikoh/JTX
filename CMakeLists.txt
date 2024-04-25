@@ -8,21 +8,21 @@ include_directories(${CBLAS_DIR}/include/)
 link_directories(${CBLAS_DIR}/lib/)
 
 add_library(JTX
-        JTX/Util/Util.h
-        JTX/Util/Vec3.h
-        JTX/Util/Mat4.cpp
-        JTX/Util/Mat4.h
-        JTX/Core/Primitive.cpp
-        JTX/Core/Primitive.h
-        JTX/Core/Core.h
-        JTX/Core/Lights.h
-        JTX/Core/Scene.h
-        JTX/Core/Camera.h
-        JTX/Core/Renderer.cpp
-        JTX/Core/Renderer.h
+        JTX/util/util.h
+        JTX/util/vec3.h
+        JTX/util/mat4.cpp
+        JTX/util/mat4.h
+        JTX/core/primitive.cpp
+        JTX/core/primitive.h
+        JTX/core/core.h
+        JTX/core/lights.h
+        JTX/core/scene.h
+        JTX/core/camera.h
+        JTX/core/renderer.cpp
+        JTX/core/renderer.h
 )
 
 target_include_directories(JTX PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(JTX openblas)
 
-add_subdirectory(Tests)
+add_subdirectory(tests)

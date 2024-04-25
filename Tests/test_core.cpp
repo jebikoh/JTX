@@ -3,9 +3,9 @@
 //
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
-#include "JTX/Core/Core.h"
+#include "JTX/core/core.h"
 
-const std::string CUBE_PATH = "../../Tests/Primitives/cube.obj";
+const std::string CUBE_PATH = "../../Tests/primitives/cube.obj";
 
 TEST_CASE("Primitive loads mesh from .obj file", "[Primitive]") {
     JTX::Core::Primitive p;

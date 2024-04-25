@@ -1,7 +1,7 @@
 #pragma once
 
-#include "JTX/Util/Vec3.h"
-#include "JTX/Util/Mat4.h"
+#include "JTX/util/vec3.h"
+#include "JTX/util/mat4.h"
 #include <queue>
 #include <cmath>
 

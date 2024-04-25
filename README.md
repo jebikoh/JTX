@@ -1,11 +1,9 @@
 # JTX
 
-Pausing this to use C++ instead of C
+Writing an improved version of my TGE project in C++. 
 
-A basic renderer.
+A real-time software renderer in C++.
 
-Compile with `make clean; make`. Run tests with `make test`.
-
-TODO (reminders):
-
--   Move view and proj transformation matrix to Camera field (or add cache)
+Extrenal dependencies are:
+ - OpenBLAS
+ - fpng (included)

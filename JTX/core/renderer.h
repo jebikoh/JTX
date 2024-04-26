@@ -8,7 +8,7 @@
 namespace JTX::Core {
     class Renderer {
     public:
-        Renderer(int w, int h, int c=1);
+        Renderer(int w, int h, int c=3);
         ~Renderer() {
             delete[] fb;
             delete[] zb;
@@ -39,7 +39,10 @@ namespace JTX::Core {
         }
 
         // Bresenhams Line
-        void drawLine(int x0, int y0, int x1, int y1, int ch, float val);
+        void drawLine(int x0, int y0, int x1, int y1, float r, float g, float b);
+        inline void drawLine(int x0, int y0, int x1, int y1, JTX::Util::Color color) {
+            drawLine(x0, y0, x1, y1, color.r, color.g, color.b);
+        }
 
         [[nodiscard]] int getWidth() const { return w; }
         [[nodiscard]] int getHeight() const { return h; }

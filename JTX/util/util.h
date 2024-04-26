@@ -2,6 +2,7 @@
 
 #include "JTX/util/vec3.h"
 #include "JTX/util/mat4.h"
+#include "JTX/util/color.h"
 #include <queue>
 #include <cmath>
 

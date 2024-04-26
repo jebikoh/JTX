@@ -54,7 +54,7 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projTyp
     }
 }
 
-void JTX::Core::Renderer::drawLine(int x0, int y0, int x1, int y1, int ch, float val) {
+void JTX::Core::Renderer::drawLine(int x0, int y0, int x1, int y1, float r, float g, float b) {
     if (x0 < 0 || x0 >= this->w || y0 < 0 || y0 >= this->h || x1 < 0 || x1 >= this->w || y1 < 0 || y1 >= this->h) {
         throw std::invalid_argument("Line out of bounds");
     }
@@ -62,7 +62,7 @@ void JTX::Core::Renderer::drawLine(int x0, int y0, int x1, int y1, int ch, float
     if (x0 == x1) {
         if (y0 > y1) {std::swap(y0, y1);}
         for (int y = y0; y <= y1; ++y) {
-            drawPixel(x0, y, ch, val);
+            drawPixel(x0, y, r, g, b);
         }
         return;
     }
@@ -70,7 +70,7 @@ void JTX::Core::Renderer::drawLine(int x0, int y0, int x1, int y1, int ch, float
     if (y0 == y1) {
         if (x0 > x1) {std::swap(x0, x1);}
         for (int x = x0; x <= x1; ++x) {
-            drawPixel(x, y0, ch, val);
+            drawPixel(x, y0, r, g, b);
         }
         return;
     }
@@ -93,7 +93,7 @@ void JTX::Core::Renderer::drawLine(int x0, int y0, int x1, int y1, int ch, float
 
     if (steep) {
         for (int x = x0; x <= x1; ++x) {
-            drawPixel(y, x, ch, val);
+            drawPixel(y, x, r, g, b);
             err -= dy;
             if (err < 0) {
                 y += sy;
@@ -102,7 +102,7 @@ void JTX::Core::Renderer::drawLine(int x0, int y0, int x1, int y1, int ch, float
         }
     } else {
         for (int x = x0; x <= x1; ++x) {
-            drawPixel(x, y, ch, val);
+            drawPixel(x, y, r, g, b);
             err -= dy;
             if (err < 0) {
                 y += sy;

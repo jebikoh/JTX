@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <iostream>
 #include "JTX/core/scene.h"
+#include "JTX/util/util.h"
 #include "external/fpng.h"
 
 namespace JTX::Core {
@@ -16,6 +17,9 @@ namespace JTX::Core {
 
         void clear();
         void render(Scene* scene, ProjectionType projType=PERSPECTIVE);
+
+        // THIS FUNCTION REQUIRES ALL VERTICES TO BE BETWEEN -1 AND 1
+        void renderWireframe(JTX::Core::Primitive &p, JTX::Util::Color color);
 
         inline void drawPixel(int x, int y, int channel, float val) {
             if (x < 0 || x >= this->w || y < 0 || y >= this->h || channel < 0 || channel >= this->c) {

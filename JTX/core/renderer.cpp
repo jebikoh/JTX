@@ -1,4 +1,5 @@
 #include "renderer.h"
+#include <iostream>
 
 JTX::Core::Renderer::Renderer(int w, int h, int c) {
     if (w <= 0 || h <= 0 || c <= 0) {throw std::invalid_argument("Invalid dimensions");}
@@ -51,6 +52,37 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projTyp
             }
             const Face *f = prim->getFace(i);
         }
+    }
+}
+
+void JTX::Core::Renderer::renderWireframe(JTX::Core::Primitive &p, JTX::Util::Color color) {
+    this->clear();
+    auto w2 = 0.5f * static_cast<float>(this->w);
+    auto h2 = 0.5f * static_cast<float>(this->h);
+
+    // TODO: move this into the loop
+    JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(w2-1.0f, h2-1.0f, 1);
+    JTX::Util::Mat4 trans = JTX::Util::Mat4::translation(w2, h2, 0);
+
+    p.applyTransform(&scale);
+    p.applyTransform(&trans);
+
+    for (int i = 0; i < p.getNumFaces(); i++) {
+        JTX::Core::Face *f = p.getFace(i);
+        float *v1 = p.getVertex(f->v1);
+        float *v2 = p.getVertex(f->v2);
+        float *v3 = p.getVertex(f->v3);
+
+        int v1_x = static_cast<int>(std::round(v1[0]));
+        int v1_y = static_cast<int>(std::round(v1[1]));
+        int v2_x = static_cast<int>(std::round(v2[0]));
+        int v2_y = static_cast<int>(std::round(v2[1]));
+        int v3_x = static_cast<int>(std::round(v3[0]));
+        int v3_y = static_cast<int>(std::round(v3[1]));
+
+        this->drawLine(v1_x, v1_y, v2_x, v2_y, color);
+        this->drawLine(v2_x, v2_y, v3_x, v3_y, color);
+        this->drawLine(v3_x, v3_y, v1_x, v1_y, color);
     }
 }
 

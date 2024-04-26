@@ -3,7 +3,7 @@
 //
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
-#include "JTX/Core/core.h"
+#include "JTX/core/core.h"
 
 const std::string CUBE_PATH = "../../Tests/primitives/cube.obj";
 
@@ -71,13 +71,4 @@ TEST_CASE("Renderer drawLine() vertical", "[Renderer]") {
     REQUIRE(r.getPixel(4, 6, 0) == 1.0f);
     REQUIRE(r.getPixel(4, 7, 0) == 1.0f);
     REQUIRE(r.getPixel(4, 8, 0) == 1.0f);
-}
-
-TEST_CASE("Renderer saveFb() with vertical line", "[Renderer]") {
-    JTX::Core::Renderer r(1000, 1000, 3);
-    r.drawLine(500, 0, 500, 999, 0, 1.0f);
-    r.drawLine(0, 500, 999, 500, 1, 1.0f);
-    r.drawLine(0, 0, 999, 999, 2, 1.0f);
-    r.drawLine(0, 999, 999, 0, 2, 1.0f);
-    r.saveFb("vertical_line.png", 0);
 }

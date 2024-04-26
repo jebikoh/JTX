@@ -123,7 +123,7 @@ TEST_CASE("Test DirLight intensity", "[Lights]") {
 }
 
 TEST_CASE("Test camera constructor", "[Camera]") {
-    JTX::Core::Camera cam(JTX::Util::Vec3(0.0f, 0.0f, 30.0f), JTX::Util::Vec3(0.0f, 0.0f, 0.0f), JTX::Util::Vec3(0.0f, 1.0f, 0.0f),  1.0472f, 0.1f, 100.0f);
+    JTX::Core::Camera cam(JTX::Util::Vec3(0.0f, 0.0f, 30.0f), JTX::Util::Vec3(0.0f, 0.0f, 0.0f), JTX::Util::Vec3(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
 
     REQUIRE_THAT(cam.getPos().x, Catch::Matchers::WithinAbs(0.0f, 0.0001f));
     REQUIRE_THAT(cam.getPos().y, Catch::Matchers::WithinAbs(0.0f, 0.0001f));
@@ -140,7 +140,7 @@ TEST_CASE("Test camera constructor", "[Camera]") {
 }
 
 TEST_CASE("Test camera view matrix", "[Camera]") {
-    JTX::Core::Camera cam(JTX::Util::Vec3(0.0f, 0.0f, 30.0f), JTX::Util::Vec3(0.0f, 0.0f, 0.0f), JTX::Util::Vec3(0.0f, 1.0f, 0.0f),  1.0472f, 0.1f, 100.0f);
+    JTX::Core::Camera cam(JTX::Util::Vec3(0.0f, 0.0f, 30.0f), JTX::Util::Vec3(0.0f, 0.0f, 0.0f), JTX::Util::Vec3(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
 
     auto vmat = cam.getViewMatrix();
     REQUIRE_THAT(vmat.data[0][0], Catch::Matchers::WithinAbs(1.0f, 0.0001f));
@@ -165,7 +165,7 @@ TEST_CASE("Test camera view matrix", "[Camera]") {
 }
 
 TEST_CASE("Test camera perspective projection matrix", "[Camera]") {
-    JTX::Core::Camera cam(JTX::Util::Vec3(0.0f, 0.0f, 30.0f), JTX::Util::Vec3(0.0f, 0.0f, 0.0f), JTX::Util::Vec3(0.0f, 1.0f, 0.0f),  1.0472f, 0.1f, 100.0f);
+    JTX::Core::Camera cam(JTX::Util::Vec3(0.0f, 0.0f, 30.0f), JTX::Util::Vec3(0.0f, 0.0f, 0.0f), JTX::Util::Vec3(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
 
     auto pmat = cam.getProjMatrix(2.0f, JTX::Core::PERSPECTIVE);
     REQUIRE_THAT(pmat.data[0][0], Catch::Matchers::WithinAbs(0.86602295, 0.0001f));

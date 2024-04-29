@@ -48,6 +48,12 @@ namespace JTX::Core {
             drawLine(x0, y0, x1, y1, color.r, color.g, color.b);
         }
 
+        // Bounding-box
+        void drawTriangle(int x0, int y0, float z0, int x1, int y1, float z1,  int x2, int y2, float z2, float r, float g, float b);
+        inline void drawTriangle(int x0, int y0, float z0, int x1, int y1, float z1,  int x2, int y2, float z2, JTX::Util::Color color) {
+            drawTriangle(x0, y0, z0, x1, y1, z1, x2, y2, z2, color.r, color.g, color.b);
+        }
+
         [[nodiscard]] int getWidth() const { return w; }
         [[nodiscard]] int getHeight() const { return h; }
         [[nodiscard]] int getChannels() const { return c; }
@@ -63,6 +69,9 @@ namespace JTX::Core {
         float *fb;
         float *zb;
 
+        static inline int edgeFn(int x0, int y0, int x1, int y1, int x2, int y2) {
+            return (x2 - x0) * (y1 - y0) - (y2 - y0) * (x1 - x0);
+        }
     };
 }
 

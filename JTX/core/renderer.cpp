@@ -33,15 +33,10 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projTyp
         for (int i = 0; i < prim->getNumVertices(); i++) {
             float *v = prim->getVertex(i);
             int *s = prim->getScreen(i);
-            // NDC
-            v[0] /= v[3];
-            v[1] /= v[3];
-            v[2] /= v[3];
-
-            // Screen space transformation
-            s[0] = static_cast<int>(std::round((v[0] + 1.0f) * 0.5f * wf));
-            s[1] = static_cast<int>(std::round((v[1] + 1.0f) * 0.5f * hf));
-            v[2] = (v[2] + 1.0f) * 0.5f;
+            // NDC & Screen space transformation
+            s[0] = static_cast<int>(std::round((v[0] / v[3] + 1.0f) * 0.5f * wf));
+            s[1] = static_cast<int>(std::round((v[1] / v[3] + 1.0f) * 0.5f * hf));
+            v[2] = (v[2] / v[3] + 1.0f) * 0.5f;
         }
 
         for (int i = 0; i < prim->getNumFaces(); i++) {
@@ -154,7 +149,7 @@ void JTX::Core::Renderer::saveFb(const std::string &path, int compressionLevel) 
         for (int x = 0; x < this->w; ++x) {
             for (int ch = 0; ch < this->c; ++ch) {
                 float val = this->getPixel(x, y, ch);
-                pixels[(y * this->w + x) * this->c + ch] = static_cast<unsigned char>(val * 255.0f);
+                pixels[(y * this->w + x) * this->c + ch] = static_cast<unsigned char>(val);
             }
         }
     }
@@ -167,5 +162,27 @@ void JTX::Core::Renderer::saveFb(const std::string &path, int compressionLevel) 
     }
 
     delete[] pixels;
+}
+
+void JTX::Core::Renderer::drawTriangle(int x0, int y0, float z0, int x1, int y1, float z1,  int x2, int y2, float z2, float r, float g, float b) {
+    int minX = std::max(0, std::min(x0, std::min(x1, x2)));
+    int minY = std::max(0, std::min(y0, std::min(y1, y2)));
+    int maxX = std::min(this->w - 1, std::max(x0, std::max(x1, x2)));
+    int maxY = std::min(this->h - 1, std::max(y0, std::max(y1, y2)));
+
+//    int area = edgeFn(x0, y0, x1, y1, x2, y2);
+
+    for (int y = minY; y <= maxY; ++y) {
+        for (int x = minX; x <= maxX; ++x) {
+            int w0 = edgeFn(x1, y1, x2, y2, x, y);
+            int w1 = edgeFn(x2, y2, x0, y0, x, y);
+            int w2 = edgeFn(x0, y0, x1, y1, x, y);
+
+            if ((w0 >= 0 && w1 >= 0 && w2 >= 0) || (w0 <= 0 && w1 <= 0 && w2 <= 0)) {
+                // TODO: Z-buffer
+                this->drawPixel(x, y, r, g, b);
+            }
+        }
+    }
 }
 

@@ -87,6 +87,14 @@ TEST_CASE("Vec3 dot product", "[vec3]") {
     REQUIRE_THAT(c, Catch::Matchers::WithinRel(32.0f, 0.0001f));
 }
 
+TEST_CASE("Vec3 dot product with separate x, y, z", "[vec3]") {
+    JTX::Util::Vec3 a{1.0f, 2.0f, 3.0f};
+
+    float c = a.dot(4.0f, 5.0f, 6.0f);
+
+    REQUIRE_THAT(c, Catch::Matchers::WithinRel(32.0f, 0.0001f));
+}
+
 TEST_CASE("Vec3 length", "[vec3]") {
     JTX::Util::Vec3 a{1.0f, 2.0f, 3.0f};
 

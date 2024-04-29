@@ -42,10 +42,27 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projTyp
         for (int i = 0; i < prim->getNumFaces(); i++) {
             float *n = prim->getNormal(i);
 
-            if (scene->getCamera().getLookAt().dot(n[0], n[1], n[2]) < 0) {
+            if (scene->getCamera().getLookAt().dot(n[0], n[1], n[2]) >= 0) {
                 continue;
             }
+
             const Face *f = prim->getFace(i);
+            int *v1 = prim->getScreen(f->v1);
+            int *v2 = prim->getScreen(f->v2);
+            int *v3 = prim->getScreen(f->v3);
+
+            this->drawTriangle(
+                    v1[0],
+                    v1[1],
+                    prim->getVertex(f->v1)[2],
+                    v2[0], v2[1],
+                    prim->getVertex(f->v2)[2],
+                    v3[0],
+                    v3[1],
+                    prim->getVertex(f->v3)[2],
+                    255.0f,
+                    255.0f,
+                    255.0f);
         }
     }
 }
@@ -179,8 +196,11 @@ void JTX::Core::Renderer::drawTriangle(int x0, int y0, float z0, int x1, int y1,
             int w2 = edgeFn(x0, y0, x1, y1, x, y);
 
             if ((w0 >= 0 && w1 >= 0 && w2 >= 0) || (w0 <= 0 && w1 <= 0 && w2 <= 0)) {
-                // TODO: Z-buffer
+                // TODO: Interpolate z
+//                if (z0 > this->zb[y * this->w + x]) {
                 this->drawPixel(x, y, r, g, b);
+                this->zb[y * this->w + x] = z0;
+//                }
             }
         }
     }

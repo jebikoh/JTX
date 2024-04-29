@@ -48,7 +48,7 @@ namespace JTX::Util {
         }
 
         [[nodiscard]] inline float dot(const float _x, const float _y, const float _z) const {
-            return this->x * x + this->y * y + this->z * z;
+            return this->x * _x + this->y * _y + this->z * _z;
         }
 
         [[nodiscard]] inline float len() const { return std::sqrt(x * x + y * y + z * z); }

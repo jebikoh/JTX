@@ -61,6 +61,8 @@ TEST_CASE("Random color head", "[SaveFB]") {
     JTX::Core::Primitive m{};
     m.load(HEAD_PATH);
 
+    JTX::Util::Vec3 lookAt = {0.0f, 0.0f, -1.0f};
+
     JTX::Util::Mat4 rot_z = JTX::Util::Mat4::rotation(JTX::Util::degToRad(180), JTX::Util::Axis::Z);
     JTX::Util::Mat4 scale2 = JTX::Util::Mat4::scale(499.0f, 499.0f, 1);
     JTX::Util::Mat4 trans = JTX::Util::Mat4::translation(500.0f, 500.0f, 0);
@@ -68,8 +70,13 @@ TEST_CASE("Random color head", "[SaveFB]") {
     m.applyTransform(&rot_z);
     m.applyTransform(&scale2);
     m.applyTransform(&trans);
+    m.calculateNormals();
 
     for (int i = 0; i < m.getNumFaces(); i++) {
+        if (lookAt.dot(m.getNormal(i)[0], m.getNormal(i)[1], m.getNormal(i)[2]) >= 0) {
+            continue;
+        }
+
         JTX::Core::Face *f = m.getFace(i);
         float *v1 = m.getVertex(f->v1);
         float *v2 = m.getVertex(f->v2);
@@ -82,9 +89,10 @@ TEST_CASE("Random color head", "[SaveFB]") {
         int v3_x = static_cast<int>(std::round(v3[0]));
         int v3_y = static_cast<int>(std::round(v3[1]));
 
+
         JTX::Util::Color color = {static_cast<float>(rand() % 255), static_cast<float>(rand() % 255), static_cast<float>(rand() % 255)};
 
         r.drawTriangle(v1_x, v1_y, 0.0f, v2_x, v2_y, 0.0f, v3_x, v3_y, 0.0f, color);
     }
-    r.saveFb("rc_head.png", 0);
+    r.saveFb("rc_head_2.png", 0);
 }

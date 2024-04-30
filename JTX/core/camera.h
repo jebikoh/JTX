@@ -18,7 +18,7 @@ namespace JTX::Core {
             this->near = near;
             this->far = far;
             this->t = JTX::Util::Mat4();
-            this->dirty = false;
+            this->dirty = true;
         }
         ~Camera() = default;
 

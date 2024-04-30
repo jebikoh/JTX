@@ -89,10 +89,61 @@ TEST_CASE("Random color head", "[SaveFB]") {
         int v3_x = static_cast<int>(std::round(v3[0]));
         int v3_y = static_cast<int>(std::round(v3[1]));
 
-
         JTX::Util::Color color = {static_cast<float>(rand() % 255), static_cast<float>(rand() % 255), static_cast<float>(rand() % 255)};
 
         r.drawTriangle(v1_x, v1_y, 0.0f, v2_x, v2_y, 0.0f, v3_x, v3_y, 0.0f, color);
     }
     r.saveFb("rc_head_2.png", 0);
+}
+
+TEST_CASE("Random color head perspective projection", "[SaveFB]") {
+    JTX::Core::Renderer r(1000, 1000, 3);
+
+    JTX::Core::Primitive m{};
+    m.load(HEAD_PATH);
+
+    JTX::Util::Mat4 rot_z = JTX::Util::Mat4::rotation(JTX::Util::degToRad(180), JTX::Util::Axis::Z);
+    JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(20.0f, 20.0f, 1);
+    m.applyTransform(&rot_z);
+    m.applyTransform(&scale);
+    m.calculateNormals();
+
+    JTX::Util::Vec3 pos{0.0f, 0.0f, 30.0f};
+    JTX::Util::Vec3 target{0.0f, 0.0f, 0.0f};
+    JTX::Util::Vec3 up{0.0f, 1.0f, 0.0f};
+    JTX::Core::Camera cam(pos, target, up, 1.0472f, 0.1f, 100.0f);
+
+    JTX::Core::Scene scene{cam};
+    scene.addPrimitive(m);
+
+    r.render(&scene);
+    r.saveFb("rc_head_perspective.png", 0);
+}
+
+TEST_CASE("Random color cube perspective projection", "[SaveFB]") {
+    JTX::Core::Renderer r(1000, 1000, 3);
+
+    JTX::Core::Primitive m{};
+    m.load(CUBE_PATH);
+
+    float rad = JTX::Util::degToRad(45);
+    JTX::Util::Mat4 rot_y = JTX::Util::Mat4::rotation(rad, JTX::Util::Axis::Y);
+    JTX::Util::Mat4 rot_z = JTX::Util::Mat4::rotation(rad, JTX::Util::Axis::X);
+    m.applyTransform(&rot_y);
+    m.applyTransform(&rot_z);
+
+    JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(5.0f, 5.0f, 1.0f);
+    m.applyTransform(&scale);
+    m.calculateNormals();
+
+    JTX::Util::Vec3 pos{0.0f, 0.0f, 30.0f};
+    JTX::Util::Vec3 target{0.0f, 0.0f, 0.0f};
+    JTX::Util::Vec3 up{0.0f, 1.0f, 0.0f};
+    JTX::Core::Camera cam(pos, target, up, 1.0472f, 0.1f, 100.0f);
+
+    JTX::Core::Scene scene{cam};
+    scene.addPrimitive(m);
+
+    r.render(&scene);
+    r.saveFb("rc_cube_perspective.png", 0);
 }

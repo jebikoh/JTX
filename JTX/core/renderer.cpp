@@ -60,9 +60,9 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projTyp
                     v3[0],
                     v3[1],
                     prim->getVertex(f->v3)[2],
-                    255.0f,
-                    255.0f,
-                    255.0f);
+                    static_cast<float>(rand() % 255),
+                    static_cast<float>(rand() % 255),
+                    static_cast<float>(rand() % 255));
         }
     }
 }

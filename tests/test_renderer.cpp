@@ -18,7 +18,7 @@ TEST_CASE("Renderer drawPixel()/getPixel()", "[Renderer]") {
 
 TEST_CASE("Renderer clear() fb and zb", "[Renderer]") {
     JTX::Core::Renderer r(100, 100, 3);
-    r.drawPixel(50, 50 , 0, 1.0f);
+    r.drawPixel(50, 50 , 0, 0.0f);
     r.clear();
     REQUIRE(r.getPixel(50, 50, 0) == 0.0f);
 }

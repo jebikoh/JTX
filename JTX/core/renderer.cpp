@@ -16,8 +16,12 @@ JTX::Core::Renderer::Renderer(int w, int h, int c) {
 
 void JTX::Core::Renderer::clear() {
     // TODO: SIMD
-    std::memset(fb, 0.0f, c * h * w * sizeof(float));
-    std::memset(zb, 0.0f, h * w * sizeof(float));
+    for (size_t i = 0; i < c * h * w; i++) {
+        fb[i] = 0.0f;
+    }
+    for (size_t i = 0; i < h * w; i++) {
+        zb[i] = 0.0f;
+    }
 }
 
 void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projType) {
@@ -212,7 +216,6 @@ void JTX::Core::Renderer::drawTriangle(int x0, int y0, float z0, int x1, int y1,
             int w1 = edgeFn(x2, y2, x0, y0, x, y);
             int w2 = edgeFn(x0, y0, x1, y1, x, y);
 
-            // Ensure all signs are the same via XOR operation
             if ((w0 >= 0 && w1 >= 0 && w2 >= 0) || (w0 <= 0 && w1 <= 0 && w2 <= 0)) {
                 float wz0 = static_cast<float>(w0) / a;
                 float wz1 = static_cast<float>(w1) / a;

@@ -43,7 +43,7 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projTyp
             float *n = prim->getNormal(i);
 
             // Back-face culling
-            if (scene->getCamera().getLookAt().dot(n[0], n[1], n[2]) >= 0) {
+            if (scene->getCamera().getLookAt().dot(n[0], n[1], n[2]) > 0) {
                 continue;
             }
 
@@ -57,11 +57,14 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projTyp
             int *v3 = prim->getScreen(f->v3);
             float z2 = prim->getVertex(f->v3)[2];
 
-            // If the face is completely obscured, skip it
-            if (z0 < this->getDepth(v1[0], v1[1]) ||
-                z1 < this->getDepth(v2[0], v2[1]) ||
-                z2 < this->getDepth(v3[0], v3[1])) {
-                continue;
+            float intensity = 1.0f;
+            if (scene->getNumLights() > 0) {
+                intensity = 0.0f;
+                for (int j = 0; j < scene->getNumLights(); ++j) {
+                    JTX::Core::DirLight light = scene->getLight(j);
+                    intensity += light.getIntensity({n[0], n[1], n[2]});
+                }
+                intensity /= static_cast<float>(scene->getNumLights());
             }
 
             this->drawTriangle(
@@ -74,9 +77,9 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projTyp
                     v3[0],
                     v3[1],
                     z2,
-                    static_cast<float>(rand() % 255),
-                    static_cast<float>(rand() % 255),
-                    static_cast<float>(rand() % 255));
+                    255.0f * intensity,
+                    255.0f * intensity,
+                    255.0f * intensity);
         }
     }
 }

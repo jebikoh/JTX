@@ -96,43 +96,45 @@ TEST_CASE("Random color head", "[SaveFB]") {
     r.saveFb("rc_head.png", 0);
 }
 
-TEST_CASE("Random color head perspective projection", "[SaveFB]") {
+TEST_CASE("Head perspective projection", "[SaveFB]") {
     JTX::Core::Renderer r(1000, 1000, 3);
 
     JTX::Core::Primitive m{};
     m.load(HEAD_PATH);
 
     JTX::Util::Mat4 rot_z = JTX::Util::Mat4::rotation(JTX::Util::degToRad(180), JTX::Util::Axis::Z);
-    JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(20.0f, 20.0f, 1);
+    JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(20.0f, 20.0f, 20.0f);
     m.applyTransform(&rot_z);
     m.applyTransform(&scale);
     m.calculateNormals();
 
-    JTX::Util::Vec3 pos{0.0f, 0.0f, 30.0f};
+    JTX::Util::Vec3 pos{0.0f, 0.0f, 50.0f};
     JTX::Util::Vec3 target{0.0f, 0.0f, 0.0f};
     JTX::Util::Vec3 up{0.0f, 1.0f, 0.0f};
     JTX::Core::Camera cam(pos, target, up, 1.0472f, 0.1f, 100.0f);
 
+    JTX::Core::DirLight light({0.0f, 0.0f, -1.0f});
+
     JTX::Core::Scene scene{cam};
     scene.addPrimitive(m);
+    scene.addLight(light);
 
     r.render(&scene);
-    r.saveFb("rc_head_perspective.png", 0);
+    r.saveFb("head_perspective.png", 0);
 }
 
-TEST_CASE("Random color cube perspective projection", "[SaveFB]") {
+TEST_CASE("Cube perspective projection", "[SaveFB]") {
     JTX::Core::Renderer r(1000, 1000, 3);
 
     JTX::Core::Primitive m{};
     m.load(CUBE_PATH);
 
     float rad = JTX::Util::degToRad(45);
+    JTX::Util::Mat4 rot_x = JTX::Util::Mat4::rotation(rad, JTX::Util::Axis::X);
     JTX::Util::Mat4 rot_y = JTX::Util::Mat4::rotation(rad, JTX::Util::Axis::Y);
-    JTX::Util::Mat4 rot_z = JTX::Util::Mat4::rotation(rad, JTX::Util::Axis::X);
+    JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(5.0f, 5.0f, 5.0f);
+    m.applyTransform(&rot_x);
     m.applyTransform(&rot_y);
-    m.applyTransform(&rot_z);
-
-    JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(5.0f, 5.0f, 1.0f);
     m.applyTransform(&scale);
     m.calculateNormals();
 
@@ -141,9 +143,12 @@ TEST_CASE("Random color cube perspective projection", "[SaveFB]") {
     JTX::Util::Vec3 up{0.0f, 1.0f, 0.0f};
     JTX::Core::Camera cam(pos, target, up, 1.0472f, 0.1f, 100.0f);
 
+    JTX::Core::DirLight light({0.0f, 0.0f, -1.0f});
+
     JTX::Core::Scene scene{cam};
     scene.addPrimitive(m);
+    scene.addLight(light);
 
     r.render(&scene);
-    r.saveFb("rc_cube_perspective.png", 0);
+    r.saveFb("cube_perspective.png", 0);
 }

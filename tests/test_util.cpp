@@ -68,14 +68,14 @@ TEST_CASE("Vec3 element-wise multiplication", "[vec3]") {
 }
 
 TEST_CASE("Vec3 cross product", "[vec3]") {
-    JTX::Util::Vec3 a{0.0f, 0.0f, -1.0f};
-    JTX::Util::Vec3 b{0.0f, 1.0f, 0.0f};
+    JTX::Util::Vec3 a{1.0f, -2.0f, 3.0f};
+    JTX::Util::Vec3 b{7.0f, 8.0f, -5.0f};
 
     JTX::Util::Vec3 c = a.cross(b);
 
-    REQUIRE_THAT(c.x, Catch::Matchers::WithinRel(1.0f, 0.0001f));
-    REQUIRE_THAT(c.y, Catch::Matchers::WithinRel(0.0f, 0.0001f));
-    REQUIRE_THAT(c.z, Catch::Matchers::WithinRel(0.0f, 0.0001f));
+    REQUIRE_THAT(c.x, Catch::Matchers::WithinRel(-14.0f, 0.0001f));
+    REQUIRE_THAT(c.y, Catch::Matchers::WithinRel(26.0f, 0.0001f));
+    REQUIRE_THAT(c.z, Catch::Matchers::WithinRel(22.0f, 0.0001f));
 }
 
 TEST_CASE("Vec3 dot product", "[vec3]") {

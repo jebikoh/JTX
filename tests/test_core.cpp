@@ -68,6 +68,44 @@ TEST_CASE("Primitive normal calculations", "[Primitive]") {
     REQUIRE_THAT(p.getNormal(p.getNumFaces() - 1)[2], Catch::Matchers::WithinAbs(-1.0f, 0.0001f));
 }
 
+TEST_CASE("Test cube rotation XY", "[Primitive]") {
+    JTX::Core::Primitive p;
+    p.load(CUBE_PATH);
+
+    float rad = JTX::Util::degToRad(45);
+    JTX::Util::Mat4 rot_x = JTX::Util::Mat4::rotation(rad, JTX::Util::Axis::X);
+    JTX::Util::Mat4 rot_y = JTX::Util::Mat4::rotation(rad, JTX::Util::Axis::Y);
+
+    p.applyTransform(&rot_x);
+    p.applyTransform(&rot_y);
+
+    float *v0 = p.getVertex(0);
+
+    REQUIRE_THAT(v0[0], Catch::Matchers::WithinAbs(-0.292893219f, 0.0001f));
+    REQUIRE_THAT(v0[1], Catch::Matchers::WithinAbs(0.000f, 0.0001f));
+    REQUIRE_THAT(v0[2], Catch::Matchers::WithinAbs(-1.70710678f, 0.0001f));
+}
+
+TEST_CASE("Rotated cube normal calculation", "[Primitive]") {
+    JTX::Core::Primitive p;
+    p.load(CUBE_PATH);
+
+    float rad = JTX::Util::degToRad(45);
+    JTX::Util::Mat4 rot_x = JTX::Util::Mat4::rotation(rad, JTX::Util::Axis::X);
+    JTX::Util::Mat4 rot_y = JTX::Util::Mat4::rotation(rad, JTX::Util::Axis::Y);
+    JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(5.0f, 5.0f, 5.0f);
+    p.applyTransform(&rot_x);
+    p.applyTransform(&rot_y);
+    p.applyTransform(&scale);
+    p.calculateNormals();
+
+    std::cout << p.getNormal(3)[0] << " " << p.getNormal(3)[1] << " " << p.getNormal(3)[2] << std::endl;
+
+    REQUIRE_THAT(p.getNormal(0)[0], Catch::Matchers::WithinAbs(-0.5000f, 0.0001f));
+    REQUIRE_THAT(p.getNormal(0)[1], Catch::Matchers::WithinAbs(-0.707106781f, 0.0001f));
+    REQUIRE_THAT(p.getNormal(0)[2], Catch::Matchers::WithinAbs(-0.5f, 0.0001f));
+}
+
 TEST_CASE("Apply scale transformation to cube primitive", "[Primitive]") {
     JTX::Core::Primitive p;
     p.load(CUBE_PATH);
@@ -120,6 +158,24 @@ TEST_CASE("Test DirLight intensity", "[Lights]") {
     JTX::Core::DirLight dl(JTX::Util::Vec3(1.0f, 1.0f, 1.0f));
 
     REQUIRE_THAT(dl.getIntensity(JTX::Util::Vec3(-1.0f, -1.0f, -1.0f)), Catch::Matchers::WithinAbs(1.7320508075688776f, 0.0001f));
+}
+
+TEST_CASE("Test DirLight intensity with primitive", "[Primitive]") {
+    JTX::Core::Primitive p;
+    p.load(CUBE_PATH);
+
+    float rad = JTX::Util::degToRad(45);
+    JTX::Util::Mat4 rot_x = JTX::Util::Mat4::rotation(rad, JTX::Util::Axis::X);
+    JTX::Util::Mat4 rot_y = JTX::Util::Mat4::rotation(rad, JTX::Util::Axis::Y);
+    p.applyTransform(&rot_x);
+    p.applyTransform(&rot_y);
+    p.calculateNormals();
+
+    JTX::Core::DirLight dl(JTX::Util::Vec3(0.0f, 0.0f, -1.0f));
+
+    float *normal = p.getNormal(3);
+    float intensity = dl.getIntensity({normal[0], normal[1], normal[2]});
+    std::cout << intensity << std::endl;
 }
 
 TEST_CASE("Test camera constructor", "[Camera]") {

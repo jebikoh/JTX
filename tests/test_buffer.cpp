@@ -93,7 +93,7 @@ TEST_CASE("Random color head", "[SaveFB]") {
 
         r.drawTriangle(v1_x, v1_y, 0.0f, v2_x, v2_y, 0.0f, v3_x, v3_y, 0.0f, color);
     }
-    r.saveFb("rc_head_2.png", 0);
+    r.saveFb("rc_head.png", 0);
 }
 
 TEST_CASE("Random color head perspective projection", "[SaveFB]") {

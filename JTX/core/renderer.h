@@ -16,10 +16,6 @@ namespace JTX::Core {
         };
 
         void clear();
-        void render(Scene* scene, ProjectionType projType=PERSPECTIVE);
-
-        // THIS FUNCTION REQUIRES ALL VERTICES TO BE BETWEEN -1 AND 1
-        void renderWireframe(JTX::Core::Primitive &p, JTX::Util::Color color);
 
         inline void drawPixel(int x, int y, int channel, float val) {
             if (x < 0 || x >= this->w || y < 0 || y >= this->h || channel < 0 || channel >= this->c) {
@@ -54,12 +50,14 @@ namespace JTX::Core {
             drawTriangle(x0, y0, z0, x1, y1, z1, x2, y2, z2, color.r, color.g, color.b);
         }
 
+        void render(Scene* scene, ProjectionType projType=PERSPECTIVE);
+        // THIS FUNCTION REQUIRES ALL VERTICES TO BE BETWEEN -1 AND 1
+        void renderWireframe(JTX::Core::Primitive &p, JTX::Util::Color color);
+
         [[nodiscard]] int getWidth() const { return w; }
         [[nodiscard]] int getHeight() const { return h; }
         [[nodiscard]] int getChannels() const { return c; }
         [[nodiscard]] float getAR() const { return ar; }
-        float *getFB() { return fb; }
-        float *getZB() { return zb; }
 
         void saveFb(const std::string &path, int compressionLevel);
 
@@ -69,8 +67,23 @@ namespace JTX::Core {
         float *fb;
         float *zb;
 
-        static inline int edgeFn(int x0, int y0, int x1, int y1, int x2, int y2) {
-            return (x2 - x0) * (y1 - y0) - (y2 - y0) * (x1 - x0);
+        static inline int edgeFn(int x0, int y0, int x1, int y1, int tx, int ty) {
+            // This is the signed area of a parallelogram
+            return (tx - x0) * (y1 - y0) - (ty - y0) * (x1 - x0);
+        }
+
+        inline float getDepth(int x, int y) {
+            if (x < 0 || x >= this->w || y < 0 || y >= this->h) {
+                throw std::invalid_argument("Pixel out of bounds");
+            }
+            return this->zb[y * this->w + x];
+        }
+
+        inline void setDepth(int x, int y, float z) {
+            if (x < 0 || x >= this->w || y < 0 || y >= this->h) {
+                throw std::invalid_argument("Pixel out of bounds");
+            }
+            this->zb[y * this->w + x] = z;
         }
     };
 }

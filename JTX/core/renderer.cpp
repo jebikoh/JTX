@@ -11,13 +11,13 @@ JTX::Core::Renderer::Renderer(int w, int h, int c) {
     this->fb = new float[c * h * w]();
     this->zb = new float[h * w];
 
-    for (int i = 0; i < w * h; i++) {this->zb[i] = 1.0f;}
+    for (int i = 0; i < w * h; i++) {this->zb[i] = 0.0f;}
 }
 
 void JTX::Core::Renderer::clear() {
     // TODO: SIMD
-    std::memset(fb, 0, c * h * w * sizeof(float));
-    std::memset(zb, 1, h * w * sizeof(float));
+    std::memset(fb, 0.0f, c * h * w * sizeof(float));
+    std::memset(zb, 0.0f, h * w * sizeof(float));
 }
 
 void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projType) {
@@ -42,24 +42,38 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projTyp
         for (int i = 0; i < prim->getNumFaces(); i++) {
             float *n = prim->getNormal(i);
 
+            // Back-face culling
             if (scene->getCamera().getLookAt().dot(n[0], n[1], n[2]) >= 0) {
                 continue;
             }
 
             const Face *f = prim->getFace(i);
             int *v1 = prim->getScreen(f->v1);
+            float z0 = prim->getVertex(f->v1)[2];
+
             int *v2 = prim->getScreen(f->v2);
+            float z1 = prim->getVertex(f->v2)[2];
+
             int *v3 = prim->getScreen(f->v3);
+            float z2 = prim->getVertex(f->v3)[2];
+
+            // If the face is completely obscured, skip it
+            if (z0 < this->getDepth(v1[0], v1[1]) ||
+                z1 < this->getDepth(v2[0], v2[1]) ||
+                z2 < this->getDepth(v3[0], v3[1])) {
+                continue;
+            }
 
             this->drawTriangle(
                     v1[0],
                     v1[1],
-                    prim->getVertex(f->v1)[2],
-                    v2[0], v2[1],
-                    prim->getVertex(f->v2)[2],
+                    z0,
+                    v2[0],
+                    v2[1],
+                    z1,
                     v3[0],
                     v3[1],
-                    prim->getVertex(f->v3)[2],
+                    z2,
                     static_cast<float>(rand() % 255),
                     static_cast<float>(rand() % 255),
                     static_cast<float>(rand() % 255));
@@ -187,7 +201,7 @@ void JTX::Core::Renderer::drawTriangle(int x0, int y0, float z0, int x1, int y1,
     int maxX = std::min(this->w - 1, std::max(x0, std::max(x1, x2)));
     int maxY = std::min(this->h - 1, std::max(y0, std::max(y1, y2)));
 
-//    int area = edgeFn(x0, y0, x1, y1, x2, y2);
+    auto a = static_cast<float>(edgeFn(x0, y0, x1, y1, x2, y2));
 
     for (int y = minY; y <= maxY; ++y) {
         for (int x = minX; x <= maxX; ++x) {
@@ -195,12 +209,17 @@ void JTX::Core::Renderer::drawTriangle(int x0, int y0, float z0, int x1, int y1,
             int w1 = edgeFn(x2, y2, x0, y0, x, y);
             int w2 = edgeFn(x0, y0, x1, y1, x, y);
 
+            // Ensure all signs are the same via XOR operation
             if ((w0 >= 0 && w1 >= 0 && w2 >= 0) || (w0 <= 0 && w1 <= 0 && w2 <= 0)) {
-                // TODO: Interpolate z
-//                if (z0 > this->zb[y * this->w + x]) {
+                float wz0 = static_cast<float>(w0) / a;
+                float wz1 = static_cast<float>(w1) / a;
+                float wz2 = static_cast<float>(w2) / a;
+                float z = wz0 * z0 + wz1 * z1 + wz2 * z2;
+
+                if (z < this->getDepth(x, y)) { continue; }
+
+                this->setDepth(x, y, z);
                 this->drawPixel(x, y, r, g, b);
-                this->zb[y * this->w + x] = z0;
-//                }
             }
         }
     }

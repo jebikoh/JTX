@@ -97,21 +97,21 @@ TEST_CASE("Random color head", "[SaveFB]") {
 }
 
 TEST_CASE("Head perspective projection", "[SaveFB]") {
-    JTX::Core::Renderer r(1000, 1000, 3);
+    JTX::Core::Renderer r(2000, 2000, 3);
 
     JTX::Core::Primitive m{};
     m.load(HEAD_PATH);
 
     JTX::Util::Mat4 rot_z = JTX::Util::Mat4::rotation(JTX::Util::degToRad(180), JTX::Util::Axis::Z);
-    JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(20.0f, 20.0f, 20.0f);
+    JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(40.0f, 40.0f, 40.0f);
     m.applyTransform(&rot_z);
     m.applyTransform(&scale);
     m.calculateNormals();
 
-    JTX::Util::Vec3 pos{0.0f, 0.0f, 50.0f};
+    JTX::Util::Vec3 pos{0.0f, 0.0f, 100.0f};
     JTX::Util::Vec3 target{0.0f, 0.0f, 0.0f};
     JTX::Util::Vec3 up{0.0f, 1.0f, 0.0f};
-    JTX::Core::Camera cam(pos, target, up, 1.0472f, 0.1f, 100.0f);
+    JTX::Core::Camera cam(pos, target, up, 1.0472f, 0.1f, 1000.0f);
 
     JTX::Core::DirLight light({0.0f, 0.0f, -1.0f});
 

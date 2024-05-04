@@ -1,5 +1,4 @@
 #include "renderer.h"
-#include <iostream>
 
 JTX::Core::Renderer::Renderer(int w, int h, int c) {
     if (w <= 0 || h <= 0 || c <= 0) {throw std::invalid_argument("Invalid dimensions");}
@@ -47,7 +46,7 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projTyp
             float *n = prim->getNormal(i);
 
             // Back-face culling
-            if (scene->getCamera().getLookAt().dot(n[0], n[1], n[2]) > 0) {
+            if (scene->getCamera().getLookAt().dot(n[0], n[1], n[2]) >= 0) {
                 continue;
             }
 

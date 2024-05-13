@@ -99,8 +99,6 @@ TEST_CASE("Rotated cube normal calculation", "[Primitive]") {
     p.applyTransform(&scale);
     p.calculateNormals();
 
-    std::cout << p.getNormal(3)[0] << " " << p.getNormal(3)[1] << " " << p.getNormal(3)[2] << std::endl;
-
     REQUIRE_THAT(p.getNormal(0)[0], Catch::Matchers::WithinAbs(-0.5000f, 0.0001f));
     REQUIRE_THAT(p.getNormal(0)[1], Catch::Matchers::WithinAbs(-0.707106781f, 0.0001f));
     REQUIRE_THAT(p.getNormal(0)[2], Catch::Matchers::WithinAbs(-0.5f, 0.0001f));
@@ -175,7 +173,7 @@ TEST_CASE("Test DirLight intensity with primitive", "[Primitive]") {
 
     float *normal = p.getNormal(3);
     float intensity = dl.getIntensity({normal[0], normal[1], normal[2]});
-    std::cout << intensity << std::endl;
+    REQUIRE_THAT(intensity, Catch::Matchers::WithinAbs(0.5f, 0.0001f));
 }
 
 TEST_CASE("Test camera constructor", "[Camera]") {

@@ -1,4 +1,4 @@
-#include "mat4.h"
+#include "mat4.hpp"
 
 namespace JTX::Util {
     Mat4::Mat4() {

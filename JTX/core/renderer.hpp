@@ -2,8 +2,8 @@
 
 #include <stdexcept>
 #include <iostream>
-#include "JTX/core/scene.h"
-#include "JTX/util/util.h"
+#include "JTX/core/scene.hpp"
+#include "JTX/util/util.hpp"
 #include "external/fpng.h"
 
 namespace JTX::Core {

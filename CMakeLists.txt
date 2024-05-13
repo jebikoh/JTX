@@ -8,18 +8,18 @@ include_directories(${CBLAS_DIR}/include/)
 link_directories(${CBLAS_DIR}/lib/)
 
 add_library(JTX
-        JTX/util/util.h
-        JTX/util/vec3.h
+        JTX/util/util.hpp
+        JTX/util/vec3.hpp
         JTX/util/mat4.cpp
-        JTX/util/mat4.h
+        JTX/util/mat4.hpp
         JTX/core/primitive.cpp
-        JTX/core/primitive.h
-        JTX/core/core.h
-        JTX/core/lights.h
-        JTX/core/scene.h
-        JTX/core/camera.h
+        JTX/core/primitive.hpp
+        JTX/core/core.hpp
+        JTX/core/lights.hpp
+        JTX/core/scene.hpp
+        JTX/core/camera.hpp
         JTX/core/renderer.cpp
-        JTX/core/renderer.h
+        JTX/core/renderer.hpp
 )
 
 add_library(fpng STATIC external/fpng.cpp)

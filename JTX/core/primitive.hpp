@@ -5,7 +5,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <cblas.h>
-#include "JTX/util/util.h"
+#include "JTX/util/util.hpp"
 
 namespace JTX::Core {
 

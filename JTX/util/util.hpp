@@ -1,8 +1,8 @@
 #pragma once
 
-#include "JTX/util/vec3.h"
-#include "JTX/util/mat4.h"
-#include "JTX/util/color.h"
+#include "JTX/util/vec3.hpp"
+#include "JTX/util/mat4.hpp"
+#include "JTX/util/color.hpp"
 #include <queue>
 #include <cmath>
 

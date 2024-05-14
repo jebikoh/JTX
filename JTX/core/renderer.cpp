@@ -7,7 +7,7 @@ JTX::Core::Renderer::Renderer(int w, int h, int c) {
     this->h = h;
     this->c = c;
     this->ar = (float)w / (float)h;
-    this->fb = new float[c * h * w]();
+    this->fb = new float[h * w * c]();
     this->zb = new float[h * w];
 
     for (int i = 0; i < w * h; i++) {this->zb[i] = 0.0f;}

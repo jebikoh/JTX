@@ -21,21 +21,24 @@ namespace JTX::Core {
             if (x < 0 || x >= this->w || y < 0 || y >= this->h || channel < 0 || channel >= this->c) {
                 throw std::invalid_argument("Pixel out of bounds or invalid channel");
             }
-            this->fb[channel * (this->h * this->w) + (y * this->w) + x] = val;
+            this->fb[(y * this->w * this-> c) + (x * this->c) + channel] = val;
         }
+
         inline void drawPixel(int x, int y, float r, float g, float b) {
             if (x < 0 || x >= this->w || y < 0 || y >= this->h || this->c != 3) {
                 throw std::invalid_argument("Pixel out of bounds or invalid channel");
             }
-            this->fb[(y * this->w) + x] = r;
-            this->fb[(this->h * this->w) + (y * this->w) + x] = g;
-            this->fb[2 * (this->h * this->w) + (y * this->w) + x] = b;
+            int i = (y * this->w * this->c) + (x * this->c);
+            this->fb[i] = r;
+            this->fb[i+1] = g;
+            this->fb[i+2] = b;
         }
+
         inline float getPixel(int x, int y, int ch) {
             if (x < 0 || x >= this->w || y < 0 || y >= this->h || ch < 0 || ch >= this->c) {
                 throw std::invalid_argument("Pixel out of bounds or invalid channel");
             }
-            return this->fb[ch * (this->h * this->w) + (y * this->w) + x];
+            return this->fb[(y * this->w * this-> c) + (x * this->c) + ch];
         }
 
         // Bresenhams Line

@@ -3,33 +3,33 @@
 JTX::Core::Renderer::Renderer(int w, int h, int c) {
     if (w <= 0 || h <= 0 || c <= 0) {throw std::invalid_argument("Invalid dimensions");}
 
-    this->w = w;
-    this->h = h;
-    this->c = c;
-    this->ar = (float)w / (float)h;
-    this->fb = new float[h * w * c]();
-    this->zb = new float[h * w];
+    this->w_ = w;
+    this->h_ = h;
+    this->c_ = c;
+    this->ar_ = (float)w / (float)h;
+    this->fb_ = new float[h * w * c]();
+    this->zb_ = new float[h * w];
 
-    for (int i = 0; i < w * h; i++) {this->zb[i] = 0.0f;}
+    for (int i = 0; i < w * h; i++) {this->zb_[i] = 0.0f;}
 }
 
 void JTX::Core::Renderer::clear() {
     // TODO: SIMD
-    for (size_t i = 0; i < c * h * w; i++) {
-        fb[i] = 0.0f;
+    for (size_t i = 0; i < c_ * h_ * w_; i++) {
+        fb_[i] = 0.0f;
     }
-    for (size_t i = 0; i < h * w; i++) {
-        zb[i] = 0.0f;
+    for (size_t i = 0; i < h_ * w_; i++) {
+        zb_[i] = 0.0f;
     }
 }
 
 void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projType) {
     // TODO: SIMD
     this->clear();
-    JTX::Util::Mat4 t = scene->getCamera().getCameraMatrix(this->ar, projType);
+    JTX::Util::Mat4 t = scene->getCamera().getCameraMatrix(this->ar_, projType);
 
-    auto wf = static_cast<float>(this->w);
-    auto hf = static_cast<float>(this->h);
+    auto wf = static_cast<float>(this->w_);
+    auto hf = static_cast<float>(this->h_);
     for (auto const & [id, prim] : scene->getPrimitives()) {
         prim->applyTransform(&t);
 
@@ -89,8 +89,8 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projTyp
 
 void JTX::Core::Renderer::renderWireframe(JTX::Core::Primitive &p, JTX::Util::Color color) {
     this->clear();
-    auto w2 = 0.5f * static_cast<float>(this->w);
-    auto h2 = 0.5f * static_cast<float>(this->h);
+    auto w2 = 0.5f * static_cast<float>(this->w_);
+    auto h2 = 0.5f * static_cast<float>(this->h_);
 
     // TODO: move this into the loop
     JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(w2-1.0f, h2-1.0f, 1);
@@ -119,7 +119,7 @@ void JTX::Core::Renderer::renderWireframe(JTX::Core::Primitive &p, JTX::Util::Co
 }
 
 void JTX::Core::Renderer::drawLine(int x0, int y0, int x1, int y1, float r, float g, float b) {
-    if (x0 < 0 || x0 >= this->w || y0 < 0 || y0 >= this->h || x1 < 0 || x1 >= this->w || y1 < 0 || y1 >= this->h) {
+    if (x0 < 0 || x0 >= this->w_ || y0 < 0 || y0 >= this->h_ || x1 < 0 || x1 >= this->w_ || y1 < 0 || y1 >= this->h_) {
         throw std::invalid_argument("Line out of bounds");
     }
 
@@ -177,20 +177,20 @@ void JTX::Core::Renderer::drawLine(int x0, int y0, int x1, int y1, float r, floa
 }
 
 void JTX::Core::Renderer::saveFb(const std::string &path, int compressionLevel) {
-    if (this->c != 3) {throw std::invalid_argument("Invalid number of channels");}
+    if (this->c_ != 3) {throw std::invalid_argument("Invalid number of channels");}
     if (compressionLevel < 0 || compressionLevel > 9) {throw std::invalid_argument("Invalid compression level");}
 
-    auto *pixels = new unsigned char[3 * this->w * this->h];
+    auto *pixels = new unsigned char[3 * this->w_ * this->h_];
 
-    for (int y = 0; y < this->h; ++y) {
-        for (int x = 0; x < this->w; ++x) {
-            for (int ch = 0; ch < this->c; ++ch) {
+    for (int y = 0; y < this->h_; ++y) {
+        for (int x = 0; x < this->w_; ++x) {
+            for (int ch = 0; ch < this->c_; ++ch) {
                 float val = this->getPixel(x, y, ch);
-                pixels[(y * this->w + x) * this->c + ch] = static_cast<unsigned char>(val);
+                pixels[(y * this->w_ + x) * this->c_ + ch] = static_cast<unsigned char>(val);
             }
         }
     }
-    bool success = fpng::fpng_encode_image_to_file(path.c_str(), pixels, this->w, this->h, this->c);
+    bool success = fpng::fpng_encode_image_to_file(path.c_str(), pixels, this->w_, this->h_, this->c_);
 
     if (success) {
         std::cout << "Image saved successfully: " << path << std::endl;
@@ -204,8 +204,8 @@ void JTX::Core::Renderer::saveFb(const std::string &path, int compressionLevel) 
 void JTX::Core::Renderer::drawTriangle(int x0, int y0, float z0, int x1, int y1, float z1,  int x2, int y2, float z2, float r, float g, float b) {
     int minX = std::max(0, std::min(x0, std::min(x1, x2)));
     int minY = std::max(0, std::min(y0, std::min(y1, y2)));
-    int maxX = std::min(this->w - 1, std::max(x0, std::max(x1, x2)));
-    int maxY = std::min(this->h - 1, std::max(y0, std::max(y1, y2)));
+    int maxX = std::min(this->w_ - 1, std::max(x0, std::max(x1, x2)));
+    int maxY = std::min(this->h_ - 1, std::max(y0, std::max(y1, y2)));
 
     auto a = static_cast<float>(edgeFn(x0, y0, x1, y1, x2, y2));
 

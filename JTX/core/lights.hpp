@@ -4,19 +4,19 @@
 namespace JTX::Core {
     class DirLight {
     public:
-        explicit DirLight(JTX::Util::Vec3 direction) : direction(direction.normalize()) {}
+        explicit DirLight(JTX::Util::Vec3 direction) : direction_(direction.normalize()) {}
         ~DirLight() = default;
 
         [[nodiscard]] const JTX::Util::Vec3& getDirection() const {
-            return direction;
+            return direction_;
         }
 
         [[nodiscard]] float getIntensity(const JTX::Util::Vec3& normal) const {
-            return std::max(0.0f, -normal.dot(direction));
+            return std::max(0.0f, -normal.dot(direction_));
         }
 
     private:
-        JTX::Util::Vec3 direction;
+        JTX::Util::Vec3 direction_;
     };
 }
 

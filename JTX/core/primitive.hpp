@@ -27,28 +27,28 @@ namespace JTX::Core {
         [[nodiscard]] const float* getNormal(int i) const;
 
         inline float *getVertex(int i) {
-            return v + 4 * i;
+            return v_ + 4 * i;
         }
 
         inline int *getScreen(int i) {
-            return screen + 2 * i;
+            return screen_ + 2 * i;
         }
 
         [[nodiscard]] inline Face *getFace(int i) const {
-            return f + i;
+            return f_ + i;
         }
 
         inline float *getNormal(int i) {
-            return n + 3 * i;
+            return n_ + 3 * i;
         }
 
         [[nodiscard]] int getNumVertices() const;
         [[nodiscard]] int getNumFaces() const;
     private:
-        int num_v, num_f;
-        float *v;
-        Face *f;
-        float *n;
-        int *screen;
+        int num_v_, num_f_;
+        float *v_;
+        Face *f_;
+        float *n_;
+        int *screen_;
     };
 } // JTX

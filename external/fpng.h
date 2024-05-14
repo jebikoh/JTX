@@ -6,7 +6,7 @@
 #include <vector>
 
 #ifndef FPNG_TRAIN_HUFFMAN_TABLES
-	// Set to 1 when using the -t (training) option in fpng_test to generate new opaque/alpha Huffman tables for the single pass encoder.
+	// Set to 1 when using the -t_ (training) option in fpng_test to generate new opaque/alpha Huffman tables for the single pass encoder.
 	#define FPNG_TRAIN_HUFFMAN_TABLES (0)
 #endif
 
@@ -18,7 +18,7 @@ namespace fpng
 
 	// ---- Useful Utilities
 
-	// Returns true if the CPU supports SSE 4.1, and SSE support wasn't disabled by setting FPNG_NO_SSE=1.
+	// Returns true if the CPU supports SSE 4.1, and SSE support wasn't_ disabled by setting FPNG_NO_SSE=1.
 	// fpng_init() must have been called first, or it'll assert and return false.
 	bool fpng_cpu_supports_sse41();
 
@@ -58,7 +58,7 @@ namespace fpng
 	{
 		FPNG_DECODE_SUCCESS = 0,				// file is a valid PNG file and written by FPNG and the decode succeeded
 		
-		FPNG_DECODE_NOT_FPNG,					// file is a valid PNG file, but it wasn't written by FPNG so you should try decoding it with a general purpose PNG decoder
+		FPNG_DECODE_NOT_FPNG,					// file is a valid PNG file, but it wasn't_ written by FPNG so you should try decoding it with a general purpose PNG decoder
 
 		FPNG_DECODE_INVALID_ARG,				// invalid function parameter
 

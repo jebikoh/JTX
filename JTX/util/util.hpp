@@ -11,20 +11,20 @@ namespace JTX::Util {
 
     class IDPool {
     public:
-        IDPool() : nextID(0) {}
+        IDPool() : nextID_(0) {}
         ~IDPool() = default;
 
         [[nodiscard]] uint64_t getID() {
-            if (pool.empty()) {return nextID++;}
-            uint64_t id = pool.front();
-            pool.pop();
+            if (pool_.empty()) {return nextID_++;}
+            uint64_t id = pool_.front();
+            pool_.pop();
             return id;
         }
 
-        void releaseID(uint64_t id) { pool.push(id); }
+        void releaseID(uint64_t id) { pool_.push(id); }
 
     private:
-        std::queue<uint64_t> pool;
-        uint64_t nextID;
+        std::queue<uint64_t> pool_;
+        uint64_t nextID_;
     };
 }

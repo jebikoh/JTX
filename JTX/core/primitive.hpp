@@ -24,7 +24,9 @@ namespace JTX::Core {
 
         void calculateNormals();
 
-        [[nodiscard]] const float* getNormal(int i) const;
+        inline const float* getNormal(int i) const {
+            return n_ + (3 * i);
+        };
 
         inline float *getVertex(int i) {
             return v_ + 4 * i;
@@ -34,7 +36,7 @@ namespace JTX::Core {
             return screen_ + 2 * i;
         }
 
-        [[nodiscard]] inline Face *getFace(int i) const {
+        inline Face *getFace(int i) const {
             return f_ + i;
         }
 
@@ -42,8 +44,12 @@ namespace JTX::Core {
             return n_ + 3 * i;
         }
 
-        [[nodiscard]] int getNumVertices() const;
-        [[nodiscard]] int getNumFaces() const;
+        inline int getNumVertices() const {
+            return num_v_;
+        };
+        inline int getNumFaces() const {
+            return num_f_;
+        };
     private:
         int num_v_, num_f_;
         float *v_;

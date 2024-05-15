@@ -96,16 +96,4 @@ namespace JTX::Core {
         delete[] v_;
         v_ = new_v;
     }
-
-    int Primitive::getNumVertices() const {
-        return num_v_;
-    }
-
-    int Primitive::getNumFaces() const {
-        return num_f_;
-    }
-
-    const float *Primitive::getNormal(int i) const {
-        return n_ + (3 * i);
-    }
 } // JTX

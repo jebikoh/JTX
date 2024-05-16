@@ -20,6 +20,8 @@ add_library(JTX
         JTX/core/camera.hpp
         JTX/core/renderer.cpp
         JTX/core/renderer.hpp
+        JTX/core/shader.cpp
+        JTX/core/shader.hpp
 )
 
 add_library(fpng STATIC external/fpng.cpp)

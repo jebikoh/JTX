@@ -2,7 +2,6 @@
 
 #include <cmath>
 #include <stdexcept>
-#include <cblas.h>
 
 namespace JTX::Util {
     class Vec3 {
@@ -10,7 +9,7 @@ namespace JTX::Util {
         float x, y, z;
 
         Vec3() : x(0), y(0), z(0) {};
-        Vec3(float x, float y, float z): x(x), y(y), z(z) {}
+        Vec3(float x, float y, float z): x(x), y(y), z(z) {};
         ~Vec3() = default;
 
         inline bool operator==(const Vec3& other) const {
@@ -22,19 +21,23 @@ namespace JTX::Util {
         inline Vec3 operator+(const Vec3& other) const {
             return {x + other.x, y + other.y, z + other.z};
         }
-
+        inline Vec3 operator-(const Vec3& other) const {
+            return {x - other.x, y - other.y, z - other.z};
+        }
+        inline Vec3 operator*(const Vec3& other) const {
+            return {x * other.x, y * other.y, z * other.z};
+        }
         inline Vec3 operator+=(const Vec3& other) {
             x += other.x;
             y += other.y;
             z += other.z;
             return *this;
         }
-
-        inline Vec3 operator-(const Vec3& other) const {
-            return {x - other.x, y - other.y, z - other.z};
-        }
-        inline Vec3 operator*(const Vec3& other) const {
-            return {x * other.x, y * other.y, z * other.z};
+        inline Vec3 operator-=(const Vec3& other) {
+            x -= other.x;
+            y -= other.y;
+            z -= other.z;
+            return *this;
         }
 
         [[nodiscard]] inline Vec3 cross(const Vec3& other) const {

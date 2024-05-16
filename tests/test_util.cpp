@@ -175,7 +175,7 @@ TEST_CASE("Vec3 dot product with separate x, y, z", "[vec3]") {
     REQUIRE_THAT(c, Catch::Matchers::WithinRel(32.0f, 0.0001f));
 }
 
-TEST_CASE("Vec4 dot prodcut with separate x, y, z, w", "[vec4]") {
+TEST_CASE("Vec4 dot product with separate x, y, z, w", "[vec4]") {
     JTX::Util::Vec4 a{1.0f, 2.0f, 3.0f, 4.0f};
 
     float c = a.dot(5.0f, 6.0f, 7.0f, 8.0f);

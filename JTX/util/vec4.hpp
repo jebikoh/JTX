@@ -2,6 +2,8 @@
 
 #include <cmath>
 #include <stdexcept>
+#include "cblas.h"
+#include "mat4.hpp"
 
 namespace JTX::Util {
     class Vec4 {
@@ -41,6 +43,13 @@ namespace JTX::Util {
             w -= other.w;
             return *this;
         }
+        inline Vec4 operator*=(const Vec4& other) {
+            x *= other.x;
+            y *= other.y;
+            z *= other.z;
+            w *= other.w;
+            return *this;
+        }
 
         inline float dot(const Vec4& other) {
             return x * other.x + y * other.y + z * other.z + w * other.w;
@@ -61,6 +70,17 @@ namespace JTX::Util {
             float l = len();
             if (l != 0) { return {x / l, y / l, z / l, w / l}; }
             else throw std::runtime_error("Cannot normalize a zero vector");
+        }
+
+        void applyTransform(const JTX::Util::Mat4* tf) {
+            float v[4] = {x, y, z, w};
+            float result[4];
+            cblas_sgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1.0f,
+                        reinterpret_cast<const float*>(tf->data), 4, v, 1, 0.0f, result, 1);
+            x = result[0];
+            y = result[1];
+            z = result[2];
+            w = result[3];
         }
     };
 }

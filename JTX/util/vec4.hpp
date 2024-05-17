@@ -3,7 +3,7 @@
 #include <cmath>
 #include <stdexcept>
 #include "cblas.h"
-#include "mat4.hpp"
+//#include "mat4.hpp"
 
 namespace JTX::Util {
     class Vec4 {
@@ -72,16 +72,17 @@ namespace JTX::Util {
             else throw std::runtime_error("Cannot normalize a zero vector");
         }
 
-        void applyTransform(const JTX::Util::Mat4* tf) {
-            float v[4] = {x, y, z, w};
-            float result[4];
-            cblas_sgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1.0f,
-                        reinterpret_cast<const float*>(tf->data), 4, v, 1, 0.0f, result, 1);
-            x = result[0];
-            y = result[1];
-            z = result[2];
-            w = result[3];
-        }
+//        // TODO: Profile this. BLAS might take longer than an unrolled loop here since M is only 4x4
+//        void applyTransform(const JTX::Util::Mat4* tf) {
+//            float v[4] = {x, y, z, w};
+//            float result[4];
+//            cblas_sgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1.0f,
+//                        reinterpret_cast<const float*>(tf->data), 4, v, 1, 0.0f, result, 1);
+//            x = result[0];
+//            y = result[1];
+//            z = result[2];
+//            w = result[3];
+//        }
     };
 }
 

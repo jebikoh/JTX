@@ -1,6 +1,6 @@
 #include "renderer.hpp"
 
-JTX::Core::Renderer::Renderer(int w, int h, int c) {
+JTX::Core::Renderer::Renderer(int w, int h, Shader *shader, int c) {
     if (w <= 0 || h <= 0 || c <= 0) {throw std::invalid_argument("Invalid dimensions");}
 
     this->w_ = w;
@@ -9,6 +9,7 @@ JTX::Core::Renderer::Renderer(int w, int h, int c) {
     this->ar_ = (float)w / (float)h;
     this->fb_ = new float[h * w * c]();
     this->zb_ = new float[h * w];
+    this->shader_ = shader;
 
     for (int i = 0; i < w * h; i++) {this->zb_[i] = 0.0f;}
 }
@@ -26,18 +27,28 @@ void JTX::Core::Renderer::clear() {
 void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projType) {
     // TODO: SIMD
     this->clear();
+    // TODO: This will be bugged if the AR ever changes midway
     JTX::Util::Mat4 t = scene->getCamera().getCameraMatrix(this->ar_, projType);
+    // TODO: Rethink how the light is bound here
+    UniformBuffer ub = {t, scene->getLight(0).getDirection()};
+    this->shader_->bind(ub);
 
     auto wf = static_cast<float>(this->w_);
     auto hf = static_cast<float>(this->h_);
     for (auto const & [id, prim] : scene->getPrimitives()) {
-        prim->applyTransform(&t);
-
         for (int i = 0; i < prim->getNumVertices(); i++) {
+            // Clip space
             float *v = prim->getVertex(i);
-            int *s = prim->getScreen(i);
+            float tmp[4];
+            this->shader_->vertex(v, tmp);
+            v[0] = tmp[0];
+            v[1] = tmp[1];
+            v[2] = tmp[2];
+            v[3] = tmp[3];
+
             // NDC & Screen space transformation
-            s[0] = static_cast<int>(std::round((v[0] / v[3] + 1.0f) * 0.5f * wf));
+            int *s = prim->getScreen(i);
+            s[0] = static_cast<int>(std::round((tmp[0] / v[3] + 1.0f) * 0.5f * wf));
             s[1] = static_cast<int>(std::round((v[1] / v[3] + 1.0f) * 0.5f * hf));
             v[2] = (v[2] / v[3] + 1.0f) * 0.5f;
         }

@@ -8,7 +8,7 @@
 #include <cmath>
 
 namespace JTX::Util {
-    inline float degToRad(float deg) { return deg * (M_PI / 180.0f); }
+    static inline float degToRad(float deg) { return deg * (M_PI / 180.0f); }
 
     class IDPool {
     public:
@@ -28,4 +28,15 @@ namespace JTX::Util {
         std::queue<uint64_t> pool_;
         uint64_t nextID_;
     };
+
+    /**
+     * I think this method is pretty dangerous as it assumes that the input vector is of size 4
+     * I can't think of a better solution at the moment
+     *
+     * TODO: Profile this. BLAS might take longer than an unrolled loop here since M is only 4x4
+     */
+    static void applyTransform(const Mat4* tf, const float *v, float *out) {
+        cblas_sgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1.0f,
+                    reinterpret_cast<const float*>(tf->data), 4, v, 1, 0.0f, out, 1);
+    }
 }

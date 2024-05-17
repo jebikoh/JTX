@@ -471,12 +471,12 @@ TEST_CASE("Test IDPool", "[idpool]") {
     REQUIRE(pool.getID() == 3);
 }
 
-TEST_CASE("Test Vec4 applyTransform", "[vec4]") {
-    JTX::Util::Vec4 a{1.0f, -1.0f, -1.0f, 1.0f};
-    JTX::Util::Mat4 rot = JTX::Util::Mat4::rotation(JTX::Util::degToRad(25.0f), JTX::Util::Axis::X);
-    a.applyTransform(&rot);
-
-    REQUIRE_THAT(a.x, Catch::Matchers::WithinRel(1.0f, 0.0001f));
-    REQUIRE_THAT(a.y, Catch::Matchers::WithinRel(-0.48368953f, 0.0001f));
-    REQUIRE_THAT(a.z, Catch::Matchers::WithinRel(-1.32892605f, 0.0001f));
-}
+//TEST_CASE("Test Vec4 applyTransform", "[vec4]") {
+//    JTX::Util::Vec4 a{1.0f, -1.0f, -1.0f, 1.0f};
+//    JTX::Util::Mat4 rot = JTX::Util::Mat4::rotation(JTX::Util::degToRad(25.0f), JTX::Util::Axis::X);
+//    a.applyTransform(&rot);
+//
+//    REQUIRE_THAT(a.x, Catch::Matchers::WithinRel(1.0f, 0.0001f));
+//    REQUIRE_THAT(a.y, Catch::Matchers::WithinRel(-0.48368953f, 0.0001f));
+//    REQUIRE_THAT(a.z, Catch::Matchers::WithinRel(-1.32892605f, 0.0001f));
+//}

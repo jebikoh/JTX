@@ -11,8 +11,9 @@ const std::string HEAD_PATH = "../../Tests/primitives/head.obj";
 const JTX::Util::Color WHITE = {255.0f, 255.0f, 255.0f};
 
 
-TEST_CASE("Renderer saveFb() with vertical line", "[SaveFB]") {
-    JTX::Core::Renderer r(1000, 1000, 3);
+TEST_CASE("Renderer saveFb() with crossing lines", "[SaveFB]") {
+    JTX::Core::DefaultShader shader{};
+    JTX::Core::Renderer r(1000, 1000, &shader, 3);
     r.drawLine(500, 0, 500, 999, WHITE);
     r.drawLine(0, 500, 999, 500, WHITE);
     r.drawLine(0, 0, 999, 999, WHITE);
@@ -21,7 +22,8 @@ TEST_CASE("Renderer saveFb() with vertical line", "[SaveFB]") {
 }
 
 TEST_CASE("Cube wireframe", "[SaveFB]") {
-    JTX::Core::Renderer r(1000, 1000, 3);
+    JTX::Core::DefaultShader shader{};
+    JTX::Core::Renderer r(1000, 1000, &shader, 3);
     JTX::Core::Primitive m{};
     m.load(CUBE_PATH);
 
@@ -39,7 +41,8 @@ TEST_CASE("Cube wireframe", "[SaveFB]") {
 }
 
 TEST_CASE("Head wireframe", "[SaveFB]") {
-    JTX::Core::Renderer r(1000, 1000, 3);
+    JTX::Core::DefaultShader shader{};
+    JTX::Core::Renderer r(1000, 1000, &shader, 3);
     JTX::Core::Primitive m{};
     m.load(HEAD_PATH);
 
@@ -51,13 +54,15 @@ TEST_CASE("Head wireframe", "[SaveFB]") {
 }
 
 TEST_CASE("Test draw triangle", "[SaveFB]") {
-    JTX::Core::Renderer r(1000, 1000, 3);
+    JTX::Core::DefaultShader shader{};
+    JTX::Core::Renderer r(1000, 1000, &shader, 3);
     r.drawTriangle(300, 300, 0.0f, 700, 300, 0.0f, 500, 700, 0.0f, WHITE);
     r.saveFb("triangle.png", 0);
 }
 
 TEST_CASE("Random color head", "[SaveFB]") {
-    JTX::Core::Renderer r(1000, 1000, 3);
+    JTX::Core::DefaultShader shader{};
+    JTX::Core::Renderer r(1000, 1000, &shader, 3);
     JTX::Core::Primitive m{};
     m.load(HEAD_PATH);
 
@@ -97,7 +102,8 @@ TEST_CASE("Random color head", "[SaveFB]") {
 }
 
 TEST_CASE("Head perspective projection", "[SaveFB]") {
-    JTX::Core::Renderer r(2000, 2000, 3);
+    JTX::Core::DefaultShader shader{};
+    JTX::Core::Renderer r(2000, 2000, &shader, 3);
 
     JTX::Core::Primitive m{};
     m.load(HEAD_PATH);
@@ -124,7 +130,8 @@ TEST_CASE("Head perspective projection", "[SaveFB]") {
 }
 
 TEST_CASE("Cube perspective projection", "[SaveFB]") {
-    JTX::Core::Renderer r(1000, 1000, 3);
+    JTX::Core::DefaultShader shader{};
+    JTX::Core::Renderer r(1000, 1000, &shader, 3);
 
     JTX::Core::Primitive m{};
     m.load(CUBE_PATH);

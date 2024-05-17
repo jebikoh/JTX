@@ -12,7 +12,7 @@ namespace JTX::Core {
     public:
         virtual ~Shader() = default;
 
-        virtual void vertex(const float *vertex, const float *normal, float* out) = 0;
+        virtual void vertex(const float *vertex, float* out) = 0;
         virtual void fragment(const float *bary, const int *screen, const float *normal, float *color) = 0;
         virtual void bind(const UniformBuffer& ub) = 0;
     };
@@ -21,7 +21,7 @@ namespace JTX::Core {
     public:
         // TODO: passing the vertices as an array is pretty dangerous
         //       potential switch to passing Vec3/Vec4 in the future
-        void vertex(const float *vertex, const float *normal, float* out) override;
+        void vertex(const float *vertex, float* out) override;
 
         void fragment(const float *bary, const int *screen, const float *normal, float *color) override;
 

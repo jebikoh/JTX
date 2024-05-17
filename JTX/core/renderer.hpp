@@ -3,13 +3,14 @@
 #include <stdexcept>
 #include <iostream>
 #include "JTX/core/scene.hpp"
+#include "JTX/core/shader.hpp"
 #include "JTX/util/util.hpp"
 #include "external/fpng.h"
 
 namespace JTX::Core {
     class Renderer {
     public:
-        Renderer(int w, int h, int c=3);
+        Renderer(int w, int h, Shader *shader, int c=3);
         ~Renderer() {
             delete[] fb_;
             delete[] zb_;
@@ -69,6 +70,7 @@ namespace JTX::Core {
         float ar_;
         float *fb_;
         float *zb_;
+        Shader *shader_;
 
         static inline int edgeFn(int x0, int y0, int x1, int y1, int tx, int ty) {
             // This is the signed area of a parallelogram

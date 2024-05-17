@@ -39,16 +39,11 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projTyp
         for (int i = 0; i < prim->getNumVertices(); i++) {
             // Clip space
             float *v = prim->getVertex(i);
-            float tmp[4];
-            this->shader_->vertex(v, tmp);
-            v[0] = tmp[0];
-            v[1] = tmp[1];
-            v[2] = tmp[2];
-            v[3] = tmp[3];
+            this->shader_->vertex(v);
 
             // NDC & Screen space transformation
             int *s = prim->getScreen(i);
-            s[0] = static_cast<int>(std::round((tmp[0] / v[3] + 1.0f) * 0.5f * wf));
+            s[0] = static_cast<int>(std::round((v[0] / v[3] + 1.0f) * 0.5f * wf));
             s[1] = static_cast<int>(std::round((v[1] / v[3] + 1.0f) * 0.5f * hf));
             v[2] = (v[2] / v[3] + 1.0f) * 0.5f;
         }

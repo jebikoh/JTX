@@ -480,3 +480,12 @@ TEST_CASE("Test IDPool", "[idpool]") {
 //    REQUIRE_THAT(a.y, Catch::Matchers::WithinRel(-0.48368953f, 0.0001f));
 //    REQUIRE_THAT(a.z, Catch::Matchers::WithinRel(-1.32892605f, 0.0001f));
 //}
+
+TEST_CASE("Test Mat4 [] operators", "[mat4]") {
+    JTX::Util::Mat4 m{};
+
+    REQUIRE(m[0][0] == 1.0f);
+    REQUIRE(m[0][1] == 0.0f);
+    REQUIRE(m[0][2] == 0.0f);
+    REQUIRE(m[0][3] == 0.0f);
+}

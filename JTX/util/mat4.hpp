@@ -20,8 +20,11 @@ namespace JTX::Util {
              float d20, float d21, float d22, float d23,
              float d30, float d31, float d32, float d33);
         ~Mat4() = default;
+
         bool operator== (const Mat4& other) const;
         bool operator!= (const Mat4& other) const;
+        inline float* operator[](int index) { return data[index]; };
+        inline const float* operator[](int index) const { return data[index]; };
 
         static Mat4 rotation(float rad, Axis axis);
         static Mat4 translation(float x, float y, float z);

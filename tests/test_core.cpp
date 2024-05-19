@@ -153,7 +153,7 @@ TEST_CASE("Apply scale transformation to cube primitive", "[Primitive]") {
 }
 
 TEST_CASE("Test DirLight intensity", "[Lights]") {
-    JTX::Core::DirLight dl(JTX::Util::Vec3(1.0f, 1.0f, 1.0f));
+    JTX::Core::DirLight dl(JTX::Util::Vec3(1.0f, 1.0f, 1.0f), 1.0f);
 
     REQUIRE_THAT(dl.getIntensity(JTX::Util::Vec3(-1.0f, -1.0f, -1.0f)), Catch::Matchers::WithinAbs(1.7320508075688776f, 0.0001f));
 }
@@ -169,7 +169,7 @@ TEST_CASE("Test DirLight intensity with primitive", "[Primitive]") {
     p.applyTransform(&rot_y);
     p.calculateNormals();
 
-    JTX::Core::DirLight dl(JTX::Util::Vec3(0.0f, 0.0f, -1.0f));
+    JTX::Core::DirLight dl(JTX::Util::Vec3(0.0f, 0.0f, -1.0f), 1.0f);
 
     float *normal = p.getNormal(3);
     float intensity = dl.getIntensity({normal[0], normal[1], normal[2]});
@@ -253,7 +253,7 @@ TEST_CASE("Test scene add primitive and dirlight", "[Scene]") {
     JTX::Core::Scene scene(cam);
     JTX::Core::Primitive p;
     p.load(CUBE_PATH);
-    JTX::Core::DirLight dl(JTX::Util::Vec3(1.0f, 1.0f, 1.0f));
+    JTX::Core::DirLight dl(JTX::Util::Vec3(1.0f, 1.0f, 1.0f), 1.0f);
     auto cube = scene.addLight(dl);
     auto l = scene.addPrimitive(p);
 
@@ -280,7 +280,7 @@ TEST_CASE("Test scene remove primitive and dirlight", "[Scene]") {
     JTX::Core::Scene scene(cam);
     JTX::Core::Primitive p;
     p.load(CUBE_PATH);
-    JTX::Core::DirLight dl(JTX::Util::Vec3(1.0f, 1.0f, 1.0f));
+    JTX::Core::DirLight dl(JTX::Util::Vec3(1.0f, 1.0f, 1.0f), 1.0f);
     auto cube = scene.addLight(dl);
     auto l = scene.addPrimitive(p);
 

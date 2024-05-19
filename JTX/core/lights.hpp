@@ -4,7 +4,13 @@
 namespace JTX::Core {
     class DirLight {
     public:
-        explicit DirLight(JTX::Util::Vec3 direction) : direction_(direction.normalize()) {}
+        explicit DirLight(JTX::Util::Vec3 direction, float lightIntensity)  {
+            if (lightIntensity < 0.0f  || lightIntensity > 1.0f) {
+                throw std::invalid_argument("Intensity must be greater be in the range [0.0f, 1.0f]");
+            }
+            this->direction_ = direction.normalize();
+            this->intensity_ = lightIntensity;
+        }
         ~DirLight() = default;
 
         [[nodiscard]] const JTX::Util::Vec3& getDirection() const {
@@ -12,11 +18,12 @@ namespace JTX::Core {
         }
 
         [[nodiscard]] float getIntensity(const JTX::Util::Vec3& normal) const {
-            return std::max(0.0f, -normal.dot(direction_));
+            return this->intensity_ * std::max(0.0f, -normal.dot(direction_));
         }
 
     private:
         JTX::Util::Vec3 direction_;
+        float intensity_;
     };
 }
 

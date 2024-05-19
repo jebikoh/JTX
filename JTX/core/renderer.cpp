@@ -67,6 +67,7 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene, ProjectionType projTyp
             float z2 = prim->getVertex(f->v3)[2];
 
             float intensity = 1.0f;
+            // TODO: refactor light looping
             if (scene->getNumLights() > 0) {
                 intensity = 0.0f;
                 for (int j = 0; j < scene->getNumLights(); ++j) {

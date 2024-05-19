@@ -119,7 +119,7 @@ TEST_CASE("Head perspective projection", "[SaveFB]") {
     JTX::Util::Vec3 up{0.0f, 1.0f, 0.0f};
     JTX::Core::Camera cam(pos, target, up, 1.0472f, 0.1f, 1000.0f);
 
-    JTX::Core::DirLight light({0.0f, 0.0f, -1.0f});
+    JTX::Core::DirLight light({0.0f, 0.0f, -1.0f}, 1.0f);
 
     JTX::Core::Scene scene{cam};
     scene.addPrimitive(m);
@@ -150,7 +150,7 @@ TEST_CASE("Cube perspective projection", "[SaveFB]") {
     JTX::Util::Vec3 up{0.0f, 1.0f, 0.0f};
     JTX::Core::Camera cam(pos, target, up, 1.0472f, 0.1f, 100.0f);
 
-    JTX::Core::DirLight light({0.0f, 0.0f, -1.0f});
+    JTX::Core::DirLight light({0.0f, 0.0f, -1.0f}, 1.0f);
 
     JTX::Core::Scene scene{cam};
     scene.addPrimitive(m);

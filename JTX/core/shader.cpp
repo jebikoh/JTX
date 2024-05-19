@@ -6,6 +6,6 @@ namespace JTX::Core {
     }
 
     void DefaultShader::fragment(const float *bary, const int *screen, const float *normal, float *color) {
-
+        
     }
 }

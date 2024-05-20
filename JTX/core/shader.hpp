@@ -15,6 +15,7 @@ namespace JTX::Core {
         inline virtual void vertex(float *vertex) = 0;
         virtual void fragment(const float *bary, const int *screen, const float *normal, float *color) = 0;
         virtual void bind(const UniformBuffer& ub) = 0;
+        virtual inline bool isBound() const = 0;
     };
 
     class DefaultShader : public Shader {
@@ -25,9 +26,12 @@ namespace JTX::Core {
 
         void fragment(const float *bary, const int *screen, const float *normal, float *color) override;
 
-        void bind(const UniformBuffer& ub) override { this->ub_ = &ub; }
+        void bind(const UniformBuffer& ub) override { this->ub_ = &ub; this->bound_ = true; }
+
+        [[nodiscard]] inline bool isBound() const override { return bound_; }
 
     private:
         const UniformBuffer *ub_;
+        bool bound_ = false;
     };
 }

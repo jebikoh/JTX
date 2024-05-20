@@ -13,6 +13,25 @@ namespace JTX::Core {
         delete[] n_;
     }
 
+    /**
+     * Resizes C-style array by allocating new array and copying contents. Deletes old array.
+     * Does not check bounds (can cause segfaults if invalid capacity is passed)
+     * @tparam T Type of array
+     * @param arr Array to resize (will be freed)
+     * @param capacity Current array capacity. Will update to new capacity
+     * @param new_capacity New array capacity
+     * @param size Size per unit (e.g. 4 for a 4D vector). Defaults to 1
+     * @param free_old Whether to free the old array. Defaults to true
+     */
+     template <typename T>
+     void resize(T*& arr, int& capacity, int new_capacity, int size=1, bool free_old = true) {
+        capacity = new_capacity;
+        auto *new_arr = new T[size * capacity];
+        std::copy(arr, arr + size * capacity, new_arr);
+        if (free_old) delete[] arr;
+        arr = new_arr;
+    }
+
     void Primitive::load(const std::string &path) {
         std::ifstream file(path);
         if (!file) {
@@ -28,11 +47,7 @@ namespace JTX::Core {
         while (std::getline(file, line)) {
             if (line.substr(0, 2) == "v ") {
                 if (num_v_ == v_capacity) {
-                    v_capacity *= 2;
-                    auto* new_v = new float[4 * v_capacity];
-                    std::copy(v_, v_ + 4 * num_v_, new_v);
-                    delete[] v_;
-                    v_ = new_v;
+                    resize(v_, v_capacity, 2 * v_capacity, 4);
                 }
                 std::istringstream iss(line.substr(2));
                 float x, y, z;
@@ -46,11 +61,7 @@ namespace JTX::Core {
                 num_v_++;
             } else if (line.substr(0, 2) == "f ") {
                 if (num_f_ == f_capacity) {
-                    f_capacity *= 2;
-                    auto* new_f = new Face[f_capacity];
-                    std::copy(f_, f_ + num_f_, new_f);
-                    delete[] f_;
-                    f_ = new_f;
+                    resize(f_, f_capacity, 2 * f_capacity, 1);
                 }
                 std::istringstream iss(line.substr(2));
                 std::string vert1, vert2, vert3;

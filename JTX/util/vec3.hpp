@@ -4,11 +4,30 @@
 #include <stdexcept>
 
 namespace JTX::Util {
+/**
+ * @class Vec3
+ * @brief A simple 3D vector class
+ *
+ * This class is used to represent a 3D vector in the JTX engine.
+ * It provides basic vector operations such as add/sub, dot/cross product, etc.
+ * All methods are marked as inline for performance
+ */
 class Vec3 {
 public:
   float x, y, z;
-  
+
+  /**
+   * @brief Default constructor
+   *
+   * Initializes vector zero-vector
+   */
   Vec3() : x(0), y(0), z(0){};
+  /**
+   * @brief XYZ constructor
+   * @param x
+   * @param y
+   * @param z
+   */
   Vec3(float x, float y, float z) : x(x), y(y), z(z){};
   ~Vec3() = default;
 
@@ -56,6 +75,12 @@ public:
     return std::sqrt(x * x + y * y + z * z);
   }
 
+  /**
+   * @brief Normalize vector (in-place)
+   *
+   * Normalizes the vector to a unit vector
+   * @return Reference to this vector
+   */
   inline Vec3 &normalize() {
     float l = len();
     if (l != 0) {
@@ -68,6 +93,10 @@ public:
     return *this;
   }
 
+  /**
+   * @brief Normalize vector
+   * @return Normalized vector as a new Vec3
+   */
   [[nodiscard]] inline Vec3 normalized() const {
     float l = len();
     if (l != 0) {

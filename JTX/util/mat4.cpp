@@ -110,6 +110,8 @@ Mat4 Mat4::translation(float x, float y, float z) {
   return m;
 }
 
+// TODO: This would likely be faster without openblas overhead
+//       Rewrite using SIMD instructions
 Mat4 Mat4::matmul(const Mat4 &m1, const Mat4 &m2) {
   Mat4 m3{};
   cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 4, 4, 4, 1.0f,

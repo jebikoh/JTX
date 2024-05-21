@@ -1,6 +1,13 @@
 #pragma
 
 namespace JTX::Util {
+/**
+ * @brief A struct representing a color in RGB format.
+ * Values are in the range [0.0f, 255.0f]
+ *
+ * TODO: Add support for alpha channel
+ * TODO: Switch to [0.0f, 1.0f] range
+ */
 struct Color {
   float r, g, b;
 };

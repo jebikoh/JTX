@@ -6,11 +6,31 @@
 // #include "mat4.hpp"
 
 namespace JTX::Util {
+/**
+ * @class Vec4
+ * @brief A simple 4D vector class
+ *
+ * This class is used to represent a 3D vector with a homogenous coordinate
+ * It provides basic vector operations such as add/sub, dot product, etc. (no
+ * cross). All methods are marked as inline for performance
+ */
 class Vec4 {
 public:
   float x, y, z, w;
 
+  /**
+   * @brief Default constructor
+   *
+   * Initializes vector zero-vector
+   */
   Vec4() : x(0), y(0), z(0), w(0){};
+  /**
+   * @brief XYZW constructor
+   * @param x
+   * @param y
+   * @param z
+   * @param w
+   */
   Vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w){};
   ~Vec4() = default;
 
@@ -60,6 +80,12 @@ public:
     return std::sqrt(x * x + y * y + z * z + w * w);
   }
 
+  /**
+   * @brief Normalize vector (in-place)
+   *
+   * Normalizes the vector to a unit vector
+   * @return Reference to this vector
+   */
   inline Vec4 &normalize() {
     float l = len();
     if (l != 0) {
@@ -72,26 +98,18 @@ public:
     return *this;
   }
 
-  inline Vec4 normalized() const {
+  /**
+   * @brief Normalize vector
+   *
+   * Normalizes the vector to a unit vector
+   * @return Normalized vector
+   */
+  [[nodiscard]] inline Vec4 normalized() const {
     float l = len();
     if (l != 0) {
       return {x / l, y / l, z / l, w / l};
     } else
       throw std::runtime_error("Cannot normalize a zero vector");
   }
-
-  //        // TODO: Profile this. BLAS might take longer than an unrolled loop
-  //        here since M is only 4x4 void applyTransform(const JTX::Util::Mat4*
-  //        tf) {
-  //            float v[4] = {x, y, z, w};
-  //            float result[4];
-  //            cblas_sgemv(CblasRowMajor, CblasNoTrans, 4, 4, 1.0f,
-  //                        reinterpret_cast<const float*>(tf->data), 4, v, 1,
-  //                        0.0f, result, 1);
-  //            x = result[0];
-  //            y = result[1];
-  //            z = result[2];
-  //            w = result[3];
-  //        }
 };
 } // namespace JTX::Util

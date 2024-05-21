@@ -10,6 +10,12 @@
 namespace JTX::Util {
 static inline float degToRad(float deg) { return deg * (M_PI / 180.0f); }
 
+/**
+ * A simple ID pool that can be used to get and release IDs. Re-used IDs are
+ * returned before new ones are given.
+ *
+ * Will be depracated soon
+ */
 class IDPool {
 public:
   IDPool() : nextID_(0) {}

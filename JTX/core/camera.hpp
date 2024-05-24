@@ -4,8 +4,25 @@
 namespace JTX::Core {
 typedef enum { PERSPECTIVE, ORTHOGRAPHIC } ProjectionType;
 
+/**
+ * @brief Camera class
+ * Stores camera's transformation matrix and other properties.
+ *
+ * Cache's the cameras transformation matrix on calculation. If camera hasn't
+ * been updated since the last call, the cached matrix is returned. All setters
+ * will cause the matrix to be recalculated on the next call.
+ */
 class Camera {
 public:
+  /**
+   * @brief Constructs a new Camera object
+   * @param pos Camera's position
+   * @param target The point the camera is looking at
+   * @param up Up vector
+   * @param fov Field of view in radians
+   * @param near Near plane
+   * @param far Far plane
+   */
   Camera(JTX::Util::Vec3 pos, JTX::Util::Vec3 target, JTX::Util::Vec3 up,
          float fov, float near, float far) {
     this->pos_ = pos;
@@ -19,7 +36,11 @@ public:
     this->dirty_ = true;
   }
   ~Camera() = default;
-  
+
+  /**
+   * @brief Returns the view matrix
+   * @return JTX::Util::Mat4 View matrix
+   */
   [[nodiscard]] JTX::Util::Mat4 getViewMatrix() const {
     JTX::Util::Vec3 right = this->lookAt_.cross(this->up_).normalize();
     JTX::Util::Vec3 vup = right.cross(this->lookAt_);
@@ -42,6 +63,12 @@ public:
             1};
   }
 
+  /**
+   * @brief Returns the projection matrix
+   * @param aspectRatio Aspect ratio of the screen (h/w)
+   * @param projType Type of projection (only PERSPECTIVE is supported)
+   * @return JTX::Util::Mat4 Projection matrix
+   */
   [[nodiscard]] JTX::Util::Mat4 getProjMatrix(const float aspectRatio,
                                               ProjectionType projType) const {
     if (projType == PERSPECTIVE) {
@@ -67,6 +94,17 @@ public:
     }
   }
 
+  /**
+   * @brief Returns the camera matrix.
+   *
+   * Returns the camera matrix. If the camera has not been updated since the
+   * last call, the cached matrix is returned. Otherwise, the matrix is
+   * recalculated and cached.
+   *
+   * @param aspectRatio
+   * @param projectionType
+   * @return
+   */
   [[nodiscard]] JTX::Util::Mat4 getCameraMatrix(const float aspectRatio,
                                                 ProjectionType projectionType) {
     if (!this->dirty_) {

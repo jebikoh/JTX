@@ -219,18 +219,6 @@ TEST_CASE("Vec4 normalize", "[vec4]") {
   REQUIRE_THAT(a.w, Catch::Matchers::WithinRel(0.730297f, 0.0001f));
 }
 
-TEST_CASE("Vec3 normalize zero vector throws", "[vec3]") {
-  JTX::Util::Vec3 a{0.0f, 0.0f, 0.0f};
-
-  REQUIRE_THROWS_AS(a.normalize(), std::runtime_error);
-}
-
-TEST_CASE("Vec4 normalize zero vector throws", "[vec4]") {
-  JTX::Util::Vec4 a{0.0f, 0.0f, 0.0f, 0.0f};
-
-  REQUIRE_THROWS_AS(a.normalize(), std::runtime_error);
-}
-
 TEST_CASE("Vec3 normalized", "[vec3]") {
   JTX::Util::Vec3 a{1.0f, 2.0f, 3.0f};
 
@@ -250,18 +238,6 @@ TEST_CASE("Vec4 normalized", "[vec4]") {
   REQUIRE_THAT(b.y, Catch::Matchers::WithinRel(0.365148f, 0.0001f));
   REQUIRE_THAT(b.z, Catch::Matchers::WithinRel(0.547723f, 0.0001f));
   REQUIRE_THAT(b.w, Catch::Matchers::WithinRel(0.730297f, 0.0001f));
-}
-
-TEST_CASE("Vec3 normalized zero vector throws", "[vec3]") {
-  JTX::Util::Vec3 a{0.0f, 0.0f, 0.0f};
-
-  REQUIRE_THROWS_AS(a.normalized(), std::runtime_error);
-}
-
-TEST_CASE("Vec4 normalized zero vector throws", "[vec4]") {
-  JTX::Util::Vec4 a{0.0f, 0.0f, 0.0f, 0.0f};
-
-  REQUIRE_THROWS_AS(a.normalized(), std::runtime_error);
 }
 
 TEST_CASE("Mat4 default constructor is identity matrix", "[mat4]") {

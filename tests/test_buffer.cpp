@@ -8,6 +8,7 @@
 
 static const std::string CUBE_PATH = "../../Tests/primitives/cube.obj";
 static const std::string HEAD_PATH = "../../Tests/primitives/head.obj";
+static const std::string GT3_PATH = "../../Tests/primitives/gt3rs.obj";
 
 TEST_CASE("Renderer saveFb() with crossing lines", "[SaveFB]") {
   JTX::Core::DefaultShader shader{};
@@ -163,4 +164,49 @@ TEST_CASE("Cube perspective projection", "[SaveFB]") {
 
   r.render(&scene);
   r.saveFb("cube_perspective.png", 0);
+}
+
+TEST_CASE("Perspective projection stress test", "[Stress]") {
+  JTX::Core::DefaultShader shader{};
+  JTX::Core::Renderer r(1920, 1080, &shader, 3);
+
+  JTX::Core::Primitive m{};
+  m.load(GT3_PATH);
+  std::cout << m.getVertex(0)[0] << ", " << m.getVertex(0)[1] << ", "
+            << m.getVertex(0)[2] << std::endl;
+
+  JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(7.0f, 7.0f, 7.0f);
+  JTX::Util::Mat4 rot_x =
+      JTX::Util::Mat4::rotation(JTX::Util::degToRad(15.0f), JTX::Util::Axis::X);
+  JTX::Util::Mat4 rot_y = JTX::Util::Mat4::rotation(JTX::Util::degToRad(-60.0f),
+                                                    JTX::Util::Axis::Y);
+  JTX::Util::Mat4 trans = JTX::Util::Mat4::translation(0.0f, -1.0f, 0.0f);
+
+  m.applyTransform(&scale);
+  std::cout << m.getVertex(0)[0] << ", " << m.getVertex(0)[1] << ", "
+            << m.getVertex(0)[2] << std::endl;
+  m.applyTransform(&rot_y);
+  std::cout << m.getVertex(0)[0] << ", " << m.getVertex(0)[1] << ", "
+            << m.getVertex(0)[2] << std::endl;
+  m.applyTransform(&rot_x);
+  std::cout << m.getVertex(0)[0] << ", " << m.getVertex(0)[1] << ", "
+            << m.getVertex(0)[2] << std::endl;
+  m.applyTransform(&trans);
+  std::cout << m.getVertex(0)[0] << ", " << m.getVertex(0)[1] << ", "
+            << m.getVertex(0)[2] << std::endl;
+
+  m.calculateNormals();
+  JTX::Util::Vec3 pos{0.0f, 0.0f, 30.0f};
+  JTX::Util::Vec3 target{0.0f, 0.0f, 0.0f};
+  JTX::Util::Vec3 up{0.0f, 1.0f, 0.0f};
+  JTX::Core::Camera cam(pos, target, up, 1.0472f, 0.1f, 100.0f);
+
+  JTX::Core::DirLight light({0.0f, 0.0f, -1.0f}, 1.0f);
+
+  JTX::Core::Scene scene{cam};
+  scene.addPrimitive(m);
+  scene.addLight(light);
+
+  r.render(&scene);
+  r.saveFb("persp_stress_test.png", 0);
 }

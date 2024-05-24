@@ -78,7 +78,7 @@ public:
   /**
    * @brief Normalize vector (in-place)
    *
-   * Normalizes the vector to a unit vector
+   * Normalizes the vector to a unit vector.
    * @return Reference to this vector
    */
   inline Vec3 &normalize() {
@@ -87,22 +87,20 @@ public:
       x /= l;
       y /= l;
       z /= l;
-    } else {
-      throw std::runtime_error("Cannot normalize a zero vector");
     }
     return *this;
   }
 
   /**
    * @brief Normalize vector
-   * @return Normalized vector as a new Vec3
+   * @return Normalized vector as a new Vec3.
    */
   [[nodiscard]] inline Vec3 normalized() const {
     float l = len();
     if (l != 0) {
       return Vec3{x / l, y / l, z / l};
     } else {
-      throw std::runtime_error("Cannot normalize a zero vector");
+      return Vec3{};
     }
   }
 };

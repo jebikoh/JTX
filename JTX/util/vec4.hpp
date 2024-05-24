@@ -94,7 +94,8 @@ public:
       z /= l;
       w /= l;
     } else
-      throw std::runtime_error("Cannot normalize a zero vector");
+      throw std::runtime_error(
+          "Vec4::normalize(): cannot normalize a zero vector");
     return *this;
   }
 
@@ -109,7 +110,7 @@ public:
     if (l != 0) {
       return {x / l, y / l, z / l, w / l};
     } else
-      throw std::runtime_error("Cannot normalize a zero vector");
+      return Vec4{};
   }
 };
 } // namespace JTX::Util

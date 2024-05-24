@@ -172,10 +172,10 @@ TEST_CASE("Perspective projection stress test", "[Stress]") {
 
   JTX::Core::Primitive m{};
   m.load(GT3_PATH);
-  std::cout << m.getVertex(0)[0] << ", " << m.getVertex(0)[1] << ", "
-            << m.getVertex(0)[2] << std::endl;
 
   JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(7.0f, 7.0f, 7.0f);
+  JTX::Util::Mat4 rot_z = JTX::Util::Mat4::rotation(JTX::Util::degToRad(180.0f),
+                                                    JTX::Util::Axis::Z);
   JTX::Util::Mat4 rot_x =
       JTX::Util::Mat4::rotation(JTX::Util::degToRad(15.0f), JTX::Util::Axis::X);
   JTX::Util::Mat4 rot_y = JTX::Util::Mat4::rotation(JTX::Util::degToRad(-60.0f),
@@ -183,17 +183,10 @@ TEST_CASE("Perspective projection stress test", "[Stress]") {
   JTX::Util::Mat4 trans = JTX::Util::Mat4::translation(0.0f, -1.0f, 0.0f);
 
   m.applyTransform(&scale);
-  std::cout << m.getVertex(0)[0] << ", " << m.getVertex(0)[1] << ", "
-            << m.getVertex(0)[2] << std::endl;
   m.applyTransform(&rot_y);
-  std::cout << m.getVertex(0)[0] << ", " << m.getVertex(0)[1] << ", "
-            << m.getVertex(0)[2] << std::endl;
   m.applyTransform(&rot_x);
-  std::cout << m.getVertex(0)[0] << ", " << m.getVertex(0)[1] << ", "
-            << m.getVertex(0)[2] << std::endl;
   m.applyTransform(&trans);
-  std::cout << m.getVertex(0)[0] << ", " << m.getVertex(0)[1] << ", "
-            << m.getVertex(0)[2] << std::endl;
+  m.applyTransform(&rot_z);
 
   m.calculateNormals();
   JTX::Util::Vec3 pos{0.0f, 0.0f, 30.0f};

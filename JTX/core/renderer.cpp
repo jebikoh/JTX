@@ -57,7 +57,11 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene,
       float *n = prim->getNormal(i);
 
       // Back-face culling
-      if (scene->getCamera().getLookAt().dot(n[0], n[1], n[2]) >= 0) {
+      //      if (scene->getCamera().getLookAt().dot(n[0], n[1], n[2]) >= 0) {
+      //        continue;
+      //      }
+
+      if (scene->getCamera().getLookAt().dot(n[0], n[1], n[2]) >= -0.0001) {
         continue;
       }
 
@@ -195,7 +199,7 @@ void JTX::Core::Renderer::saveFb(const std::string &path,
   }
 
   auto *pixels = new unsigned char[3 * this->w_ * this->h_];
-  
+
   for (int y = 0; y < this->h_; ++y) {
     for (int x = 0; x < this->w_; ++x) {
       for (int ch = 0; ch < this->c_; ++ch) {
@@ -239,12 +243,10 @@ void JTX::Core::Renderer::drawTriangle(int x0, int y0, float z0, int x1, int y1,
         float wz2 = static_cast<float>(w2) / a;
         float z = wz0 * z0 + wz1 * z1 + wz2 * z2;
 
-        if (z < this->getDepth(x, y)) {
-          continue;
+        if (z > this->getDepth(x, y)) {
+          this->setDepth(x, y, z);
+          this->drawPixel(x, y, r, g, b);
         }
-
-        this->setDepth(x, y, z);
-        this->drawPixel(x, y, r, g, b);
       }
     }
   }

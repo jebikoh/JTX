@@ -249,12 +249,11 @@ void JTX::Core::Renderer::drawTriangle(int x0, int y0, float z0, int x1, int y1,
 }
 
 void JTX::Core::Renderer::rasterizeTriangle(const JTX::Core::Scene &scene,
-                                            int primId,
+                                            const JTX::Core::Primitive &prim,
                                             const JTX::Core::Face &face) {
   if (!this->shader_->isBound()) {
     throw std::runtime_error("Shader not bound");
   }
-  const auto &prim = scene.getPrimitive(primId);
 
   // Screen XY
   const int *v1 = prim.getScreen(face.v1);

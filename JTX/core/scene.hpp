@@ -66,6 +66,15 @@ public:
                              " not found");
   }
 
+  [[nodiscard]] const DirLight &getLight(LightID id) const {
+    auto it = lights_.find(id);
+    if (it != lights_.end()) {
+      return *it->second;
+    }
+    throw std::runtime_error("Light with ID " + std::to_string(id) +
+                             " not found");
+  }
+
   JTX::Core::Camera &getCamera() { return camera_; }
 
   std::unordered_map<PrimitiveID, JTX::Core::Primitive *> getPrimitives() {
@@ -74,6 +83,13 @@ public:
 
   int getNumPrimitives() { return (int)this->primitives_.size(); }
   int getNumLights() { return (int)this->lights_.size(); }
+
+  [[nodiscard]] const int getNumPrimitives() const {
+    return (int)this->primitives_.size();
+  }
+  [[nodiscard]] const int getNumLights() const {
+    return (int)this->lights_.size();
+  }
 
 private:
   JTX::Core::Camera camera_;

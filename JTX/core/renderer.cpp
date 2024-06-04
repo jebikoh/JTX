@@ -57,10 +57,6 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene,
       float *n = prim->getNormal(i);
 
       // Back-face culling
-      //      if (scene->getCamera().getLookAt().dot(n[0], n[1], n[2]) >= 0) {
-      //        continue;
-      //      }
-
       if (scene->getCamera().getLookAt().dot(n[0], n[1], n[2]) >= -0.0001) {
         continue;
       }
@@ -246,6 +242,60 @@ void JTX::Core::Renderer::drawTriangle(int x0, int y0, float z0, int x1, int y1,
         if (z > this->getDepth(x, y)) {
           this->setDepth(x, y, z);
           this->drawPixel(x, y, r, g, b);
+        }
+      }
+    }
+  }
+}
+
+void JTX::Core::Renderer::rasterizeTriangle(const JTX::Core::Scene &scene,
+                                            int primId,
+                                            const JTX::Core::Face &face) {
+  if (!this->shader_->isBound()) {
+    throw std::runtime_error("Shader not bound");
+  }
+  const auto &prim = scene.getPrimitive(primId);
+
+  // Screen XY
+  const int *v1 = prim.getScreen(face.v1);
+  const int x1 = v1[0];
+  const int y1 = v1[1];
+
+  const int *v2 = prim.getScreen(face.v2);
+  const int x2 = v2[0];
+  const int y2 = v2[1];
+
+  const int *v3 = prim.getScreen(face.v3);
+  const int x3 = v3[0];
+  const int y3 = v3[1];
+
+  // Z
+  const float z1 = prim.getVertex(face.v1)[2];
+  const float z2 = prim.getVertex(face.v2)[2];
+  const float z3 = prim.getVertex(face.v3)[2];
+
+  int minX = std::max(0, std::min(x1, std::min(x2, x3)));
+  int minY = std::max(0, std::min(y1, std::min(y2, y3)));
+  int maxX = std::min(this->w_ - 1, std::max(x1, std::max(x2, x3)));
+  int maxY = std::min(this->h_ - 1, std::max(y1, std::max(y2, y3)));
+
+  auto a = static_cast<float>(edgeFn(x1, y1, x2, y2, x3, y3));
+
+  for (int y = minY; y <= maxY; ++y) {
+    for (int x = minX; x <= maxX; ++x) {
+      int w0 = edgeFn(x2, y2, x3, y3, x, y);
+      int w1 = edgeFn(x3, y3, x1, y1, x, y);
+      int w2 = edgeFn(x1, y1, x2, y2, x, y);
+
+      if ((w0 >= 0 && w1 >= 0 && w2 >= 0) || (w0 <= 0 && w1 <= 0 && w2 <= 0)) {
+        float wz0 = static_cast<float>(w0) / a;
+        float wz1 = static_cast<float>(w1) / a;
+        float wz2 = static_cast<float>(w2) / a;
+        float z = wz0 * z1 + wz1 * z2 + wz2 * z3;
+
+        if (z > this->getDepth(x, y)) {
+          this->setDepth(x, y, z);
+          this->drawPixel(x, y, 0.0f, 0.0f, 0.0f);
         }
       }
     }

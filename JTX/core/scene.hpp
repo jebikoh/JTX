@@ -35,7 +35,16 @@ public:
     throw std::runtime_error("Primitive with ID " + std::to_string(id) +
                              " not found");
   }
-  
+
+  [[nodiscard]] const Primitive &getPrimitive(PrimitiveID id) const {
+    auto it = primitives_.find(id);
+    if (it != primitives_.end()) {
+      return *it->second;
+    }
+    throw std::runtime_error("Primitive with ID " + std::to_string(id) +
+                             " not found");
+  }
+
   LightID addLight(DirLight &light) {
     LightID id = lightIDPool_.getID();
     lights_[id] = &light;

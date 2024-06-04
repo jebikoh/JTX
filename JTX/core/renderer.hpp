@@ -57,11 +57,12 @@ public:
                            int x2, int y2, float z2, JTX::Util::Color color) {
     drawTriangle(x0, y0, z0, x1, y1, z1, x2, y2, z2, color.r, color.g, color.b);
   }
+  void rasterizeTriangle(const Scene &scene, int primId, const Face &face);
 
   void render(Scene *scene, ProjectionType projType = PERSPECTIVE);
   // THIS FUNCTION REQUIRES ALL VERTICES TO BE BETWEEN -1 AND 1
   void renderWireframe(JTX::Core::Primitive &p, JTX::Util::Color color);
-  
+
   [[nodiscard]] int getWidth() const { return w_; }
   [[nodiscard]] int getHeight() const { return h_; }
   [[nodiscard]] int getChannels() const { return c_; }

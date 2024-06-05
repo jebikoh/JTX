@@ -177,9 +177,9 @@ TEST_CASE("Apply scale transformation to cube primitive", "[Primitive]") {
 }
 
 TEST_CASE("Test DirLight intensity", "[Lights]") {
-  JTX::Core::DirLight dl(JTX::Util::Vec3(1.0f, 1.0f, 1.0f), 1.0f);
+  JTX::Core::DirLight dl(JTX::Util::Vec3f(1.0f, 1.0f, 1.0f), 1.0f);
 
-  REQUIRE_THAT(dl.getIntensity(JTX::Util::Vec3(-1.0f, -1.0f, -1.0f)),
+  REQUIRE_THAT(dl.getIntensity(JTX::Util::Vec3f(-1.0f, -1.0f, -1.0f)),
                Catch::Matchers::WithinAbs(1.7320508075688776f, 0.0001f));
 }
 
@@ -194,7 +194,7 @@ TEST_CASE("Test DirLight intensity with primitive", "[Primitive]") {
   p.applyTransform(&rot_y);
   p.calculateNormals();
 
-  JTX::Core::DirLight dl(JTX::Util::Vec3(0.0f, 0.0f, -1.0f), 1.0f);
+  JTX::Core::DirLight dl(JTX::Util::Vec3f(0.0f, 0.0f, -1.0f), 1.0f);
 
   float *normal = p.getNormal(3);
   float intensity = dl.getIntensity({normal[0], normal[1], normal[2]});
@@ -203,8 +203,8 @@ TEST_CASE("Test DirLight intensity with primitive", "[Primitive]") {
 
 TEST_CASE("Test camera constructor", "[Camera]") {
   JTX::Core::Camera cam(
-      JTX::Util::Vec3(0.0f, 0.0f, 30.0f), JTX::Util::Vec3(0.0f, 0.0f, 0.0f),
-      JTX::Util::Vec3(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
+      JTX::Util::Vec3f(0.0f, 0.0f, 30.0f), JTX::Util::Vec3f(0.0f, 0.0f, 0.0f),
+      JTX::Util::Vec3f(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
 
   REQUIRE_THAT(cam.getPos().x, Catch::Matchers::WithinAbs(0.0f, 0.0001f));
   REQUIRE_THAT(cam.getPos().y, Catch::Matchers::WithinAbs(0.0f, 0.0001f));
@@ -222,8 +222,8 @@ TEST_CASE("Test camera constructor", "[Camera]") {
 
 TEST_CASE("Test camera view matrix", "[Camera]") {
   JTX::Core::Camera cam(
-      JTX::Util::Vec3(0.0f, 0.0f, 30.0f), JTX::Util::Vec3(0.0f, 0.0f, 0.0f),
-      JTX::Util::Vec3(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
+      JTX::Util::Vec3f(0.0f, 0.0f, 30.0f), JTX::Util::Vec3f(0.0f, 0.0f, 0.0f),
+      JTX::Util::Vec3f(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
 
   auto vmat = cam.getViewMatrix();
   REQUIRE_THAT(vmat.data[0][0], Catch::Matchers::WithinAbs(1.0f, 0.0001f));
@@ -249,8 +249,8 @@ TEST_CASE("Test camera view matrix", "[Camera]") {
 
 TEST_CASE("Test camera perspective projection matrix", "[Camera]") {
   JTX::Core::Camera cam(
-      JTX::Util::Vec3(0.0f, 0.0f, 30.0f), JTX::Util::Vec3(0.0f, 0.0f, 0.0f),
-      JTX::Util::Vec3(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
+      JTX::Util::Vec3f(0.0f, 0.0f, 30.0f), JTX::Util::Vec3f(0.0f, 0.0f, 0.0f),
+      JTX::Util::Vec3f(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
 
   auto pmat = cam.getProjMatrix(2.0f, JTX::Core::PERSPECTIVE);
   REQUIRE_THAT(pmat.data[0][0],
@@ -278,12 +278,12 @@ TEST_CASE("Test camera perspective projection matrix", "[Camera]") {
 
 TEST_CASE("Test scene add primitive and dirlight", "[Scene]") {
   JTX::Core::Camera cam(
-      JTX::Util::Vec3(0.0f, 0.0f, 30.0f), JTX::Util::Vec3(0.0f, 0.0f, 0.0f),
-      JTX::Util::Vec3(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
+      JTX::Util::Vec3f(0.0f, 0.0f, 30.0f), JTX::Util::Vec3f(0.0f, 0.0f, 0.0f),
+      JTX::Util::Vec3f(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
   JTX::Core::Scene scene(cam);
   JTX::Core::Primitive p;
   p.load(CUBE_PATH);
-  JTX::Core::DirLight dl(JTX::Util::Vec3(1.0f, 1.0f, 1.0f), 1.0f);
+  JTX::Core::DirLight dl(JTX::Util::Vec3f(1.0f, 1.0f, 1.0f), 1.0f);
   auto cube = scene.addLight(dl);
   auto l = scene.addPrimitive(p);
 
@@ -293,7 +293,7 @@ TEST_CASE("Test scene add primitive and dirlight", "[Scene]") {
   REQUIRE(scene.getPrimitive(cube).getNumVertices() == 8);
   REQUIRE(scene.getPrimitive(l).getNumFaces() == 12);
 
-  JTX::Util::Vec3 pos = scene.getCamera().getPos();
+  JTX::Util::Vec3f pos = scene.getCamera().getPos();
 
   REQUIRE(pos.x == 0.0f);
   REQUIRE(pos.y == 0.0f);
@@ -302,12 +302,12 @@ TEST_CASE("Test scene add primitive and dirlight", "[Scene]") {
 
 TEST_CASE("Test scene remove primitive and dirlight", "[Scene]") {
   JTX::Core::Camera cam(
-      JTX::Util::Vec3(0.0f, 0.0f, 30.0f), JTX::Util::Vec3(0.0f, 0.0f, 0.0f),
-      JTX::Util::Vec3(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
+      JTX::Util::Vec3f(0.0f, 0.0f, 30.0f), JTX::Util::Vec3f(0.0f, 0.0f, 0.0f),
+      JTX::Util::Vec3f(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
   JTX::Core::Scene scene(cam);
   JTX::Core::Primitive p;
   p.load(CUBE_PATH);
-  JTX::Core::DirLight dl(JTX::Util::Vec3(1.0f, 1.0f, 1.0f), 1.0f);
+  JTX::Core::DirLight dl(JTX::Util::Vec3f(1.0f, 1.0f, 1.0f), 1.0f);
   auto cube = scene.addLight(dl);
   auto l = scene.addPrimitive(p);
 

@@ -23,7 +23,7 @@ public:
    * @param near Near plane
    * @param far Far plane
    */
-  Camera(JTX::Util::Vec3 pos, JTX::Util::Vec3 target, JTX::Util::Vec3 up,
+  Camera(JTX::Util::Vec3f pos, JTX::Util::Vec3f target, JTX::Util::Vec3f up,
          float fov, float near, float far) {
     this->pos_ = pos;
     this->lookAt_ = target - pos;
@@ -42,8 +42,8 @@ public:
    * @return JTX::Util::Mat4 View matrix
    */
   [[nodiscard]] JTX::Util::Mat4 getViewMatrix() const {
-    JTX::Util::Vec3 right = this->lookAt_.cross(this->up_).normalize();
-    JTX::Util::Vec3 vup = right.cross(this->lookAt_);
+    JTX::Util::Vec3f right = this->lookAt_.cross(this->up_).normalize();
+    JTX::Util::Vec3f vup = right.cross(this->lookAt_);
 
     return {right.x,
             right.y,
@@ -118,25 +118,25 @@ public:
     return this->t_;
   }
 
-  [[nodiscard]] JTX::Util::Vec3 getPos() const { return this->pos_; }
-  [[nodiscard]] JTX::Util::Vec3 getLookAt() const { return this->lookAt_; }
-  [[nodiscard]] JTX::Util::Vec3 getUp() const { return this->up_; }
+  [[nodiscard]] JTX::Util::Vec3f getPos() const { return this->pos_; }
+  [[nodiscard]] JTX::Util::Vec3f getLookAt() const { return this->lookAt_; }
+  [[nodiscard]] JTX::Util::Vec3f getUp() const { return this->up_; }
   [[nodiscard]] float getFov() const { return this->fov_; }
   [[nodiscard]] float getNear() const { return this->near_; }
   [[nodiscard]] float getFar() const { return this->far_; }
 
-  void setPos(JTX::Util::Vec3 npos) {
+  void setPos(JTX::Util::Vec3f npos) {
     this->pos_ = npos;
     this->dirty_ = true;
   }
 
-  void setLookAt(JTX::Util::Vec3 target) {
+  void setLookAt(JTX::Util::Vec3f target) {
     this->lookAt_ = target - this->pos_;
     this->lookAt_.normalize();
     this->dirty_ = true;
   }
 
-  void setUp(JTX::Util::Vec3 nup) {
+  void setUp(JTX::Util::Vec3f nup) {
     this->up_ = nup.normalize();
     this->dirty_ = true;
   }
@@ -157,9 +157,9 @@ public:
   }
 
 private:
-  JTX::Util::Vec3 pos_;
-  JTX::Util::Vec3 lookAt_;
-  JTX::Util::Vec3 up_;
+  JTX::Util::Vec3f pos_;
+  JTX::Util::Vec3f lookAt_;
+  JTX::Util::Vec3f up_;
   float fov_;
   float near_;
   float far_;

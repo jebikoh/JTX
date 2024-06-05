@@ -67,7 +67,7 @@ TEST_CASE("Random color head", "[SaveFB]") {
   JTX::Core::Primitive m{};
   m.load(HEAD_PATH);
 
-  JTX::Util::Vec3 lookAt = {0.0f, 0.0f, -1.0f};
+  JTX::Util::Vec3f lookAt = {0.0f, 0.0f, -1.0f};
 
   JTX::Util::Mat4 rot_z =
       JTX::Util::Mat4::rotation(JTX::Util::degToRad(180), JTX::Util::Axis::Z);
@@ -120,9 +120,9 @@ TEST_CASE("Head perspective projection", "[SaveFB]") {
   m.applyTransform(&scale);
   m.calculateNormals();
 
-  JTX::Util::Vec3 pos{0.0f, 0.0f, 100.0f};
-  JTX::Util::Vec3 target{0.0f, 0.0f, 0.0f};
-  JTX::Util::Vec3 up{0.0f, 1.0f, 0.0f};
+  JTX::Util::Vec3f pos{0.0f, 0.0f, 100.0f};
+  JTX::Util::Vec3f target{0.0f, 0.0f, 0.0f};
+  JTX::Util::Vec3f up{0.0f, 1.0f, 0.0f};
   JTX::Core::Camera cam(pos, target, up, 1.0472f, 0.1f, 1000.0f);
 
   JTX::Core::DirLight light({0.0f, 0.0f, -1.0f}, 1.0f);
@@ -151,9 +151,9 @@ TEST_CASE("Cube perspective projection", "[SaveFB]") {
   m.applyTransform(&scale);
   m.calculateNormals();
 
-  JTX::Util::Vec3 pos{0.0f, 0.0f, 30.0f};
-  JTX::Util::Vec3 target{0.0f, 0.0f, 0.0f};
-  JTX::Util::Vec3 up{0.0f, 1.0f, 0.0f};
+  JTX::Util::Vec3f pos{0.0f, 0.0f, 30.0f};
+  JTX::Util::Vec3f target{0.0f, 0.0f, 0.0f};
+  JTX::Util::Vec3f up{0.0f, 1.0f, 0.0f};
   JTX::Core::Camera cam(pos, target, up, 1.0472f, 0.1f, 100.0f);
 
   JTX::Core::DirLight light({0.0f, 0.0f, -1.0f}, 1.0f);
@@ -189,9 +189,9 @@ TEST_CASE("Perspective projection stress test", "[Stress]") {
   m.applyTransform(&rot_z);
 
   m.calculateNormals();
-  JTX::Util::Vec3 pos{0.0f, 0.0f, 30.0f};
-  JTX::Util::Vec3 target{0.0f, 0.0f, 0.0f};
-  JTX::Util::Vec3 up{0.0f, 1.0f, 0.0f};
+  JTX::Util::Vec3f pos{0.0f, 0.0f, 30.0f};
+  JTX::Util::Vec3f target{0.0f, 0.0f, 0.0f};
+  JTX::Util::Vec3f up{0.0f, 1.0f, 0.0f};
   JTX::Core::Camera cam(pos, target, up, 1.0472f, 0.1f, 100.0f);
 
   JTX::Core::DirLight light({0.0f, 0.0f, -1.0f}, 1.0f);

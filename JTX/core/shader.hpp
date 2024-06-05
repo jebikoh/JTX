@@ -4,7 +4,7 @@
 namespace JTX::Core {
 struct UniformBuffer {
   JTX::Util::Mat4 cameraMatrix;
-  JTX::Util::Vec3 lightDir;
+  JTX::Util::Vec3f lightDir;
   // Add as needed
 };
 

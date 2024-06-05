@@ -14,7 +14,7 @@ public:
    * @param direction Light direction
    * @param intensity Light intensity
    */
-  explicit DirLight(JTX::Util::Vec3 direction, float intensity) {
+  explicit DirLight(JTX::Util::Vec3f direction, float intensity) {
     if (intensity < 0.0f || intensity > 1.0f) {
       throw std::invalid_argument(
           "Intensity must be greater be in the range [0.0f, 1.0f]");
@@ -24,7 +24,7 @@ public:
   }
   ~DirLight() = default;
 
-  [[nodiscard]] const JTX::Util::Vec3 &getDirection() const {
+  [[nodiscard]] const JTX::Util::Vec3f &getDirection() const {
     return direction_;
   }
 
@@ -33,12 +33,12 @@ public:
    * @param normal Surface normal
    * @return float Intensity of the light at the point
    */
-  [[nodiscard]] float getIntensity(const JTX::Util::Vec3 &normal) const {
+  [[nodiscard]] float getIntensity(const JTX::Util::Vec3f &normal) const {
     return this->intensity_ * std::max(0.0f, -normal.dot(direction_));
   }
 
 private:
-  JTX::Util::Vec3 direction_;
+  JTX::Util::Vec3f direction_;
   float intensity_;
 };
 } // namespace JTX::Core

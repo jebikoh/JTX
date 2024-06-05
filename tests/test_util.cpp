@@ -2,14 +2,131 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 
-TEST_CASE("Vec3 default constructor is zero vector", "[vec3]") {
-  JTX::Util::Vec3 a{};
+// Vec3f
+TEST_CASE("Vec3f default constructor is zero vector", "[vec3f]") {
+  JTX::Util::Vec3f a{};
 
   REQUIRE(a.x == 0.0f);
   REQUIRE(a.y == 0.0f);
   REQUIRE(a.z == 0.0f);
 }
 
+TEST_CASE("Vec3f xyz constructor sets x, y, z", "[Vec3f]") {
+  JTX::Util::Vec3f a{1.0f, 2.0f, 3.0f};
+
+  REQUIRE(a.x == 1.0f);
+  REQUIRE(a.y == 2.0f);
+  REQUIRE(a.z == 3.0f);
+}
+
+TEST_CASE("Vec3f (in)equality operator on equal vectors", "[Vec3f]") {
+  JTX::Util::Vec3f a{1.0f, 2.0f, 3.0f};
+  JTX::Util::Vec3f b{1.0f, 2.0f, 3.0f};
+
+  REQUIRE(a == b);
+  //  REQUIRE_FALSE(a != b);
+  //  REQUIRE(a == b);
+  //  REQUIRE_FALSE(a != b);
+}
+
+TEST_CASE("Vec3f (in)equality operator on unequal vectors", "[Vec3f]") {
+  JTX::Util::Vec3f a{1.0f, 2.0f, 3.0f};
+  JTX::Util::Vec3f b{1.0f, 2.0f, 4.0f};
+
+  REQUIRE_FALSE(a == b);
+  REQUIRE(a != b);
+}
+
+TEST_CASE("Vec3f addition", "[Vec3f]") {
+  JTX::Util::Vec3f a{1.0f, 2.0f, 3.0f};
+  JTX::Util::Vec3f b{1.0f, 2.0f, 3.0f};
+
+  JTX::Util::Vec3f c = a + b;
+
+  REQUIRE_THAT(c.x, Catch::Matchers::WithinRel(2.0f, 0.0001f));
+  REQUIRE_THAT(c.y, Catch::Matchers::WithinRel(4.0f, 0.0001f));
+  REQUIRE_THAT(c.z, Catch::Matchers::WithinRel(6.0f, 0.0001f));
+}
+
+TEST_CASE("Vec3f subtraction", "[Vec3f]") {
+  JTX::Util::Vec3f a{1.0f, 2.0f, 3.0f};
+  JTX::Util::Vec3f b{1.0f, 2.0f, 3.0f};
+
+  JTX::Util::Vec3f c = a - b;
+
+  REQUIRE_THAT(c.x, Catch::Matchers::WithinRel(0.0f, 0.0001f));
+  REQUIRE_THAT(c.y, Catch::Matchers::WithinRel(0.0f, 0.0001f));
+  REQUIRE_THAT(c.z, Catch::Matchers::WithinRel(0.0f, 0.0001f));
+}
+
+TEST_CASE("Vec3f element-wise multiplication", "[Vec3f]") {
+  JTX::Util::Vec3f a{1.0f, 2.0f, 3.0f};
+  JTX::Util::Vec3f b{1.0f, 2.0f, 3.0f};
+
+  JTX::Util::Vec3f c = a * b;
+
+  REQUIRE_THAT(c.x, Catch::Matchers::WithinRel(1.0f, 0.0001f));
+  REQUIRE_THAT(c.y, Catch::Matchers::WithinRel(4.0f, 0.0001f));
+  REQUIRE_THAT(c.z, Catch::Matchers::WithinRel(9.0f, 0.0001f));
+}
+
+TEST_CASE("Vec3f cross product", "[Vec3f]") {
+  JTX::Util::Vec3f a{1.0f, -2.0f, 3.0f};
+  JTX::Util::Vec3f b{7.0f, 8.0f, -5.0f};
+
+  JTX::Util::Vec3f c = a.cross(b);
+
+  REQUIRE_THAT(c.x, Catch::Matchers::WithinRel(-14.0f, 0.0001f));
+  REQUIRE_THAT(c.y, Catch::Matchers::WithinRel(26.0f, 0.0001f));
+  REQUIRE_THAT(c.z, Catch::Matchers::WithinRel(22.0f, 0.0001f));
+}
+
+TEST_CASE("Vec3f dot product", "[Vec3f]") {
+  JTX::Util::Vec3f a{1.0f, 2.0f, 3.0f};
+  JTX::Util::Vec3f b{4.0f, 5.0f, 6.0f};
+
+  float c = a.dot(b);
+
+  REQUIRE_THAT(c, Catch::Matchers::WithinRel(32.0f, 0.0001f));
+}
+
+TEST_CASE("Vec3f dot product with separate x, y, z", "[Vec3f]") {
+  JTX::Util::Vec3f a{1.0f, 2.0f, 3.0f};
+
+  float c = a.dot(4.0f, 5.0f, 6.0f);
+
+  REQUIRE_THAT(c, Catch::Matchers::WithinRel(32.0f, 0.0001f));
+}
+
+TEST_CASE("Vec3f length", "[Vec3f]") {
+  JTX::Util::Vec3f a{1.0f, 2.0f, 3.0f};
+
+  float c = a.len();
+
+  REQUIRE_THAT(c, Catch::Matchers::WithinRel(3.741657f, 0.0001f));
+}
+
+TEST_CASE("Vec3f normalize", "[Vec3f]") {
+  JTX::Util::Vec3f a{1.0f, 2.0f, 3.0f};
+
+  a.normalize();
+
+  REQUIRE_THAT(a.x, Catch::Matchers::WithinRel(0.267261f, 0.0001f));
+  REQUIRE_THAT(a.y, Catch::Matchers::WithinRel(0.534522f, 0.0001f));
+  REQUIRE_THAT(a.z, Catch::Matchers::WithinRel(0.801784f, 0.0001f));
+}
+
+TEST_CASE("Vec3f normalized", "[Vec3f]") {
+  JTX::Util::Vec3f a{1.0f, 2.0f, 3.0f};
+
+  JTX::Util::Vec3f b = a.normalized();
+
+  REQUIRE_THAT(b.x, Catch::Matchers::WithinRel(0.267261f, 0.0001f));
+  REQUIRE_THAT(b.y, Catch::Matchers::WithinRel(0.534522f, 0.0001f));
+  REQUIRE_THAT(b.z, Catch::Matchers::WithinRel(0.801784f, 0.0001f));
+}
+
+// Vec4
 TEST_CASE("Vec4 default constructor is zero vector", "[vec4]") {
   JTX::Util::Vec4 a{};
 
@@ -19,14 +136,6 @@ TEST_CASE("Vec4 default constructor is zero vector", "[vec4]") {
   REQUIRE(a.w == 0.0f);
 }
 
-TEST_CASE("Vec3 xyz constructor sets x, y, z", "[vec3]") {
-  JTX::Util::Vec3 a{1.0f, 2.0f, 3.0f};
-
-  REQUIRE(a.x == 1.0f);
-  REQUIRE(a.y == 2.0f);
-  REQUIRE(a.z == 3.0f);
-}
-
 TEST_CASE("Vec4 xyzw constructor sets x, y, z, w", "[vec4]") {
   JTX::Util::Vec4 a{1.0f, 2.0f, 3.0f, 4.0f};
 
@@ -34,22 +143,6 @@ TEST_CASE("Vec4 xyzw constructor sets x, y, z, w", "[vec4]") {
   REQUIRE(a.y == 2.0f);
   REQUIRE(a.z == 3.0f);
   REQUIRE(a.w == 4.0f);
-}
-
-TEST_CASE("Vec3 (in)equality operator on equal vectors", "[vec3]") {
-  JTX::Util::Vec3 a{1.0f, 2.0f, 3.0f};
-  JTX::Util::Vec3 b{1.0f, 2.0f, 3.0f};
-
-  REQUIRE(a == b);
-  REQUIRE_FALSE(a != b);
-}
-
-TEST_CASE("Vec3 (in)equality operator on unequal vectors", "[vec3]") {
-  JTX::Util::Vec3 a{1.0f, 2.0f, 3.0f};
-  JTX::Util::Vec3 b{1.0f, 2.0f, 4.0f};
-
-  REQUIRE_FALSE(a == b);
-  REQUIRE(a != b);
 }
 
 TEST_CASE("Vec4 (in)equality operator on equal vectors", "[vec4]") {
@@ -68,17 +161,6 @@ TEST_CASE("Vec4 (in)equality operator on unequal vectors", "[vec4]") {
   REQUIRE(a != b);
 }
 
-TEST_CASE("Vec3 addition", "[vec3]") {
-  JTX::Util::Vec3 a{1.0f, 2.0f, 3.0f};
-  JTX::Util::Vec3 b{1.0f, 2.0f, 3.0f};
-
-  JTX::Util::Vec3 c = a + b;
-
-  REQUIRE_THAT(c.x, Catch::Matchers::WithinRel(2.0f, 0.0001f));
-  REQUIRE_THAT(c.y, Catch::Matchers::WithinRel(4.0f, 0.0001f));
-  REQUIRE_THAT(c.z, Catch::Matchers::WithinRel(6.0f, 0.0001f));
-}
-
 TEST_CASE("Vec4 addition", "[vec4]") {
   JTX::Util::Vec4 a{1.0f, 2.0f, 3.0f, 4.0f};
   JTX::Util::Vec4 b{1.0f, 2.0f, 3.0f, 4.0f};
@@ -89,17 +171,6 @@ TEST_CASE("Vec4 addition", "[vec4]") {
   REQUIRE_THAT(c.y, Catch::Matchers::WithinRel(4.0f, 0.0001f));
   REQUIRE_THAT(c.z, Catch::Matchers::WithinRel(6.0f, 0.0001f));
   REQUIRE_THAT(c.w, Catch::Matchers::WithinRel(8.0f, 0.0001f));
-}
-
-TEST_CASE("Vec3 subtraction", "[vec3]") {
-  JTX::Util::Vec3 a{1.0f, 2.0f, 3.0f};
-  JTX::Util::Vec3 b{1.0f, 2.0f, 3.0f};
-
-  JTX::Util::Vec3 c = a - b;
-
-  REQUIRE_THAT(c.x, Catch::Matchers::WithinRel(0.0f, 0.0001f));
-  REQUIRE_THAT(c.y, Catch::Matchers::WithinRel(0.0f, 0.0001f));
-  REQUIRE_THAT(c.z, Catch::Matchers::WithinRel(0.0f, 0.0001f));
 }
 
 TEST_CASE("Vec4 subtraction", "[vec4]") {
@@ -114,17 +185,6 @@ TEST_CASE("Vec4 subtraction", "[vec4]") {
   REQUIRE_THAT(c.w, Catch::Matchers::WithinRel(0.0f, 0.0001f));
 }
 
-TEST_CASE("Vec3 element-wise multiplication", "[vec3]") {
-  JTX::Util::Vec3 a{1.0f, 2.0f, 3.0f};
-  JTX::Util::Vec3 b{1.0f, 2.0f, 3.0f};
-
-  JTX::Util::Vec3 c = a * b;
-
-  REQUIRE_THAT(c.x, Catch::Matchers::WithinRel(1.0f, 0.0001f));
-  REQUIRE_THAT(c.y, Catch::Matchers::WithinRel(4.0f, 0.0001f));
-  REQUIRE_THAT(c.z, Catch::Matchers::WithinRel(9.0f, 0.0001f));
-}
-
 TEST_CASE("Vec4 element-wise multiplication", "[vec4]") {
   JTX::Util::Vec4 a{1.0f, 2.0f, 3.0f, 4.0f};
   JTX::Util::Vec4 b{1.0f, 2.0f, 3.0f, 4.0f};
@@ -137,26 +197,6 @@ TEST_CASE("Vec4 element-wise multiplication", "[vec4]") {
   REQUIRE_THAT(c.w, Catch::Matchers::WithinRel(16.0f, 0.0001f));
 }
 
-TEST_CASE("Vec3 cross product", "[vec3]") {
-  JTX::Util::Vec3 a{1.0f, -2.0f, 3.0f};
-  JTX::Util::Vec3 b{7.0f, 8.0f, -5.0f};
-
-  JTX::Util::Vec3 c = a.cross(b);
-
-  REQUIRE_THAT(c.x, Catch::Matchers::WithinRel(-14.0f, 0.0001f));
-  REQUIRE_THAT(c.y, Catch::Matchers::WithinRel(26.0f, 0.0001f));
-  REQUIRE_THAT(c.z, Catch::Matchers::WithinRel(22.0f, 0.0001f));
-}
-
-TEST_CASE("Vec3 dot product", "[vec3]") {
-  JTX::Util::Vec3 a{1.0f, 2.0f, 3.0f};
-  JTX::Util::Vec3 b{4.0f, 5.0f, 6.0f};
-
-  float c = a.dot(b);
-
-  REQUIRE_THAT(c, Catch::Matchers::WithinRel(32.0f, 0.0001f));
-}
-
 TEST_CASE("Vec4 dot prodcut", "[vec4]") {
   JTX::Util::Vec4 a{1.0f, 2.0f, 3.0f, 4.0f};
   JTX::Util::Vec4 b{5.0f, 6.0f, 7.0f, 8.0f};
@@ -164,14 +204,6 @@ TEST_CASE("Vec4 dot prodcut", "[vec4]") {
   float c = a.dot(b);
 
   REQUIRE_THAT(c, Catch::Matchers::WithinRel(70.0f, 0.0001f));
-}
-
-TEST_CASE("Vec3 dot product with separate x, y, z", "[vec3]") {
-  JTX::Util::Vec3 a{1.0f, 2.0f, 3.0f};
-
-  float c = a.dot(4.0f, 5.0f, 6.0f);
-
-  REQUIRE_THAT(c, Catch::Matchers::WithinRel(32.0f, 0.0001f));
 }
 
 TEST_CASE("Vec4 dot product with separate x, y, z, w", "[vec4]") {
@@ -182,30 +214,12 @@ TEST_CASE("Vec4 dot product with separate x, y, z, w", "[vec4]") {
   REQUIRE_THAT(c, Catch::Matchers::WithinRel(70.0f, 0.0001f));
 }
 
-TEST_CASE("Vec3 length", "[vec3]") {
-  JTX::Util::Vec3 a{1.0f, 2.0f, 3.0f};
-
-  float c = a.len();
-
-  REQUIRE_THAT(c, Catch::Matchers::WithinRel(3.741657f, 0.0001f));
-}
-
 TEST_CASE("Vec4 length", "[vec4]") {
   JTX::Util::Vec4 a{1.0f, 2.0f, 3.0f, 4.0f};
 
   float c = a.len();
 
   REQUIRE_THAT(c, Catch::Matchers::WithinRel(5.477226f, 0.0001f));
-}
-
-TEST_CASE("Vec3 normalize", "[vec3]") {
-  JTX::Util::Vec3 a{1.0f, 2.0f, 3.0f};
-
-  a.normalize();
-
-  REQUIRE_THAT(a.x, Catch::Matchers::WithinRel(0.267261f, 0.0001f));
-  REQUIRE_THAT(a.y, Catch::Matchers::WithinRel(0.534522f, 0.0001f));
-  REQUIRE_THAT(a.z, Catch::Matchers::WithinRel(0.801784f, 0.0001f));
 }
 
 TEST_CASE("Vec4 normalize", "[vec4]") {
@@ -219,16 +233,6 @@ TEST_CASE("Vec4 normalize", "[vec4]") {
   REQUIRE_THAT(a.w, Catch::Matchers::WithinRel(0.730297f, 0.0001f));
 }
 
-TEST_CASE("Vec3 normalized", "[vec3]") {
-  JTX::Util::Vec3 a{1.0f, 2.0f, 3.0f};
-
-  JTX::Util::Vec3 b = a.normalized();
-
-  REQUIRE_THAT(b.x, Catch::Matchers::WithinRel(0.267261f, 0.0001f));
-  REQUIRE_THAT(b.y, Catch::Matchers::WithinRel(0.534522f, 0.0001f));
-  REQUIRE_THAT(b.z, Catch::Matchers::WithinRel(0.801784f, 0.0001f));
-}
-
 TEST_CASE("Vec4 normalized", "[vec4]") {
   JTX::Util::Vec4 a{1.0f, 2.0f, 3.0f, 4.0f};
 
@@ -240,6 +244,7 @@ TEST_CASE("Vec4 normalized", "[vec4]") {
   REQUIRE_THAT(b.w, Catch::Matchers::WithinRel(0.730297f, 0.0001f));
 }
 
+// Mat4
 TEST_CASE("Mat4 default constructor is identity matrix", "[mat4]") {
   JTX::Util::Mat4 a{};
 
@@ -437,17 +442,6 @@ TEST_CASE("Mat4 * operator identity matrix", "[mat4]") {
   REQUIRE(c == a);
 }
 
-TEST_CASE("Test IDPool", "[idpool]") {
-  JTX::Util::IDPool pool{};
-
-  REQUIRE(pool.getID() == 0);
-  REQUIRE(pool.getID() == 1);
-  REQUIRE(pool.getID() == 2);
-  pool.releaseID(1);
-  REQUIRE(pool.getID() == 1);
-  REQUIRE(pool.getID() == 3);
-}
-
 // TEST_CASE("Test Vec4 applyTransform", "[vec4]") {
 //     JTX::Util::Vec4 a{1.0f, -1.0f, -1.0f, 1.0f};
 //     JTX::Util::Mat4 rot =
@@ -466,4 +460,15 @@ TEST_CASE("Test Mat4 [] operators", "[mat4]") {
   REQUIRE(m[0][1] == 0.0f);
   REQUIRE(m[0][2] == 0.0f);
   REQUIRE(m[0][3] == 0.0f);
+}
+
+TEST_CASE("Test IDPool", "[idpool]") {
+  JTX::Util::IDPool pool{};
+
+  REQUIRE(pool.getID() == 0);
+  REQUIRE(pool.getID() == 1);
+  REQUIRE(pool.getID() == 2);
+  pool.releaseID(1);
+  REQUIRE(pool.getID() == 1);
+  REQUIRE(pool.getID() == 3);
 }

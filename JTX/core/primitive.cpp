@@ -149,10 +149,10 @@ void Primitive::calculateNormals() {
     const auto *v2 = this->getVertex(face.v2);
     const auto *v3 = this->getVertex(face.v3);
 
-    JTX::Util::Vec3 e1(v2[0] - v1[0], v2[1] - v1[1], v2[2] - v1[2]);
-    JTX::Util::Vec3 e2(v3[0] - v1[0], v3[1] - v1[1], v3[2] - v1[2]);
+    JTX::Util::Vec3f e1(v2[0] - v1[0], v2[1] - v1[1], v2[2] - v1[2]);
+    JTX::Util::Vec3f e2(v3[0] - v1[0], v3[1] - v1[1], v3[2] - v1[2]);
 
-    JTX::Util::Vec3 normal = e1.cross(e2).normalize();
+    JTX::Util::Vec3f normal = e1.cross(e2).normalize();
 
     this->n_[3 * i] = normal.x;
     this->n_[3 * i + 1] = normal.y;

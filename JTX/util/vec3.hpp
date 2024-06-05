@@ -8,27 +8,29 @@ namespace JTX::Util {
  * @class Vec3
  * @brief A simple 3D vector class
  *
- * This class is used to represent a 3D vector in the JTX engine.
- * It provides basic vector operations such as add/sub, dot/cross product, etc.
- * All methods are marked as inline for performance
+ * This template is used to represent a 3D vector in the JTX engine.
+ * It provides basic vector operations such as add/sub, dot/cross product.
+ *
+ * T must be an arithmetic type.
  */
+template <typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
 class Vec3 {
 public:
-  float x, y, z;
-
+  T x, y, z;
   /**
    * @brief Default constructor
    *
    * Initializes vector zero-vector
    */
   Vec3() : x(0), y(0), z(0){};
+
   /**
    * @brief XYZ constructor
    * @param x
    * @param y
    * @param z
    */
-  Vec3(float x, float y, float z) : x(x), y(y), z(z){};
+  Vec3(T x, T y, T z) : x(x), y(y), z(z){};
   ~Vec3() = default;
 
   inline bool operator==(const Vec3 &other) const {
@@ -62,12 +64,11 @@ public:
             x * other.y - y * other.x};
   }
 
-  [[nodiscard]] inline float dot(const Vec3 &other) const {
+  [[nodiscard]] inline T dot(const Vec3 &other) const {
     return x * other.x + y * other.y + z * other.z;
   }
 
-  [[nodiscard]] inline float dot(const float _x, const float _y,
-                                 const float _z) const {
+  [[nodiscard]] inline T dot(const T _x, const T _y, const T _z) const {
     return this->x * _x + this->y * _y + this->z * _z;
   }
 
@@ -104,4 +105,7 @@ public:
     }
   }
 };
+
+typedef Vec3<float> Vec3f;
+typedef Vec3<int> Vec3i;
 } // namespace JTX::Util

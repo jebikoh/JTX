@@ -2,6 +2,7 @@
 
 #include "JTX/util/color.hpp"
 #include "JTX/util/mat4.hpp"
+#include "JTX/util/vec2.hpp"
 #include "JTX/util/vec3.hpp"
 #include "JTX/util/vec4.hpp"
 #include <cmath>

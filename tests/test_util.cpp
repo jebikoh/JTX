@@ -24,9 +24,7 @@ TEST_CASE("Vec3f (in)equality operator on equal vectors", "[Vec3f]") {
   JTX::Util::Vec3f b{1.0f, 2.0f, 3.0f};
 
   REQUIRE(a == b);
-  //  REQUIRE_FALSE(a != b);
-  //  REQUIRE(a == b);
-  //  REQUIRE_FALSE(a != b);
+  REQUIRE_FALSE(a != b);
 }
 
 TEST_CASE("Vec3f (in)equality operator on unequal vectors", "[Vec3f]") {
@@ -242,6 +240,112 @@ TEST_CASE("Vec4f normalized", "[Vec4f]") {
   REQUIRE_THAT(b.y, Catch::Matchers::WithinRel(0.365148f, 0.0001f));
   REQUIRE_THAT(b.z, Catch::Matchers::WithinRel(0.547723f, 0.0001f));
   REQUIRE_THAT(b.w, Catch::Matchers::WithinRel(0.730297f, 0.0001f));
+}
+
+// Vec2i
+TEST_CASE("Vec2i default constructor is zero vector", "[Vec2i]") {
+  JTX::Util::Vec2i a{};
+
+  REQUIRE(a.x == 0);
+  REQUIRE(a.y == 0);
+}
+
+TEST_CASE("Vec2i xyz constructor sets x, y", "[Vec2i]") {
+  JTX::Util::Vec2i a{1, 2};
+
+  REQUIRE(a.x == 1);
+  REQUIRE(a.y == 2);
+}
+
+TEST_CASE("Vec2i (in)equality operator on equal vectors", "[Vec2i]") {
+  JTX::Util::Vec2i a{1, 2};
+  JTX::Util::Vec2i b{1, 2};
+
+  REQUIRE(a == b);
+  REQUIRE_FALSE(a != b);
+}
+
+TEST_CASE("Vec2i (in)equality operator on unequal vectors", "[Vec2i]") {
+  JTX::Util::Vec2i a{1, 2};
+  JTX::Util::Vec2i b{1, 3};
+
+  REQUIRE_FALSE(a == b);
+  REQUIRE(a != b);
+}
+
+TEST_CASE("Vec2i addition", "[Vec2i]") {
+  JTX::Util::Vec2i a{1, 2};
+  JTX::Util::Vec2i b{1, 2};
+
+  JTX::Util::Vec2i c = a + b;
+
+  REQUIRE(c.x == 2);
+  REQUIRE(c.y == 4);
+}
+
+TEST_CASE("Vec2i subtraction", "[Vec2i]") {
+  JTX::Util::Vec2i a{1, 2};
+  JTX::Util::Vec2i b{1, 2};
+
+  JTX::Util::Vec2i c = a - b;
+
+  REQUIRE(c.x == 0);
+  REQUIRE(c.y == 0);
+}
+
+TEST_CASE("Vec2i element-wise multiplication", "[Vec2i]") {
+  JTX::Util::Vec2i a{1, 2};
+  JTX::Util::Vec2i b{1, 2};
+
+  JTX::Util::Vec2i c = a * b;
+
+  REQUIRE(c.x == 1);
+  REQUIRE(c.y == 4);
+}
+
+TEST_CASE("Vec2i dot product", "[Vec2i]") {
+  JTX::Util::Vec2i a{1, 2};
+  JTX::Util::Vec2i b{1, 2};
+
+  int c = a.dot(b);
+
+  REQUIRE(c == 5);
+}
+
+TEST_CASE("Vec2i dot product with separate x, y, z", "[Vec2i]") {
+  JTX::Util::Vec2i a{1, 2};
+
+  int c = a.dot(1, 2);
+
+  REQUIRE(c == 5);
+}
+
+TEST_CASE("Vec2i length", "[Vec2i]") {
+  JTX::Util::Vec2i a{1, 2};
+
+  float c = a.len();
+
+  REQUIRE_THAT(c, Catch::Matchers::WithinRel(2.236067f, 0.0001f));
+}
+
+TEST_CASE("Vec2i normalize", "[Vec2i]") {
+  JTX::Util::Vec3f a{1.0f, 2.0f, 3.0f};
+
+  a.normalize();
+
+  REQUIRE_THAT(a.x, Catch::Matchers::WithinRel(0.267261f, 0.0001f));
+  REQUIRE_THAT(a.y, Catch::Matchers::WithinRel(0.534522f, 0.0001f));
+  REQUIRE_THAT(a.z, Catch::Matchers::WithinRel(0.801784f, 0.0001f));
+}
+
+TEST_CASE("Vec2i normalized", "[Vec2i]") {
+  JTX::Util::Vec3f a{1.0f, 2.0f, 3.0f};
+
+  JTX::Util::Vec3f b = a.normalized();
+
+  REQUIRE_THAT(b.x, Catch::Matchers::WithinRel(0.267261f, 0.0001f));
+  REQUIRE_THAT(b.y, Catch::Matchers::WithinRel(0.534522f, 0.0001f));
+  REQUIRE_THAT(b.z, Catch::Matchers::WithinRel(0.801784f, 0.0001f));
 }
 
 // Mat4

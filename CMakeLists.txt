@@ -23,6 +23,7 @@ add_library(JTX
         JTX/core/shader.cpp
         JTX/core/shader.hpp
         JTX/util/vec4.hpp
+        JTX/util/vec2.hpp
 )
 
 add_library(fpng STATIC external/fpng.cpp)

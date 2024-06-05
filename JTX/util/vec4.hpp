@@ -14,9 +14,10 @@ namespace JTX::Util {
  * It provides basic vector operations such as add/sub, dot product, etc. (no
  * cross). All methods are marked as inline for performance
  */
+template <typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
 class Vec4 {
 public:
-  float x, y, z, w;
+  T x, y, z, w;
 
   /**
    * @brief Default constructor
@@ -31,7 +32,7 @@ public:
    * @param z
    * @param w
    */
-  Vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w){};
+  Vec4(T x, T y, T z, T w) : x(x), y(y), z(z), w(w){};
   ~Vec4() = default;
 
   inline bool operator==(const Vec4 &other) const {
@@ -69,11 +70,10 @@ public:
     return *this;
   }
 
-  inline float dot(const Vec4 &other) {
+  inline T dot(const Vec4 &other) {
     return x * other.x + y * other.y + z * other.z + w * other.w;
   }
-  inline float dot(const float _x, const float _y, const float _z,
-                   const float _w) {
+  inline T dot(const float _x, const float _y, const float _z, const float _w) {
     return this->x * _x + this->y * _y + this->z * _z + this->w * _w;
   }
   [[nodiscard]] inline float len() const {
@@ -113,4 +113,6 @@ public:
       return Vec4{};
   }
 };
+
+typedef Vec4<float> Vec4f;
 } // namespace JTX::Util

@@ -22,7 +22,7 @@ public:
 class DefaultShader : public Shader {
 public:
   // TODO: passing the vertices as an array is pretty dangerous
-  //       potential switch to passing Vec3/Vec4 in the future
+  //       potential switch to passing Vec3f/Vec4f in the future
   inline void vertex(float *vertex) override;
 
   void fragment(const float *bary, const int *screen, const float *normal,

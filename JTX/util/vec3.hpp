@@ -107,5 +107,4 @@ public:
 };
 
 typedef Vec3<float> Vec3f;
-typedef Vec3<int> Vec3i;
 } // namespace JTX::Util

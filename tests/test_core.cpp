@@ -220,3 +220,101 @@ TEST_CASE("Test camera constructor", "[Camera]") {
   REQUIRE_THAT(cam.getNear(), Catch::Matchers::WithinAbs(0.1f, 0.0001f));
   REQUIRE_THAT(cam.getFar(), Catch::Matchers::WithinAbs(100.0f, 0.0001f));
 }
+
+TEST_CASE("Test camera view matrix", "[Camera]") {
+  JTX::Core::Camera cam(
+      JTX::Util::Vec3f(0.0f, 0.0f, 30.0f), JTX::Util::Vec3f(0.0f, 0.0f, 0.0f),
+      JTX::Util::Vec3f(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
+
+  auto vmat = cam.getViewMatrix();
+  REQUIRE_THAT(vmat.data[0][0], Catch::Matchers::WithinAbs(1.0f, 0.0001f));
+  REQUIRE_THAT(vmat.data[0][1], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+  REQUIRE_THAT(vmat.data[0][2], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+  REQUIRE_THAT(vmat.data[0][3], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+
+  REQUIRE_THAT(vmat.data[1][0], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+  REQUIRE_THAT(vmat.data[1][1], Catch::Matchers::WithinAbs(1.0f, 0.0001f));
+  REQUIRE_THAT(vmat.data[1][2], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+  REQUIRE_THAT(vmat.data[1][3], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+
+  REQUIRE_THAT(vmat.data[2][0], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+  REQUIRE_THAT(vmat.data[2][1], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+  REQUIRE_THAT(vmat.data[2][2], Catch::Matchers::WithinAbs(1.0f, 0.0001f));
+  REQUIRE_THAT(vmat.data[2][3], Catch::Matchers::WithinAbs(-30.0f, 0.0001f));
+
+  REQUIRE_THAT(vmat.data[3][0], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+  REQUIRE_THAT(vmat.data[3][1], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+  REQUIRE_THAT(vmat.data[3][2], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+  REQUIRE_THAT(vmat.data[3][3], Catch::Matchers::WithinAbs(1.0f, 0.0001f));
+}
+
+TEST_CASE("Test camera perspective projection matrix", "[Camera]") {
+  JTX::Core::Camera cam(
+      JTX::Util::Vec3f(0.0f, 0.0f, 30.0f), JTX::Util::Vec3f(0.0f, 0.0f, 0.0f),
+      JTX::Util::Vec3f(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
+
+  auto pmat = cam.getProjMatrix(2.0f, JTX::Core::PERSPECTIVE);
+  REQUIRE_THAT(pmat.data[0][0],
+               Catch::Matchers::WithinAbs(0.86602295, 0.0001f));
+  REQUIRE_THAT(pmat.data[0][1], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+  REQUIRE_THAT(pmat.data[0][2], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+  REQUIRE_THAT(pmat.data[0][3], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+
+  REQUIRE_THAT(pmat.data[1][0], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+  REQUIRE_THAT(pmat.data[1][1],
+               Catch::Matchers::WithinAbs(1.73204591, 0.0001f));
+  REQUIRE_THAT(pmat.data[1][2], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+  REQUIRE_THAT(pmat.data[1][3], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+
+  REQUIRE_THAT(pmat.data[2][0], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+  REQUIRE_THAT(pmat.data[2][1], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+  REQUIRE_THAT(pmat.data[2][2], Catch::Matchers::WithinAbs(1.002002, 0.0001f));
+  REQUIRE_THAT(pmat.data[2][3], Catch::Matchers::WithinAbs(0.2002002, 0.0001f));
+
+  REQUIRE_THAT(pmat.data[3][0], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+  REQUIRE_THAT(pmat.data[3][1], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+  REQUIRE_THAT(pmat.data[3][2], Catch::Matchers::WithinAbs(-1.0f, 0.0001f));
+  REQUIRE_THAT(pmat.data[3][3], Catch::Matchers::WithinAbs(0.0f, 0.0001f));
+}
+
+TEST_CASE("Test scene add primitive and dirlight", "[Scene]") {
+  JTX::Core::Camera cam(
+      JTX::Util::Vec3f(0.0f, 0.0f, 30.0f), JTX::Util::Vec3f(0.0f, 0.0f, 0.0f),
+      JTX::Util::Vec3f(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
+  JTX::Core::Scene scene(cam);
+  JTX::Core::Primitive p;
+  p.load(CUBE_PATH);
+  JTX::Core::DirLight dl(JTX::Util::Vec3f(1.0f, 1.0f, 1.0f), 1.0f);
+  auto cube = scene.addLight(dl);
+  auto l = scene.addPrimitive(p);
+
+  REQUIRE(scene.getNumPrimitives() == 1);
+  REQUIRE(scene.getNumLights() == 1);
+
+  REQUIRE(scene.getPrimitive(cube).getNumVertices() == 8);
+  REQUIRE(scene.getPrimitive(l).getNumFaces() == 12);
+
+  JTX::Util::Vec3f pos = scene.getCamera().getPos();
+
+  REQUIRE(pos.x == 0.0f);
+  REQUIRE(pos.y == 0.0f);
+  REQUIRE(pos.z == 30.0f);
+}
+
+TEST_CASE("Test scene remove primitive and dirlight", "[Scene]") {
+  JTX::Core::Camera cam(
+      JTX::Util::Vec3f(0.0f, 0.0f, 30.0f), JTX::Util::Vec3f(0.0f, 0.0f, 0.0f),
+      JTX::Util::Vec3f(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
+  JTX::Core::Scene scene(cam);
+  JTX::Core::Primitive p;
+  p.load(CUBE_PATH);
+  JTX::Core::DirLight dl(JTX::Util::Vec3f(1.0f, 1.0f, 1.0f), 1.0f);
+  auto cube = scene.addLight(dl);
+  auto l = scene.addPrimitive(p);
+
+  scene.removePrimitive(l);
+  scene.removeLight(cube);
+
+  REQUIRE(scene.getNumPrimitives() == 0);
+  REQUIRE(scene.getNumLights() == 0);
+}

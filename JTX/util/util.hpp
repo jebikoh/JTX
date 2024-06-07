@@ -46,19 +46,15 @@ private:
  *
  * NOTE: this method is not safe and does not check for the size of the array
  */
-static void applyTransform(const Mat4 &tf, float *v) {
-  float x =
-      v[0] * tf[0][0] + v[1] * tf[0][1] + v[2] * tf[0][2] + v[3] * tf[0][3];
-  float y =
-      v[0] * tf[1][0] + v[1] * tf[1][1] + v[2] * tf[1][2] + v[3] * tf[1][3];
-  float z =
-      v[0] * tf[2][0] + v[1] * tf[2][1] + v[2] * tf[2][2] + v[3] * tf[2][3];
-  float w =
-      v[0] * tf[3][0] + v[1] * tf[3][1] + v[2] * tf[3][2] + v[3] * tf[3][3];
+static void applyTransform(const Mat4 &tf, Util::Vec4f &v) {
+  float x = v.x * tf[0][0] + v.y * tf[0][1] + v.z * tf[0][2] + v.w * tf[0][3];
+  float y = v.x * tf[1][0] + v.y * tf[1][1] + v.z * tf[1][2] + v.w * tf[1][3];
+  float z = v.x * tf[2][0] + v.y * tf[2][1] + v.z * tf[2][2] + v.w * tf[2][3];
+  float w = v.x * tf[3][0] + v.y * tf[3][1] + v.z * tf[3][2] + v.w * tf[3][3];
 
-  v[0] = x;
-  v[1] = y;
-  v[2] = z;
-  v[3] = w;
+  v.x = x;
+  v.y = y;
+  v.z = z;
+  v.w = w;
 }
 } // namespace JTX::Util

@@ -30,9 +30,7 @@ void JTX::Core::Renderer::clear() {
 
 void JTX::Core::Renderer::render(JTX::Core::Scene *scene,
                                  ProjectionType projType) {
-  // TODO: SIMD
   this->clear();
-  // TODO: This will be bugged if the AR ever changes midway
   JTX::Util::Mat4 t = scene->getCamera().getCameraMatrix(this->ar_, projType);
   // TODO: Rethink how the light is bound here
   UniformBuffer ub = {t, scene->getLight(0).getDirection()};
@@ -43,48 +41,46 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene,
   for (auto const &[id, prim] : scene->getPrimitives()) {
     for (int i = 0; i < prim->getNumVertices(); i++) {
       // Clip space
-      float *v = prim->getVertex(i);
+      Util::Vec4f v = prim->getVertex(i);
       this->shader_->vertex(v);
 
       // NDC & Screen space transformation
-      int *s = prim->getScreen(i);
-      s[0] = static_cast<int>(std::round((v[0] / v[3] + 1.0f) * 0.5f * wf));
-      s[1] = static_cast<int>(std::round((v[1] / v[3] + 1.0f) * 0.5f * hf));
-      v[2] = (v[2] / v[3] + 1.0f) * 0.5f;
+      int *s = prim->getScreenPtr(i);
+      s[0] = static_cast<int>(std::round((v.x / v.w + 1.0f) * 0.5f * wf));
+      s[1] = static_cast<int>(std::round((v.y / v.w + 1.0f) * 0.5f * hf));
+      prim->setZ(i, (v.z / v.w + 1.0f) * 0.5f);
     }
 
     for (int i = 0; i < prim->getNumFaces(); i++) {
-      float *n = prim->getNormal(i);
-
       // Back-face culling
-      if (scene->getCamera().getLookAt().dot(n[0], n[1], n[2]) >= -0.0001) {
+      Util::Vec3f n = prim->getFaceNormal(i);
+      if (scene->getCamera().getLookAt().dot(n) >= -0.0001) {
         continue;
       }
 
       const Face *f = prim->getFace(i);
-      int *v1 = prim->getScreen(f->v1);
-      float z0 = prim->getVertex(f->v1)[2];
+      Util::Vec2i v1 = prim->getScreen(f->v1);
+      float z1 = prim->getZ(f->v1);
 
-      int *v2 = prim->getScreen(f->v2);
-      float z1 = prim->getVertex(f->v2)[2];
+      Util::Vec2i v2 = prim->getScreen(f->v2);
+      float z2 = prim->getZ(f->v2);
 
-      int *v3 = prim->getScreen(f->v3);
-      float z2 = prim->getVertex(f->v3)[2];
+      Util::Vec2i v3 = prim->getScreen(f->v3);
+      float z3 = prim->getZ(f->v3);
 
+      // TODO: Move to rasterize function
       float intensity = 1.0f;
-      // TODO: refactor light looping
       if (scene->getNumLights() > 0) {
         intensity = 0.0f;
         for (int j = 0; j < scene->getNumLights(); ++j) {
           JTX::Core::DirLight light = scene->getLight(j);
-          intensity += light.getIntensity({n[0], n[1], n[2]});
+          intensity += light.getIntensity(n);
         }
         intensity /= static_cast<float>(scene->getNumLights());
       }
 
-      this->drawTriangle(v1[0], v1[1], z0, v2[0], v2[1], z1, v3[0], v3[1], z2,
-                         255.0f * intensity, 255.0f * intensity,
-                         255.0f * intensity);
+      this->drawTriangle(v1, z1, v2, z2, v3, z3, 255.0f * intensity,
+                         255.0f * intensity, 255.0f * intensity);
     }
   }
 }
@@ -95,7 +91,6 @@ void JTX::Core::Renderer::renderWireframe(JTX::Core::Primitive &p,
   auto w2 = 0.5f * static_cast<float>(this->w_);
   auto h2 = 0.5f * static_cast<float>(this->h_);
 
-  // TODO: move this into the loop
   JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(w2 - 1.0f, h2 - 1.0f, 1);
   JTX::Util::Mat4 trans = JTX::Util::Mat4::translation(w2, h2, 0);
 
@@ -103,17 +98,17 @@ void JTX::Core::Renderer::renderWireframe(JTX::Core::Primitive &p,
   p.applyTransform(&trans);
 
   for (int i = 0; i < p.getNumFaces(); i++) {
-    JTX::Core::Face *f = p.getFace(i);
-    float *v1 = p.getVertex(f->v1);
-    float *v2 = p.getVertex(f->v2);
-    float *v3 = p.getVertex(f->v3);
+    const Core::Face *f = p.getFace(i);
+    Util::Vec4f v1 = p.getVertex(f->v1);
+    Util::Vec4f v2 = p.getVertex(f->v2);
+    Util::Vec4f v3 = p.getVertex(f->v3);
 
-    int v1_x = static_cast<int>(std::round(v1[0]));
-    int v1_y = static_cast<int>(std::round(v1[1]));
-    int v2_x = static_cast<int>(std::round(v2[0]));
-    int v2_y = static_cast<int>(std::round(v2[1]));
-    int v3_x = static_cast<int>(std::round(v3[0]));
-    int v3_y = static_cast<int>(std::round(v3[1]));
+    int v1_x = static_cast<int>(std::round(v1.x));
+    int v1_y = static_cast<int>(std::round(v1.y));
+    int v2_x = static_cast<int>(std::round(v2.x));
+    int v2_y = static_cast<int>(std::round(v2.y));
+    int v3_x = static_cast<int>(std::round(v3.x));
+    int v3_y = static_cast<int>(std::round(v3.y));
 
     this->drawLine(v1_x, v1_y, v2_x, v2_y, color);
     this->drawLine(v2_x, v2_y, v3_x, v3_y, color);
@@ -217,27 +212,27 @@ void JTX::Core::Renderer::saveFb(const std::string &path,
   delete[] pixels;
 }
 
-void JTX::Core::Renderer::drawTriangle(int x0, int y0, float z0, int x1, int y1,
-                                       float z1, int x2, int y2, float z2,
+void JTX::Core::Renderer::drawTriangle(Util::Vec2i v1, float z1, Util::Vec2i v2,
+                                       float z2, Util::Vec2i v3, float z3,
                                        float r, float g, float b) {
-  int minX = std::max(0, std::min(x0, std::min(x1, x2)));
-  int minY = std::max(0, std::min(y0, std::min(y1, y2)));
-  int maxX = std::min(this->w_ - 1, std::max(x0, std::max(x1, x2)));
-  int maxY = std::min(this->h_ - 1, std::max(y0, std::max(y1, y2)));
+  int minX = std::max(0, std::min(v1.x, std::min(v2.x, v3.x)));
+  int minY = std::max(0, std::min(v1.y, std::min(v2.y, v3.y)));
+  int maxX = std::min(this->w_ - 1, std::max(v1.x, std::max(v2.x, v3.x)));
+  int maxY = std::min(this->h_ - 1, std::max(v1.y, std::max(v2.y, v3.y)));
 
-  auto a = static_cast<float>(edgeFn(x0, y0, x1, y1, x2, y2));
+  auto a = static_cast<float>(edgeFn(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y));
 
   for (int y = minY; y <= maxY; ++y) {
     for (int x = minX; x <= maxX; ++x) {
-      int w0 = edgeFn(x1, y1, x2, y2, x, y);
-      int w1 = edgeFn(x2, y2, x0, y0, x, y);
-      int w2 = edgeFn(x0, y0, x1, y1, x, y);
+      int w0 = edgeFn(v2.x, v2.y, v3.x, v3.y, x, y);
+      int w1 = edgeFn(v3.x, v3.y, v1.x, v1.y, x, y);
+      int w2 = edgeFn(v1.x, v1.y, v2.x, v2.y, x, y);
 
       if ((w0 >= 0 && w1 >= 0 && w2 >= 0) || (w0 <= 0 && w1 <= 0 && w2 <= 0)) {
         float wz0 = static_cast<float>(w0) / a;
         float wz1 = static_cast<float>(w1) / a;
         float wz2 = static_cast<float>(w2) / a;
-        float z = wz0 * z0 + wz1 * z1 + wz2 * z2;
+        float z = wz0 * z1 + wz1 * z2 + wz2 * z3;
 
         if (z > this->getDepth(x, y)) {
           this->setDepth(x, y, z);
@@ -248,55 +243,56 @@ void JTX::Core::Renderer::drawTriangle(int x0, int y0, float z0, int x1, int y1,
   }
 }
 
-void JTX::Core::Renderer::rasterizeTriangle(const JTX::Core::Scene &scene,
-                                            const JTX::Core::Primitive &prim,
-                                            const JTX::Core::Face &face) {
-  if (!this->shader_->isBound()) {
-    throw std::runtime_error("Shader not bound");
-  }
-
-  // Screen XY
-  const int *v1 = prim.getScreen(face.v1);
-  const int x1 = v1[0];
-  const int y1 = v1[1];
-
-  const int *v2 = prim.getScreen(face.v2);
-  const int x2 = v2[0];
-  const int y2 = v2[1];
-
-  const int *v3 = prim.getScreen(face.v3);
-  const int x3 = v3[0];
-  const int y3 = v3[1];
-
-  // Z
-  const float z1 = prim.getVertex(face.v1)[2];
-  const float z2 = prim.getVertex(face.v2)[2];
-  const float z3 = prim.getVertex(face.v3)[2];
-
-  int minX = std::max(0, std::min(x1, std::min(x2, x3)));
-  int minY = std::max(0, std::min(y1, std::min(y2, y3)));
-  int maxX = std::min(this->w_ - 1, std::max(x1, std::max(x2, x3)));
-  int maxY = std::min(this->h_ - 1, std::max(y1, std::max(y2, y3)));
-
-  auto a = static_cast<float>(edgeFn(x1, y1, x2, y2, x3, y3));
-
-  for (int y = minY; y <= maxY; ++y) {
-    for (int x = minX; x <= maxX; ++x) {
-      int w0 = edgeFn(x2, y2, x3, y3, x, y);
-      int w1 = edgeFn(x3, y3, x1, y1, x, y);
-      int w2 = edgeFn(x1, y1, x2, y2, x, y);
-
-      if ((w0 >= 0 && w1 >= 0 && w2 >= 0) || (w0 <= 0 && w1 <= 0 && w2 <= 0)) {
-        float wz0 = static_cast<float>(w0) / a;
-        float wz1 = static_cast<float>(w1) / a;
-        float wz2 = static_cast<float>(w2) / a;
-        float z = wz0 * z1 + wz1 * z2 + wz2 * z3;
-
-        if (z > this->getDepth(x, y)) {
-          this->setDepth(x, y, z);
-          this->drawPixel(x, y, 0.0f, 0.0f, 0.0f);
-        }
-      }
-    }
-  }
-}
+// void JTX::Core::Renderer::rasterizeTriangle(const JTX::Core::Scene &scene,
+//                                             const JTX::Core::Primitive &prim,
+//                                             const JTX::Core::Face &face) {
+//   if (!this->shader_->isBound()) {
+//     throw std::runtime_error("Shader not bound");
+//   }
+//
+//   // Screen XY
+//   const int *v1 = prim.getScreen(face.v1);
+//   const int x1 = v1[0];
+//   const int y1 = v1[1];
+//
+//   const int *v2 = prim.getScreen(face.v2);
+//   const int x2 = v2[0];
+//   const int y2 = v2[1];
+//
+//   const int *v3 = prim.getScreen(face.v3);
+//   const int x3 = v3[0];
+//   const int y3 = v3[1];
+//
+//   // Z
+//   const float z1 = prim.getVertex(face.v1)[2];
+//   const float z2 = prim.getVertex(face.v2)[2];
+//   const float z3 = prim.getVertex(face.v3)[2];
+//
+//   int minX = std::max(0, std::min(x1, std::min(x2, x3)));
+//   int minY = std::max(0, std::min(y1, std::min(y2, y3)));
+//   int maxX = std::min(this->w_ - 1, std::max(x1, std::max(x2, x3)));
+//   int maxY = std::min(this->h_ - 1, std::max(y1, std::max(y2, y3)));
+//
+//   auto a = static_cast<float>(edgeFn(x1, y1, x2, y2, x3, y3));
+//
+//   for (int y = minY; y <= maxY; ++y) {
+//     for (int x = minX; x <= maxX; ++x) {
+//       int w0 = edgeFn(x2, y2, x3, y3, x, y);
+//       int w1 = edgeFn(x3, y3, x1, y1, x, y);
+//       int w2 = edgeFn(x1, y1, x2, y2, x, y);
+//
+//       if ((w0 >= 0 && w1 >= 0 && w2 >= 0) || (w0 <= 0 && w1 <= 0 && w2 <= 0))
+//       {
+//         float wz0 = static_cast<float>(w0) / a;
+//         float wz1 = static_cast<float>(w1) / a;
+//         float wz2 = static_cast<float>(w2) / a;
+//         float z = wz0 * z1 + wz1 * z2 + wz2 * z3;
+//
+//         if (z > this->getDepth(x, y)) {
+//           this->setDepth(x, y, z);
+//           this->drawPixel(x, y, 0.0f, 0.0f, 0.0f);
+//         }
+//       }
+//     }
+//   }
+// }

@@ -9,12 +9,15 @@ const static int FACE_SIZE = 1;
 
 Primitive::Primitive()
     : num_v_(0), num_f_(0), num_vt_(0), num_vn_(0), v_(nullptr), vt_(nullptr),
-      vn_(nullptr), f_(nullptr), n_(nullptr), screen_(nullptr) {}
+      vn_(nullptr), f_(nullptr), n_(nullptr), z_(nullptr), screen_(nullptr) {}
 
 Primitive::~Primitive() {
   delete[] v_;
+  delete[] vt_;
+  delete[] vn_;
   delete[] f_;
   delete[] n_;
+  delete[] z_;
 }
 
 /**
@@ -137,6 +140,7 @@ void Primitive::load(const std::string &path) {
   }
 
   v_ = reinterpret_cast<float *>(realloc(v_, 4 * num_v_ * sizeof(float)));
+  z_ = new float[num_v_];
   f_ = reinterpret_cast<Face *>(realloc(f_, num_f_ * sizeof(Face)));
   n_ = new float[3 * num_f_];
   screen_ = new int[2 * num_v_];
@@ -145,12 +149,12 @@ void Primitive::load(const std::string &path) {
 void Primitive::calculateNormals() {
   for (int i = 0; i < this->num_f_; i++) {
     const auto &face = this->f_[i];
-    const auto *v1 = this->getVertex(face.v1);
-    const auto *v2 = this->getVertex(face.v2);
-    const auto *v3 = this->getVertex(face.v3);
+    const auto v1 = this->getVertex(face.v1);
+    const auto v2 = this->getVertex(face.v2);
+    const auto v3 = this->getVertex(face.v3);
 
-    JTX::Util::Vec3f e1(v2[0] - v1[0], v2[1] - v1[1], v2[2] - v1[2]);
-    JTX::Util::Vec3f e2(v3[0] - v1[0], v3[1] - v1[1], v3[2] - v1[2]);
+    JTX::Util::Vec3f e1(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z);
+    JTX::Util::Vec3f e2(v3.x - v1.x, v3.y - v1.y, v3.z - v1.z);
 
     JTX::Util::Vec3f normal = e1.cross(e2).normalize();
 

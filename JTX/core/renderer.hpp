@@ -51,11 +51,11 @@ public:
   }
 
   // Bounding-box
-  void drawTriangle(int x0, int y0, float z0, int x1, int y1, float z1, int x2,
-                    int y2, float z2, float r, float g, float b);
-  inline void drawTriangle(int x0, int y0, float z0, int x1, int y1, float z1,
-                           int x2, int y2, float z2, JTX::Util::Color color) {
-    drawTriangle(x0, y0, z0, x1, y1, z1, x2, y2, z2, color.r, color.g, color.b);
+  void drawTriangle(Util::Vec2i v1, float z1, Util::Vec2i v2, float z2,
+                    Util::Vec2i v3, float z3, float r, float g, float b);
+  inline void drawTriangle(Util::Vec2i v1, float z1, Util::Vec2i v2, float z2,
+                           Util::Vec2i v3, float z3, JTX::Util::Color color) {
+    drawTriangle(v1, z1, v2, z2, v3, z3, color.r, color.g, color.b);
   }
   void rasterizeTriangle(const Scene &scene, const Primitive &prim,
                          const Face &face);

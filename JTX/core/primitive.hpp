@@ -24,32 +24,29 @@ public:
   void applyTransform(const JTX::Util::Mat4 *tf);
   void calculateNormals();
 
-  inline float *getNormal(int i) { return n_ + 3 * i; }
-  [[nodiscard]] inline const float *getFaceNormal(int i) const {
-    return n_ + (3 * i);
-  };
-
-  inline float *getVertex(int i) { return v_ + 4 * i; }
-  inline float *getVertexNormal(int i) { return vn_ + 3 * i; }
-  inline float *getVertexTexture(int i) { return vt_ + 3 * i; }
-
-  [[nodiscard]] inline const float *getVertex(int i) const {
-    return v_ + 4 * i;
-  }
-  [[nodiscard]] inline const float *getVertexNormal(int i) const {
-    return vn_ + 3 * i;
-  }
-  [[nodiscard]] inline const float *getVertexTexture(int i) const {
-    return vt_ + 3 * i;
-  }
-
-  inline int *getScreen(int i) { return screen_ + 2 * i; }
-  [[nodiscard]] inline const int *getScreen(int i) const {
-    return screen_ + 2 * i;
-  }
-
-  [[nodiscard]] inline Face *getFace(int i) { return f_ + i; }
   [[nodiscard]] inline const Face *getFace(int i) const { return f_ + i; }
+  inline Util::Vec3f getFaceNormal(int i) {
+    float *n = n_ + 3 * i;
+    return {n[0], n[1], n[2]};
+  }
+
+  inline Util::Vec4f getVertex(int i) {
+    int j = 4 * i;
+    return {v_[j], v_[j + 1], v_[j + 2], v_[j + 3]};
+  }
+  inline Util::Vec3f getVertexNormal(int i) {
+    float *vn = vn_ + 3 * i;
+    return {vn[0], vn[1], vn[2]};
+  }
+  inline Util::Vec3f getVertexTexture(int i) {
+    float *vt = vt_ + 3 * i;
+    return {vt[0], vt[1], vt[2]};
+  }
+  inline Util::Vec2i getScreen(int i) {
+    int *s = getScreenPtr(i);
+    return {s[0], s[1]};
+  }
+  inline float getZ(int i) { return z_[i]; }
 
   [[nodiscard]] inline int getNumVertices() const { return num_v_; };
   [[nodiscard]] inline int getNumFaces() const { return num_f_; };
@@ -61,8 +58,14 @@ private:
   float *v_;
   float *vt_;
   float *vn_;
+  float *z_;
   Face *f_;
   float *n_;
   int *screen_;
+
+  inline int *getScreenPtr(int i) { return screen_ + 2 * i; }
+  inline void setZ(int i, float z) { z_[i] = z; }
+
+  friend class Renderer;
 };
 } // namespace JTX::Core

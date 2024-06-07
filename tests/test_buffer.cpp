@@ -10,7 +10,7 @@ static const std::string CUBE_PATH = "../../Tests/primitives/cube.obj";
 static const std::string HEAD_PATH = "../../Tests/primitives/head.obj";
 static const std::string GT3_PATH = "../../Tests/primitives/gt3rs.obj";
 
-static const bool ENABLE_STRESS_TESTS = false;
+static const bool ENABLE_STRESS_TESTS = true;
 
 TEST_CASE("Renderer saveFb() with crossing lines", "[SaveFB]") {
   JTX::Core::DefaultShader shader{};
@@ -58,7 +58,7 @@ TEST_CASE("Head wireframe", "[SaveFB]") {
 TEST_CASE("Test draw triangle", "[SaveFB]") {
   JTX::Core::DefaultShader shader{};
   JTX::Core::Renderer r(1000, 1000, &shader, 3);
-  r.drawTriangle(300, 300, 1.0f, 700, 300, 1.0f, 500, 700, 1.0f,
+  r.drawTriangle({300, 300}, 1.0f, {700, 300}, 1.0f, {500, 700}, 1.0f,
                  JTX::Util::WHITE);
   r.saveFb("triangle.png", 0);
 }

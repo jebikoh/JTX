@@ -1,7 +1,7 @@
 #include "shader.hpp"
 
 namespace JTX::Core {
-inline void DefaultShader::vertex(float *vertex) {
+inline void DefaultShader::vertex(Util::Vec4f &vertex) {
   JTX::Util::applyTransform(ub_->cameraMatrix, vertex);
 }
 

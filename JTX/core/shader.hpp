@@ -12,7 +12,7 @@ class Shader {
 public:
   virtual ~Shader() = default;
 
-  inline virtual void vertex(float *vertex) = 0;
+  inline virtual void vertex(Util::Vec4f &vertex) = 0;
   virtual void fragment(const float *bary, const int *screen,
                         const float *normal, float *color) = 0;
   virtual void bind(const UniformBuffer &ub) = 0;
@@ -21,9 +21,7 @@ public:
 
 class DefaultShader : public Shader {
 public:
-  // TODO: passing the vertices as an array is pretty dangerous
-  //       potential switch to passing Vec3f/Vec4f in the future
-  inline void vertex(float *vertex) override;
+  inline void vertex(Util::Vec4f &vertex) override;
 
   void fragment(const float *bary, const int *screen, const float *normal,
                 float *color) override;

@@ -77,7 +77,7 @@ TEST_CASE("Renderer drawLine() with color struct") {
 
 TEST_CASE("Renderer drawTriangle()", "[Renderer]") {
   JTX::Core::Renderer r(10, 10, nullptr, 3);
-  r.drawTriangle(2, 2, 1.0f, 8, 2, 1.0f, 5, 8, 1.0f, 255.0f, 0.0f, 0.0f);
+  r.drawTriangle({2, 2}, 1.0f, {8, 2}, 1.0f, {5, 8}, 1.0f, 255.0f, 0.0f, 0.0f);
   REQUIRE(r.getPixel(2, 2, 0) == 255.0f);
   REQUIRE(r.getPixel(3, 2, 0) == 255.0f);
   REQUIRE(r.getPixel(4, 2, 0) == 255.0f);

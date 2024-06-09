@@ -67,26 +67,27 @@ TEST_CASE("Head perspective projection", "[SaveFB]") {
   JTX::Core::DefaultShader shader{};
   JTX::Core::Renderer r(2000, 2000, &shader, 3);
 
-  JTX::Core::Primitive m{};
-  m.load(HEAD_PATH);
+  auto m = std::make_unique<JTX::Core::Primitive>();
+  m->load(HEAD_PATH);
 
   JTX::Util::Mat4 rot_z =
       JTX::Util::Mat4::rotation(JTX::Util::degToRad(180), JTX::Util::Axis::Z);
   JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(40.0f, 40.0f, 40.0f);
-  m.applyTransform(&rot_z);
-  m.applyTransform(&scale);
-  m.calculateNormals();
+  m->applyTransform(&rot_z);
+  m->applyTransform(&scale);
+  m->calculateNormals();
 
   JTX::Util::Vec3f pos{0.0f, 0.0f, 100.0f};
   JTX::Util::Vec3f target{0.0f, 0.0f, 0.0f};
   JTX::Util::Vec3f up{0.0f, 1.0f, 0.0f};
   JTX::Core::Camera cam(pos, target, up, 1.0472f, 0.1f, 1000.0f);
 
-  JTX::Core::DirLight light({0.0f, 0.0f, -1.0f}, 1.0f);
+  auto light = std::make_unique<JTX::Core::DirLight>(
+      JTX::Util::Vec3f(0.0f, 0.0f, -1.0f), 1.0f);
 
   JTX::Core::Scene scene{cam};
-  scene.addPrimitive(m);
-  scene.addLight(light);
+  scene.addPrimitive(std::move(m));
+  scene.addLight(std::move(light));
 
   r.render(&scene);
   r.saveFb("head_perspective.png", 0);
@@ -96,28 +97,30 @@ TEST_CASE("Cube perspective projection", "[SaveFB]") {
   JTX::Core::DefaultShader shader{};
   JTX::Core::Renderer r(1000, 1000, &shader, 3);
 
-  JTX::Core::Primitive m{};
-  m.load(CUBE_PATH);
+  auto m = std::make_unique<JTX::Core::Primitive>();
+  m->load(CUBE_PATH);
 
   float rad = JTX::Util::degToRad(45);
   JTX::Util::Mat4 rot_x = JTX::Util::Mat4::rotation(rad, JTX::Util::Axis::X);
   JTX::Util::Mat4 rot_y = JTX::Util::Mat4::rotation(rad, JTX::Util::Axis::Y);
   JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(5.0f, 5.0f, 5.0f);
-  m.applyTransform(&rot_x);
-  m.applyTransform(&rot_y);
-  m.applyTransform(&scale);
-  m.calculateNormals();
+  m->applyTransform(&rot_x);
+  m->applyTransform(&rot_y);
+  m->applyTransform(&scale);
+  m->calculateNormals();
 
   JTX::Util::Vec3f pos{0.0f, 0.0f, 30.0f};
   JTX::Util::Vec3f target{0.0f, 0.0f, 0.0f};
   JTX::Util::Vec3f up{0.0f, 1.0f, 0.0f};
   JTX::Core::Camera cam(pos, target, up, 1.0472f, 0.1f, 100.0f);
 
-  JTX::Core::DirLight light({0.0f, 0.0f, -1.0f}, 1.0f);
+  auto light = std::make_unique<JTX::Core::DirLight>(
+      JTX::Util::Vec3f(0.0f, 0.0f, -1.0f), 1.0f);
 
   JTX::Core::Scene scene{cam};
-  scene.addPrimitive(m);
-  scene.addLight(light);
+
+  scene.addPrimitive(std::move(m));
+  scene.addLight(std::move(light));
 
   r.render(&scene);
   r.saveFb("cube_perspective.png", 0);
@@ -130,8 +133,8 @@ TEST_CASE("Perspective projection stress test", "[Stress]") {
   JTX::Core::DefaultShader shader{};
   JTX::Core::Renderer r(1920, 1080, &shader, 3);
 
-  JTX::Core::Primitive m{};
-  m.load(GT3_PATH);
+  auto m = std::make_unique<JTX::Core::Primitive>();
+  m->load(GT3_PATH);
 
   JTX::Util::Mat4 scale = JTX::Util::Mat4::scale(7.0f, 7.0f, 7.0f);
   JTX::Util::Mat4 rot_z = JTX::Util::Mat4::rotation(JTX::Util::degToRad(180.0f),
@@ -142,23 +145,24 @@ TEST_CASE("Perspective projection stress test", "[Stress]") {
                                                     JTX::Util::Axis::Y);
   JTX::Util::Mat4 trans = JTX::Util::Mat4::translation(0.0f, -1.0f, 0.0f);
 
-  m.applyTransform(&scale);
-  m.applyTransform(&rot_y);
-  m.applyTransform(&rot_x);
-  m.applyTransform(&trans);
-  m.applyTransform(&rot_z);
+  m->applyTransform(&scale);
+  m->applyTransform(&rot_y);
+  m->applyTransform(&rot_x);
+  m->applyTransform(&trans);
+  m->applyTransform(&rot_z);
 
-  m.calculateNormals();
+  m->calculateNormals();
   JTX::Util::Vec3f pos{0.0f, 0.0f, 30.0f};
   JTX::Util::Vec3f target{0.0f, 0.0f, 0.0f};
   JTX::Util::Vec3f up{0.0f, 1.0f, 0.0f};
   JTX::Core::Camera cam(pos, target, up, 1.0472f, 0.1f, 100.0f);
 
-  JTX::Core::DirLight light({0.0f, 0.0f, -1.0f}, 1.0f);
+  auto light = std::make_unique<JTX::Core::DirLight>(
+      JTX::Util::Vec3f(0.0f, 0.0f, -1.0f), 1.0f);
 
   JTX::Core::Scene scene{cam};
-  scene.addPrimitive(m);
-  scene.addLight(light);
+  scene.addPrimitive(std::move(m));
+  scene.addLight(std::move(light));
 
   r.render(&scene);
   r.saveFb("persp_stress_test.png", 0);

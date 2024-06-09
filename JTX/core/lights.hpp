@@ -28,12 +28,14 @@ public:
     return direction_;
   }
 
+  [[nodiscard]] float getIntensity() const { return intensity_; }
+
   /**
    * Calculate the intensity of the light at a given point given surface normal
    * @param normal Surface normal
    * @return float Intensity of the light at the point
    */
-  [[nodiscard]] float getIntensity(const JTX::Util::Vec3f &normal) const {
+  [[nodiscard]] float calculateIntensity(const JTX::Util::Vec3f &normal) const {
     return this->intensity_ * std::max(0.0f, -normal.dot(direction_));
   }
 

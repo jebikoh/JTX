@@ -166,4 +166,8 @@ private:
   JTX::Util::Mat4 t_;
   bool dirty_;
 };
+
+static const Camera DEFAULT_CAM =
+    Camera({0.0f, 0.0f, 30.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, 1.0472f,
+           0.1f, 1000.0f);
 } // namespace JTX::Core

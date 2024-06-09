@@ -181,7 +181,7 @@ TEST_CASE("Apply scale transformation to cube primitive", "[Primitive]") {
 TEST_CASE("Test DirLight intensity", "[Lights]") {
   JTX::Core::DirLight dl(JTX::Util::Vec3f(1.0f, 1.0f, 1.0f), 1.0f);
 
-  REQUIRE_THAT(dl.getIntensity(JTX::Util::Vec3f(-1.0f, -1.0f, -1.0f)),
+  REQUIRE_THAT(dl.calculateIntensity(JTX::Util::Vec3f(-1.0f, -1.0f, -1.0f)),
                Catch::Matchers::WithinAbs(1.7320508075688776f, 0.0001f));
 }
 
@@ -198,7 +198,7 @@ TEST_CASE("Test DirLight intensity with primitive", "[Primitive]") {
 
   JTX::Core::DirLight dl(JTX::Util::Vec3f(0.0f, 0.0f, -1.0f), 1.0f);
 
-  float intensity = dl.getIntensity(p.getFaceNormal(3));
+  float intensity = dl.calculateIntensity(p.getFaceNormal(3));
   REQUIRE_THAT(intensity, Catch::Matchers::WithinAbs(0.5f, 0.0001f));
 }
 
@@ -282,17 +282,22 @@ TEST_CASE("Test scene add primitive and dirlight", "[Scene]") {
       JTX::Util::Vec3f(0.0f, 0.0f, 30.0f), JTX::Util::Vec3f(0.0f, 0.0f, 0.0f),
       JTX::Util::Vec3f(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
   JTX::Core::Scene scene(cam);
-  JTX::Core::Primitive p;
-  p.load(CUBE_PATH);
-  JTX::Core::DirLight dl(JTX::Util::Vec3f(1.0f, 1.0f, 1.0f), 1.0f);
-  auto cube = scene.addLight(dl);
-  auto l = scene.addPrimitive(p);
+
+  auto p = std::make_unique<JTX::Core::Primitive>();
+  p->load(CUBE_PATH);
+  auto l = scene.addPrimitive(std::move(p));
+
+  auto dl = std::make_unique<JTX::Core::DirLight>(
+      JTX::Util::Vec3f(1.0f, 1.0f, 1.0f), 1.0f);
+  auto light = scene.addLight(std::move(dl));
 
   REQUIRE(scene.getNumPrimitives() == 1);
   REQUIRE(scene.getNumLights() == 1);
 
-  REQUIRE(scene.getPrimitive(cube).getNumVertices() == 8);
+  REQUIRE(scene.getPrimitive(l).getNumVertices() == 8);
   REQUIRE(scene.getPrimitive(l).getNumFaces() == 12);
+
+  REQUIRE(scene.getLight(light).getIntensity() == 1.0f);
 
   JTX::Util::Vec3f pos = scene.getCamera().getPos();
 
@@ -306,15 +311,84 @@ TEST_CASE("Test scene remove primitive and dirlight", "[Scene]") {
       JTX::Util::Vec3f(0.0f, 0.0f, 30.0f), JTX::Util::Vec3f(0.0f, 0.0f, 0.0f),
       JTX::Util::Vec3f(0.0f, 1.0f, 0.0f), 1.0472f, 0.1f, 100.0f);
   JTX::Core::Scene scene(cam);
-  JTX::Core::Primitive p;
-  p.load(CUBE_PATH);
-  JTX::Core::DirLight dl(JTX::Util::Vec3f(1.0f, 1.0f, 1.0f), 1.0f);
-  auto cube = scene.addLight(dl);
-  auto l = scene.addPrimitive(p);
 
-  scene.removePrimitive(l);
-  scene.removeLight(cube);
+  auto p = std::make_unique<JTX::Core::Primitive>();
+  p->load(CUBE_PATH);
+  auto primitiveId = scene.addPrimitive(std::move(p));
+
+  auto dl = std::make_unique<JTX::Core::DirLight>(
+      JTX::Util::Vec3f(1.0f, 1.0f, 1.0f), 1.0f);
+  auto lightId = scene.addLight(std::move(dl));
+
+  REQUIRE(scene.getNumPrimitives() == 1);
+  REQUIRE(scene.getNumLights() == 1);
+
+  scene.removePrimitive(primitiveId);
+  scene.removeLight(lightId);
 
   REQUIRE(scene.getNumPrimitives() == 0);
   REQUIRE(scene.getNumLights() == 0);
+
+  REQUIRE_THROWS_AS(scene.getPrimitive(primitiveId), std::runtime_error);
+  REQUIRE_THROWS_AS(scene.getLight(lightId), std::runtime_error);
+}
+
+TEST_CASE("Test scene remove primitive in middle maintains index", "[Scene]") {
+  JTX::Core::Scene scene(JTX::Core::DEFAULT_CAM);
+
+  auto p1 = std::make_unique<JTX::Core::Primitive>();
+  auto p2 = std::make_unique<JTX::Core::Primitive>();
+  auto p3 = std::make_unique<JTX::Core::Primitive>();
+  p1->load(CUBE_PATH);
+  p2->load(CUBE_PATH);
+  p3->load(HEAD_PATH);
+
+  int p1v = p1->getNumVertices();
+  int p3v = p3->getNumVertices();
+
+  auto id1 = scene.addPrimitive(std::move(p1));
+  auto id2 = scene.addPrimitive(std::move(p2));
+  auto id3 = scene.addPrimitive(std::move(p3));
+
+  REQUIRE(scene.getNumPrimitives() == 3);
+
+  scene.removePrimitive(id2);
+
+  REQUIRE(scene.getNumPrimitives() == 2);
+
+  auto p1v2 = scene.getPrimitive(id1).getNumVertices();
+  auto p3v2 = scene.getPrimitive(id3).getNumVertices();
+
+  REQUIRE(p1v == p1v2);
+  REQUIRE(p3v == p3v2);
+}
+
+TEST_CASE("Test scene remove light in middle maintains index", "[Scene]") {
+  JTX::Core::Scene scene(JTX::Core::DEFAULT_CAM);
+
+  auto l1 = std::make_unique<JTX::Core::DirLight>(
+      JTX::Util::Vec3f(1.0f, 1.0f, 1.0f), 0.25f);
+  auto l2 = std::make_unique<JTX::Core::DirLight>(
+      JTX::Util::Vec3f(1.0f, 1.0f, 1.0f), 0.5f);
+  auto l3 = std::make_unique<JTX::Core::DirLight>(
+      JTX::Util::Vec3f(1.0f, 1.0f, 1.0f), 0.75f);
+
+  auto id1 = scene.addLight(std::move(l1));
+  auto id2 = scene.addLight(std::move(l2));
+  auto id3 = scene.addLight(std::move(l3));
+
+  float l1i = scene.getLight(id1).getIntensity();
+  float l3i = scene.getLight(id3).getIntensity();
+
+  REQUIRE(scene.getNumLights() == 3);
+
+  scene.removeLight(id2);
+
+  REQUIRE(scene.getNumLights() == 2);
+
+  float l1i2 = scene.getLight(id1).getIntensity();
+  float l3i2 = scene.getLight(id3).getIntensity();
+
+  REQUIRE(l1i == l1i2);
+  REQUIRE(l3i == l3i2);
 }

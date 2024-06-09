@@ -38,7 +38,7 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene,
 
   auto wf = static_cast<float>(this->w_);
   auto hf = static_cast<float>(this->h_);
-  for (auto const &[id, prim] : scene->getPrimitives()) {
+  for (auto const &prim : scene->getPrimitives()) {
     for (int i = 0; i < prim->getNumVertices(); i++) {
       // Clip space
       Util::Vec4f v = prim->getVertex(i);
@@ -74,7 +74,7 @@ void JTX::Core::Renderer::render(JTX::Core::Scene *scene,
         intensity = 0.0f;
         for (int j = 0; j < scene->getNumLights(); ++j) {
           JTX::Core::DirLight light = scene->getLight(j);
-          intensity += light.getIntensity(n);
+          intensity += light.calculateIntensity(n);
         }
         intensity /= static_cast<float>(scene->getNumLights());
       }

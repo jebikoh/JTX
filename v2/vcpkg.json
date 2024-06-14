@@ -1,0 +1,15 @@
+{
+  "name" : "jtx",
+  "version-string" : "1.0.0",
+  "builtin-baseline" : "94a50e8c1357d423840e22451e122f56d62b5c20",
+  "dependencies" : [ {
+    "name" : "openblas",
+    "version>=" : "0.3.27"
+  }, {
+    "name" : "vcpkg-cmake-config",
+    "version>=" : "2024-05-23"
+  }, {
+    "name" : "vcpkg-cmake",
+    "version>=" : "2024-04-18"
+  } ]
+}

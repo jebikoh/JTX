@@ -15,7 +15,7 @@ namespace jtx {
 
         // Check for NaN
         [[nodiscard]] inline bool valid() const {
-            return !(jtx::isNaN(x) || jtx::isNaN(y) || isNaN(z));
+            return !(jtx::isNaN(x) || jtx::isNaN(y) || jtx::isNaN(z));
         }
 
         //region Constructors

@@ -7,7 +7,9 @@
 #include <iostream>
 
 namespace jtx {
-#ifndef NDEBUG
+#ifdef NDEBUG
+#define ASSERT(condition) ((void) 0)
+#else
 #define ASSERT(condition) \
     do {                  \
         if (!(condition)) { \
@@ -16,8 +18,6 @@ namespace jtx {
            std::abort(); \
         } \
     } while (false)
-#else
-#define ASSERT(condition) ((void) 0)
 #endif
 }
 

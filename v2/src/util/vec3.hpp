@@ -14,11 +14,11 @@ namespace jtx {
         T x, y, z;
 
         // Check for NaN
-        inline bool valid() {
-            return !(isNaN(x) || isNaN(y) || isNan(z));
+        [[nodiscard]] inline bool valid() const {
+            return !(jtx::isNaN(x) || jtx::isNaN(y) || isNaN(z));
         }
 
-        // Constructors
+        //region Constructors
         Vec3() : x(JTX_ZERO), y(JTX_ZERO), z(JTX_ZERO) {};
 
         Vec3(T x, T y, T z) : x(x), y(y), z(z) { ASSERT(valid()); };
@@ -26,8 +26,9 @@ namespace jtx {
         Vec3(const Vec3 &other) : x(other.x), y(other.y), z(other.z) { ASSERT(valid()); };
 
         ~Vec3() = default;
+        //endregion
 
-        // Unary operators
+        //region Unary operators
         inline Vec3 operator-() const {
             return {-x, -y, -z};
         }
@@ -65,8 +66,9 @@ namespace jtx {
             z--;
             return temp;
         }
+        //endregion
 
-        // Binary operators
+        //region Binary operators
         inline Vec3 &operator=(const Vec3 &other) {
             ASSERT(other.valid());
             x = other.x;
@@ -100,16 +102,17 @@ namespace jtx {
         }
 
         inline Vec3 operator/(const Vec3 &other) const {
-            ASSERT(other.x != JTX_ZERO && other.y != JTX_ZERO && other.z != JTX_ZERO);
+            ASSERT(JTX_ZERO != other.x && JTX_ZERO != other.y && JTX_ZERO != other.z);
             return {x / other.x, y / other.y, z / other.z};
         }
 
         inline Vec3 operator/(T scalar) const {
-            ASSERT(scalar != JTX_ZERO);
+            ASSERT(JTX_ZERO != scalar);
             return {x / scalar, y / scalar, z / scalar};
         }
+        //endregion
 
-        // In-place Assignment Operators
+        //region In-place Assignment Operators
         inline Vec3 &operator+=(const Vec3 &other) {
             x += other.x;
             y += other.y;
@@ -157,8 +160,9 @@ namespace jtx {
             ASSERT(valid());
             return *this;
         }
+        //endregion
 
-        // Member functions
+        //region Member functions
         [[nodiscard]] inline Vec3 cross(const Vec3 &other) const {
             return {y * other.z - z * other.y, z * other.x - x * other.z,
                     x * other.y - y * other.x};
@@ -227,32 +231,37 @@ namespace jtx {
         }
 
         inline auto min() const {
-            return std::min({x, y, z});
+            return std::min(z, std::min(x, y));
         }
 
         static inline Vec3 min(const Vec3 &a, const Vec3 &b) {
             return {std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z)};
         }
 
+        inline auto max() const {
+            return std::max(z, std::max(x, y));
+        }
+
         static inline Vec3 max(const Vec3 &a, const Vec3 &b) {
             return {std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z)};
         }
 
-        inline auto hprod() const {
+        inline T hprod() const {
             return x * y * z;
         }
 
-        static inline auto hprod(const Vec3 &v) {
+        static inline T hprod(const Vec3 &v) {
             return v.x * v.y * v.z;
         }
 
         static inline auto lerp(const Vec3 &a, const Vec3 &b, float t) {
-            return (1 - t) * a + t * b;
+            return a * (1 - t) + b * t;
         }
 
-        static inline auto fma(const Vec3 &a, const Vec3 &b, const Vec3 &c) {
+        static inline Vec3 fma(const Vec3 &a, const Vec3 &b, const Vec3 &c) {
             return a * b + c;
         }
+        //endregion
     };
 
 

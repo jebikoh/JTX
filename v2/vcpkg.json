@@ -11,5 +11,8 @@
   }, {
     "name" : "vcpkg-cmake",
     "version>=" : "2024-04-18"
+  }, {
+    "name" : "catch2",
+    "version>=" : "3.6.0"
   } ]
 }

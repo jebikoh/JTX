@@ -225,6 +225,34 @@ namespace jtx {
         static inline Vec3 floor(const Vec3 &v) {
             return {jtx::floor(v.x), jtx::floor(v.y), jtx::floor(v.z)};
         }
+
+        inline auto min() const {
+            return std::min({x, y, z});
+        }
+
+        static inline Vec3 min(const Vec3 &a, const Vec3 &b) {
+            return {std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z)};
+        }
+
+        static inline Vec3 max(const Vec3 &a, const Vec3 &b) {
+            return {std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z)};
+        }
+
+        inline auto hprod() const {
+            return x * y * z;
+        }
+
+        static inline auto hprod(const Vec3 &v) {
+            return v.x * v.y * v.z;
+        }
+
+        static inline auto lerp(const Vec3 &a, const Vec3 &b, float t) {
+            return (1 - t) * a + t * b;
+        }
+
+        static inline auto fma(const Vec3 &a, const Vec3 &b, const Vec3 &c) {
+            return a * b + c;
+        }
     };
 
 

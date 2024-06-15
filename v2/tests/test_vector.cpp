@@ -10,6 +10,10 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 
+static const float T_DEG_90 = 1.570796f;
+static const float T_EPS = 0.0001f;
+
+
 //region Vec3: Constructors
 TEST_CASE("Vec3f default constructor", "[Vec3]") {
     jtx::Vec3f v;
@@ -456,7 +460,7 @@ TEST_CASE("Vec3f angle", "[Vec3]") {
     jtx::Vec3f forward{0.0f, 0.0f, 1.0f};
     auto theta = jtx::Vec3f::angle(up, forward);
     // 90 degrees
-    REQUIRE_THAT(theta, Catch::Matchers::WithinRel(1.570796f, 0.0001f));
+    REQUIRE_THAT(theta, Catch::Matchers::WithinRel(T_DEG_90, 0.0001f));
 }
 
 // TODO: this appears to be backwards?!
@@ -686,6 +690,14 @@ TEST_CASE("Vec2f * operator (scalar)", "[Vec2]") {
     REQUIRE(v2.y == 4.0f);
 }
 
+TEST_CASE("Vec2f * operator (LHS scalar") {
+    float s = 2.0f;
+    jtx::Vec2f v1(1.0f, 2.0f);
+    jtx::Vec2f v2 = s * v1;
+    REQUIRE(v2.x == 2.0f);
+    REQUIRE(v2.y == 4.0f);
+}
+
 TEST_CASE("Vec2f / operator", "[Vec2]") {
     jtx::Vec2f v1(4.0f, 10.0f);
     jtx::Vec2f v2(4.0f, 5.0f);
@@ -700,6 +712,14 @@ TEST_CASE("Vec2f / operator (scalar)", "[Vec2]") {
     jtx::Vec2f v2 = v1 / s;
     REQUIRE(v2.x == 1.0f);
     REQUIRE(v2.y == 2.0f);
+}
+
+TEST_CASE("Vec2f / operator (LHS scalar)", "[Vec2]") {
+    float s = 2.0f;
+    jtx::Vec2f v1(2.0f, 4.0f);
+    jtx::Vec2f v2 = s / v1;
+    REQUIRE(v2.x == 1.0f);
+    REQUIRE(v2.y == 0.5f);
 }
 //endregion
 
@@ -801,6 +821,20 @@ TEST_CASE("Vec2f abs (static)", "[Vec2]") {
     REQUIRE(v2.y == 2.0f);
 }
 
+TEST_CASE("Vec2f absdot", "[Vec2]") {
+    jtx::Vec2f v1(1.0f, 2.0f);
+    jtx::Vec2f v2(-4.0f, -5.0f);
+    auto dot = v1.absdot(v2);
+    REQUIRE(dot == 14.0f);
+}
+
+TEST_CASE("Vec2f absdot (static)", "[Vec2]") {
+    jtx::Vec2f v1(1.0f, 2.0f);
+    jtx::Vec2f v2(-4.0f, -5.0f);
+    auto dot = jtx::Vec2f::absdot(v1, v2);
+    REQUIRE(dot == 14.0f);
+}
+
 TEST_CASE("Vec2f ceil", "[Vec2]") {
     jtx::Vec2f v(1.1f, 2.2f);
     v.ceil();
@@ -884,6 +918,23 @@ TEST_CASE("Vec2f FMA", "[Vec2]") {
     auto v4 = jtx::Vec2f::fma(v1, v2, v3);
     REQUIRE(v4.x == 11.0f);
     REQUIRE(v4.y == 18.0f);
+}
+
+TEST_CASE("Vec2f angle", "[Vec2]") {
+    jtx::Vec2f up{0.0f, 1.0f};
+    jtx::Vec2f right{1.0f, 0.0f};
+    auto theta = jtx::Vec2f::angle(up, right);
+    // 90 degrees
+    REQUIRE_THAT(theta, Catch::Matchers::WithinRel(T_DEG_90, 0.0001f));
+}
+
+// TODO: this appears to be backwards?!
+TEST_CASE("Vec2f Gram Schmidt", "[Vec2]") {
+    jtx::Vec2f b{1.0f, 0.0f};
+    jtx::Vec2f a{1.0f, 1.0f};
+    auto c = jtx::Vec2f::gramSchmidt(a, b);
+    REQUIRE(c.x == 0.0f);
+    REQUIRE(c.y == 1.0f);
 }
 //endregion
 

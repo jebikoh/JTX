@@ -96,6 +96,10 @@ namespace jtx {
             return {x * scalar, y * scalar};
         }
 
+        friend inline Vec2 operator*(T scalar, const Vec2 &v) {
+            return v * scalar;
+        }
+
         inline Vec2 operator/(const Vec2 &other) const {
             ASSERT(JTX_ZERO != other.x && JTX_ZERO != other.y);
             return {x / other.x, y / other.y};
@@ -104,6 +108,11 @@ namespace jtx {
         inline Vec2 operator/(T scalar) const {
             ASSERT(JTX_ZERO != scalar);
             return {x / scalar, y / scalar};
+        }
+
+        friend inline Vec2 operator/(T scalar, const Vec2 &v) {
+            ASSERT(JTX_ZERO != v.x && JTX_ZERO != v.y);
+            return {scalar / v.x, scalar / v.y};
         }
         //endregion
 
@@ -160,6 +169,24 @@ namespace jtx {
             return this->x * _x + this->y * _y;
         }
 
+        inline Vec2 &abs() {
+            x = std::abs(x);
+            y = std::abs(y);
+            return *this;
+        }
+
+        static inline Vec2 abs(const Vec2 &v) {
+            return {std::abs(v.x), std::abs(v.y)};
+        }
+
+        inline T absdot(const Vec2 &other) {
+            return std::abs(dot(other));
+        }
+
+        static inline T absdot(const Vec2 &a, const Vec2 &b) {
+            return std::abs(a.dot(b));
+        }
+
         [[nodiscard]] inline float len() const { return std::sqrt(x * x + y * y); }
 
         inline Vec2 &normalize() {
@@ -177,16 +204,6 @@ namespace jtx {
             } else {
                 return Vec2{};
             }
-        }
-
-        inline Vec2 &abs() {
-            x = std::abs(x);
-            y = std::abs(y);
-            return *this;
-        }
-
-        static inline Vec2 abs(const Vec2 &v) {
-            return {std::abs(v.x), std::abs(v.y)};
         }
 
         inline Vec2 &ceil() {
@@ -239,6 +256,17 @@ namespace jtx {
 
         static inline Vec2 fma(const Vec2 &a, const Vec2 &b, const Vec2 &c) {
             return a * b + c;
+        }
+
+        static inline float angle(const Vec2 &a, const Vec2 &b) {
+            if (a.dot(b) < 0) {
+                return PI_F - 2 * std::asin((a - b).len() / 2);
+            }
+            return 2 * std::asin((a - b).len() / 2);
+        }
+
+        static inline Vec2 gramSchmidt(const Vec2 &a, const Vec2 &b) {
+            return a - (b * a.dot(b));
         }
         //endregion
     };

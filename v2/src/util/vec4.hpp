@@ -19,7 +19,7 @@ namespace jtx {
         }
 
         //region Constructors
-        Vec4() : x(JTX_ZERO), y(JTX_ZERO), z(JTX_ZERO), w(JTX_ZERO){};
+        Vec4() : x(JTX_ZERO), y(JTX_ZERO), z(JTX_ZERO), w(JTX_ZERO) {};
 
         Vec4(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) { ASSERT(valid()); };
 
@@ -187,10 +187,7 @@ namespace jtx {
         inline Vec4 &normalize() {
             float l = len();
             if (l != 0) {
-                x /= l;
-                y /= l;
-                z /= l;
-                w /= l;
+                (*this) /= l;
             }
             return *this;
         }
@@ -198,7 +195,7 @@ namespace jtx {
         static inline Vec4 normalize(const Vec4 &v) {
             float l = v.len();
             if (l != 0) {
-                return {v.x / l, v.y / l, v.z / l, v.w / l};
+                return v / l;
             } else {
                 return Vec4{};
             }

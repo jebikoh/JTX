@@ -181,9 +181,7 @@ namespace jtx {
         inline Vec3 &normalize() {
             float l = len();
             if (l != 0) {
-                x /= l;
-                y /= l;
-                z /= l;
+                (*this) /= l;
             }
             return *this;
         }
@@ -191,7 +189,7 @@ namespace jtx {
         static inline Vec3 normalize(const Vec3 &v) {
             float l = v.len();
             if (l != 0) {
-                return {v.x / l, v.y / l, v.z / l};
+                return v / l;
             } else {
                 return Vec3{};
             }

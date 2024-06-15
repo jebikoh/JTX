@@ -189,6 +189,15 @@ TEST_CASE("Vec3f * operator (scalar)", "[Vec3]") {
     REQUIRE(v2.z == 6.0f);
 }
 
+TEST_CASE("Vec3f * operator (LHS scalar)", "[Vec3]") {
+    float s = 2.0f;
+    jtx::Vec3f v1(1.0f, 2.0f, 3.0f);
+    jtx::Vec3f v2 = s * v1;
+    REQUIRE(v2.x == 2.0f);
+    REQUIRE(v2.y == 4.0f);
+    REQUIRE(v2.z == 6.0f);
+}
+
 TEST_CASE("Vec3f / operator", "[Vec3]") {
     jtx::Vec3f v1(4.0f, 10.0f, 18.0f);
     jtx::Vec3f v2(4.0f, 5.0f, 6.0f);
@@ -205,6 +214,15 @@ TEST_CASE("Vec3f / operator (scalar)", "[Vec3]") {
     REQUIRE(v2.x == 1.0f);
     REQUIRE(v2.y == 2.0f);
     REQUIRE(v2.z == 3.0f);
+}
+
+TEST_CASE("Vec3f / operator (LHS scalar)", "[Vec3]") {
+    float s = 2.0f;
+    jtx::Vec3f v1(2.0f, 4.0f, 6.0f);
+    jtx::Vec3f v2 = s / v1;
+    REQUIRE(v2.x == 1.0f);
+    REQUIRE(v2.y == 0.5f);
+    REQUIRE(v2.z == 1.0f / 3.0f);
 }
 //endregion
 
@@ -495,6 +513,15 @@ TEST_CASE("Vec3i floor (static)") {
     REQUIRE(v2.x == 1);
     REQUIRE(v2.y == 2);
     REQUIRE(v2.z == 3);
+}
+
+TEST_CASE("Vec3i cross") {
+    jtx::Vec3i v1(1, 2, 3);
+    jtx::Vec3i v2(4, 5, 6);
+    jtx::Vec3i v3 = jtx::Vec3i::cross(v1, v2);
+    REQUIRE(v3.x == -3);
+    REQUIRE(v3.y == 6);
+    REQUIRE(v3.z == -3);
 }
 
 //endregion

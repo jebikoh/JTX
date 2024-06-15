@@ -102,6 +102,10 @@ namespace jtx {
             return {x * scalar, y * scalar, z * scalar};
         }
 
+        friend inline Vec3 operator*(T scalar, const Vec3 &v) {
+            return v * scalar;
+        }
+
         inline Vec3 operator/(const Vec3 &other) const {
             ASSERT(JTX_ZERO != other.x && JTX_ZERO != other.y && JTX_ZERO != other.z);
             return {x / other.x, y / other.y, z / other.z};
@@ -110,6 +114,10 @@ namespace jtx {
         inline Vec3 operator/(T scalar) const {
             ASSERT(JTX_ZERO != scalar);
             return {x / scalar, y / scalar, z / scalar};
+        }
+
+        friend inline Vec3 operator/(T scalar, const Vec3 &v) {
+            return {scalar / v.x, scalar / v.y, scalar / v.z};
         }
         //endregion
 

@@ -20,7 +20,7 @@ TEST_CASE("Vec4f constructor", "[Vec4]") {
     REQUIRE(v.w == 4.0f);
 }
 
-TEST_CASE("Vec4f copy constructor") {
+TEST_CASE("Vec4f copy constructor", "[Vec4]") {
     jtx::Vec4f v1(1.0f, 2.0f, 3.0f, 4.0f);
     jtx::Vec4f v2(v1);
     REQUIRE(v2.x == 1.0f);
@@ -29,7 +29,7 @@ TEST_CASE("Vec4f copy constructor") {
     REQUIRE(v2.w == 4.0f);
 }
 
-TEST_CASE("Vec4f template copy constructor") {
+TEST_CASE("Vec4f template copy constructor", "[Vec4]") {
     jtx::Vec4f v1(1.0f, 2.0f, 3.0f, 4.0f);
     jtx::Vec4i v2(v1);
     REQUIRE(v2.x == 1);
@@ -55,7 +55,7 @@ TEST_CASE("Vec4f invalid", "[Vec4]") {
 //endregion
 
 //region Vec4: Unary operators
-TEST_CASE("Vec4f operator- on positive values") {
+TEST_CASE("Vec4f operator- on positive values", "[Vec4]") {
     jtx::Vec4f v1(1.0f, 2.0f, 3.0f, 4.0f);
     jtx::Vec4f v2 = -v1;
     REQUIRE(v2.x == -1.0f);
@@ -64,7 +64,7 @@ TEST_CASE("Vec4f operator- on positive values") {
     REQUIRE(v2.w == -4.0f);
 }
 
-TEST_CASE("Vec4f operator- on negative values") {
+TEST_CASE("Vec4f operator- on negative values", "[Vec4]") {
     jtx::Vec4f v1(-1.0f, -2.0f, -3.0f, -4.0f);
     jtx::Vec4f v2 = -v1;
     REQUIRE(v2.x == 1.0f);
@@ -73,7 +73,7 @@ TEST_CASE("Vec4f operator- on negative values") {
     REQUIRE(v2.w == 4.0f);
 }
 
-TEST_CASE("Vec4f operator+") {
+TEST_CASE("Vec4f operator+", "[Vec4]") {
     jtx::Vec4f v1(1.0f, 2.0f, 3.0f, 4.0f);
     jtx::Vec4f v2 = +v1;
     REQUIRE(v2.x == 1.0f);
@@ -82,7 +82,7 @@ TEST_CASE("Vec4f operator+") {
     REQUIRE(v2.w == 4.0f);
 }
 
-TEST_CASE("Vec4f ++ postfix operator") {
+TEST_CASE("Vec4f ++ postfix operator", "[Vec4]") {
     jtx::Vec4f v(1.0f, 2.0f, 3.0f, 4.0f);
     jtx::Vec4f v2 = v++;
     REQUIRE(v.x == 2.0f);
@@ -95,7 +95,7 @@ TEST_CASE("Vec4f ++ postfix operator") {
     REQUIRE(v2.w == 4.0f);
 }
 
-TEST_CASE("Vec4f ++ prefix operator") {
+TEST_CASE("Vec4f ++ prefix operator", "[Vec4]") {
     jtx::Vec4f v(1.0f, 2.0f, 3.0f, 4.0f);
     jtx::Vec4f v2 = ++v;
     REQUIRE(v.x == 2.0f);
@@ -108,7 +108,7 @@ TEST_CASE("Vec4f ++ prefix operator") {
     REQUIRE(v2.w == 5.0f);
 }
 
-TEST_CASE("Vec4f -- postfix operator") {
+TEST_CASE("Vec4f -- postfix operator", "[Vec4]") {
     jtx::Vec4f v(1.0f, 2.0f, 3.0f, 4.0f);
     jtx::Vec4f v2 = v--;
     REQUIRE(v.x == 0.0f);
@@ -121,7 +121,7 @@ TEST_CASE("Vec4f -- postfix operator") {
     REQUIRE(v2.w == 4.0f);
 }
 
-TEST_CASE("Vec4f -- prefix operator") {
+TEST_CASE("Vec4f -- prefix operator", "[Vec4]") {
     jtx::Vec4f v(1.0f, 2.0f, 3.0f, 4.0f);
     jtx::Vec4f v2 = --v;
     REQUIRE(v.x == 0.0f);
@@ -510,7 +510,7 @@ TEST_CASE("Vec4i valid", "[Vec4]") {
     REQUIRE(v.valid());
 }
 
-TEST_CASE("Vec4i ceil") {
+TEST_CASE("Vec4i ceil", "[Vec4]") {
     jtx::Vec4i v(1, 2, 3, 4);
     v.ceil();
     REQUIRE(v.x == 1);
@@ -519,7 +519,7 @@ TEST_CASE("Vec4i ceil") {
     REQUIRE(v.w == 4);
 }
 
-TEST_CASE("Vec4i ceil (static)") {
+TEST_CASE("Vec4i ceil (static)", "[Vec4]") {
     jtx::Vec4i v(1, 2, 3, 4);
     auto v2 = jtx::Vec4i::ceil(v);
     REQUIRE(v2.x == 1);
@@ -528,7 +528,7 @@ TEST_CASE("Vec4i ceil (static)") {
     REQUIRE(v2.w == 4);
 }
 
-TEST_CASE("Vec4i floor") {
+TEST_CASE("Vec4i floor", "[Vec4]") {
     jtx::Vec4i v(1, 2, 3, 4);
     v.floor();
     REQUIRE(v.x == 1);
@@ -537,7 +537,7 @@ TEST_CASE("Vec4i floor") {
     REQUIRE(v.w == 4);
 }
 
-TEST_CASE("Vec4i floor (static)") {
+TEST_CASE("Vec4i floor (static)", "[Vec4]") {
     jtx::Vec4i v(1, 2, 3, 4);
     auto v2 = jtx::Vec4i::floor(v);
     REQUIRE(v2.x == 1);

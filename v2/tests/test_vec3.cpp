@@ -18,7 +18,7 @@ TEST_CASE("Vec3f constructor", "[Vec3]") {
     REQUIRE(v.z == 3.0f);
 }
 
-TEST_CASE("Vec3f copy constructor") {
+TEST_CASE("Vec3f copy constructor", "[Vec3]") {
     jtx::Vec3f v1(1.0f, 2.0f, 3.0f);
     jtx::Vec3f v2(v1);
     REQUIRE(v2.x == 1.0f);
@@ -26,7 +26,7 @@ TEST_CASE("Vec3f copy constructor") {
     REQUIRE(v2.z == 3.0f);
 }
 
-TEST_CASE("Vec3f template copy constructor") {
+TEST_CASE("Vec3f template copy constructor", "[Vec3]") {
     jtx::Vec3f v1(1.0f, 2.0f, 3.0f);
     jtx::Vec3i v2(v1);
     REQUIRE(v2.x == 1);
@@ -51,7 +51,7 @@ TEST_CASE("Vec3f invalid", "[Vec3]") {
 //endregion
 
 //region Vec3: Unary oeprators
-TEST_CASE("Vec3f operator- on positive values") {
+TEST_CASE("Vec3f operator- on positive values", "[Vec3]") {
     jtx::Vec3f v1(1.0f, 2.0f, 3.0f);
     jtx::Vec3f v2 = -v1;
     REQUIRE(v2.x == -1.0f);
@@ -59,7 +59,7 @@ TEST_CASE("Vec3f operator- on positive values") {
     REQUIRE(v2.z == -3.0f);
 }
 
-TEST_CASE("Vec3f operator- on negative values") {
+TEST_CASE("Vec3f operator- on negative values", "[Vec3]") {
     jtx::Vec3f v1(-1.0f, -2.0f, -3.0f);
     jtx::Vec3f v2 = -v1;
     REQUIRE(v2.x == 1.0f);
@@ -67,7 +67,7 @@ TEST_CASE("Vec3f operator- on negative values") {
     REQUIRE(v2.z == 3.0f);
 }
 
-TEST_CASE("Vec3f operator+") {
+TEST_CASE("Vec3f operator+", "[Vec3]") {
     jtx::Vec3f v1(1.0f, 2.0f, 3.0f);
     jtx::Vec3f v2 = +v1;
     REQUIRE(v2.x == 1.0f);
@@ -75,7 +75,7 @@ TEST_CASE("Vec3f operator+") {
     REQUIRE(v2.z == 3.0f);
 }
 
-TEST_CASE("Vec3f ++ postfix operator") {
+TEST_CASE("Vec3f ++ postfix operator", "[Vec3]") {
     jtx::Vec3f v(1.0f, 2.0f, 3.0f);
     jtx::Vec3f v2 = v++;
     REQUIRE(v.x == 2.0f);
@@ -86,7 +86,7 @@ TEST_CASE("Vec3f ++ postfix operator") {
     REQUIRE(v2.z == 3.0f);
 }
 
-TEST_CASE("Vec3f ++ prefix operator") {
+TEST_CASE("Vec3f ++ prefix operator", "[Vec3]") {
     jtx::Vec3f v(1.0f, 2.0f, 3.0f);
     jtx::Vec3f v2 = ++v;
     REQUIRE(v.x == 2.0f);
@@ -97,7 +97,7 @@ TEST_CASE("Vec3f ++ prefix operator") {
     REQUIRE(v2.z == 4.0f);
 }
 
-TEST_CASE("Vec3f -- postfix operator") {
+TEST_CASE("Vec3f -- postfix operator", "[Vec3]") {
     jtx::Vec3f v(1.0f, 2.0f, 3.0f);
     jtx::Vec3f v2 = v--;
     REQUIRE(v.x == 0.0f);
@@ -108,7 +108,7 @@ TEST_CASE("Vec3f -- postfix operator") {
     REQUIRE(v2.z == 3.0f);
 }
 
-TEST_CASE("Vec3f -- prefix operator") {
+TEST_CASE("Vec3f -- prefix operator", "[Vec3]") {
     jtx::Vec3f v(1.0f, 2.0f, 3.0f);
     jtx::Vec3f v2 = --v;
     REQUIRE(v.x == 0.0f);
@@ -461,7 +461,7 @@ TEST_CASE("Vec3f angle", "[Vec3]") {
 }
 
 // TODO: this appears to be backwards?!
-TEST_CASE("Vec3f Gram Schmidt") {
+TEST_CASE("Vec3f Gram Schmidt", "[Vec3]") {
     jtx::Vec3f b{1.0f, 0.0f, 0.0f};
     jtx::Vec3f a{1.0f, 1.0f, 0.0f};
     auto c = jtx::Vec3f::gramSchmidt(a, b);
@@ -502,7 +502,7 @@ TEST_CASE("Vec3i valid", "[Vec3]") {
     REQUIRE(v.valid());
 }
 
-TEST_CASE("Vec3i ceil") {
+TEST_CASE("Vec3i ceil", "[Vec3]") {
     jtx::Vec3i v(1, 2, 3);
     v.ceil();
     REQUIRE(v.x == 1);
@@ -510,7 +510,7 @@ TEST_CASE("Vec3i ceil") {
     REQUIRE(v.z == 3);
 }
 
-TEST_CASE("Vec3i ceil (static)") {
+TEST_CASE("Vec3i ceil (static)", "[Vec3]") {
     jtx::Vec3i v(1, 2, 3);
     auto v2 = jtx::Vec3i::ceil(v);
     REQUIRE(v2.x == 1);
@@ -518,7 +518,7 @@ TEST_CASE("Vec3i ceil (static)") {
     REQUIRE(v2.z == 3);
 }
 
-TEST_CASE("Vec3i floor") {
+TEST_CASE("Vec3i floor", "[Vec3]") {
     jtx::Vec3i v(1, 2, 3);
     v.floor();
     REQUIRE(v.x == 1);
@@ -526,7 +526,7 @@ TEST_CASE("Vec3i floor") {
     REQUIRE(v.z == 3);
 }
 
-TEST_CASE("Vec3i floor (static)") {
+TEST_CASE("Vec3i floor (static)", "[Vec3]") {
     jtx::Vec3i v(1, 2, 3);
     auto v2 = jtx::Vec3i::floor(v);
     REQUIRE(v2.x == 1);
@@ -534,7 +534,7 @@ TEST_CASE("Vec3i floor (static)") {
     REQUIRE(v2.z == 3);
 }
 
-TEST_CASE("Vec3i cross") {
+TEST_CASE("Vec3i cross", "[Vec3]") {
     jtx::Vec3i v1(1, 2, 3);
     jtx::Vec3i v2(4, 5, 6);
     jtx::Vec3i v3 = jtx::Vec3i::cross(v1, v2);

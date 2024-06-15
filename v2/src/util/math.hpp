@@ -1,22 +1,27 @@
 #pragma once
 
+#include "./assert.hpp"
 #include <cmath>
 #include <algorithm>
 
 namespace jtx {
     inline float clampAsin(float theta) {
+        ASSERT(theta >= -1.0001f && theta <= 1.0001f);
         return std::asin(std::clamp(theta, -1.0f, 1.0f));
     }
 
     inline float clampAcos(float theta) {
+        ASSERT(theta >= -1.0001f && theta <= 1.0001f);
         return std::acos(std::clamp(theta, -1.0f, 1.0f));
     }
 
     inline double clampAsin(double theta) {
+        ASSERT(theta >= -1.0001f && theta <= 1.0001);
         return std::asin(std::clamp(theta, -1.0, 1.0));
     }
 
     inline double clampAcos(double theta) {
+        ASSERT(theta >= -1.0001 && theta <= 1.0001);
         return std::acos(std::clamp(theta, -1.0, 1.0));
     }
 

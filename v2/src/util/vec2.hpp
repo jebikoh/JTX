@@ -3,8 +3,8 @@
 #include<cmath>
 #include<stdexcept>
 #include "./constants.hpp"
-#include "./numerical.h"
-#include "./assert.h"
+#include "./numerical.hpp"
+#include "./assert.hpp"
 
 namespace jtx {
     // Only allow numeric types

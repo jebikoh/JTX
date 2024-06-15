@@ -3,8 +3,9 @@
 #include<cmath>
 #include<stdexcept>
 #include "./constants.hpp"
-#include "./numerical.h"
-#include "./assert.h"
+#include "./numerical.hpp"
+#include "./assert.hpp"
+#include "./math.hpp"
 
 namespace jtx {
     // Only allow numeric types
@@ -163,9 +164,10 @@ namespace jtx {
         //endregion
 
         //region Member functions
-        [[nodiscard]] inline Vec3 cross(const Vec3 &other) const {
-            return {y * other.z - z * other.y, z * other.x - x * other.z,
-                    x * other.y - y * other.x};
+        static inline Vec3 cross(const Vec3 &a, const Vec3 &b) {
+            return {jtx::dop(a.y, b.z, a.z, b.y),
+                    jtx::dop(a.z, b.x, a.x, b.z),
+                    jtx::dop(a.x, b.y, a.y, b.x)};
         }
 
         [[nodiscard]] inline T dot(const Vec3 &other) const {
@@ -174,6 +176,25 @@ namespace jtx {
 
         [[nodiscard]] inline T dot(const T _x, const T _y, const T _z) const {
             return this->x * _x + this->y * _y + this->z * _z;
+        }
+
+        inline Vec3 &abs() {
+            x = std::abs(x);
+            y = std::abs(y);
+            z = std::abs(z);
+            return *this;
+        }
+
+        static inline Vec3 abs(const Vec3 &v) {
+            return {std::abs(v.x), std::abs(v.y), std::abs(v.z)};
+        }
+
+        inline T absdot(const Vec3 &other) {
+            return std::abs(dot(other));
+        }
+
+        static inline T absdot(const Vec3 &a, const Vec3 &b) {
+            return std::abs(a.dot(b));
         }
 
         [[nodiscard]] inline float len() const { return std::sqrt(x * x + y * y + z * z); }
@@ -193,17 +214,6 @@ namespace jtx {
             } else {
                 return Vec3{};
             }
-        }
-
-        inline Vec3 &abs() {
-            x = std::abs(x);
-            y = std::abs(y);
-            z = std::abs(z);
-            return *this;
-        }
-
-        static inline Vec3 abs(const Vec3 &v) {
-            return {std::abs(v.x), std::abs(v.y), std::abs(v.z)};
         }
 
         inline Vec3 &ceil() {
@@ -258,6 +268,17 @@ namespace jtx {
 
         static inline Vec3 fma(const Vec3 &a, const Vec3 &b, const Vec3 &c) {
             return a * b + c;
+        }
+
+        static inline float angle(const Vec3 &a, const Vec3 &b) {
+            if (a.dot(b) < 0) {
+                return PI_F - 2 * std::asin((a - b).len() / 2);
+            }
+            return 2 * std::asin((a - b).len() / 2);
+        }
+
+        static inline Vec3 gramSchmidt(const Vec3 &a, const Vec3 &b) {
+            return a - (b * a.dot(b));
         }
         //endregion
     };

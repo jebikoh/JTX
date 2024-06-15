@@ -1,8 +1,8 @@
 #pragma once
 
-#include "./assert.h"
+#include "./assert.hpp"
 #include "./constants.hpp"
-#include "./numerical.h"
+#include "./numerical.hpp"
 #include <cmath>
 #include <stdexcept>
 

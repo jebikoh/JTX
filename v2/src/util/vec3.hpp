@@ -279,6 +279,7 @@ namespace jtx {
             return a * b + c;
         }
 
+        // Taken from PBRT
         static inline float angle(const Vec3 &a, const Vec3 &b) {
             if (a.dot(b) < 0) {
                 return PI_F - 2 * std::asin((a - b).len() / 2);
@@ -286,8 +287,18 @@ namespace jtx {
             return 2 * std::asin((a - b).len() / 2);
         }
 
+        // Taken from PBRT
         static inline Vec3 gramSchmidt(const Vec3 &a, const Vec3 &b) {
             return a - (b * a.dot(b));
+        }
+
+        // From PBRT
+        static inline void coordinateSystem(const Vec3 v1, Vec3 *v2, Vec3 *v3) {
+            float sign = std::copysign(1.0f, v1.z);
+            float a = -1.0f / (sign + v1.z);
+            float b = v1.x * v1.y * a;
+            *v2 = Vec3{1.0f + sign * v1.x * v1.x * a, sign * b, -sign * v1.x};
+            *v3 = Vec3{b, sign + v1.y * v1.y * a, -v1.y};
         }
         //endregion
     };

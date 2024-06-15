@@ -25,6 +25,11 @@ namespace jtx {
 
         Vec4(const Vec4 &other) : x(other.x), y(other.y), z(other.z), w(other.w) { ASSERT(valid()); };
 
+        template<typename U>
+        explicit Vec4(const Vec4<U> &other) : x(T(other.x)), y(T(other.y)), z(T(other.z)), w(T(other.w)) {
+            ASSERT(valid());
+        };
+
         ~Vec4() = default;
         //endregion
 

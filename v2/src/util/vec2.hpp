@@ -25,6 +25,9 @@ namespace jtx {
 
         Vec2(const Vec2 &other) : x(other.x), y(other.y) { ASSERT(valid()); };
 
+        template<typename U>
+        explicit Vec2(const Vec2<U> &other) : x(T(other.x)), y(T(other.y)) { ASSERT(valid()); };
+
         ~Vec2() = default;
         //endregion
 

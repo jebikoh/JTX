@@ -28,6 +28,15 @@ TEST_CASE("Vec4f copy constructor") {
     REQUIRE(v2.z == 3.0f);
     REQUIRE(v2.w == 4.0f);
 }
+
+TEST_CASE("Vec4f template copy constructor") {
+    jtx::Vec4f v1(1.0f, 2.0f, 3.0f, 4.0f);
+    jtx::Vec4i v2(v1);
+    REQUIRE(v2.x == 1);
+    REQUIRE(v2.y == 2);
+    REQUIRE(v2.z == 3);
+    REQUIRE(v2.w == 4);
+}
 //endregion
 
 //region Vec4: Numerical validity
@@ -485,6 +494,15 @@ TEST_CASE("Vec4i default constructor", "[Vec4]") {
     REQUIRE(v.y == 0);
     REQUIRE(v.z == 0);
     REQUIRE(v.w == 0);
+}
+
+TEST_CASE("Vec4i template copy constructor", "[Vec4]") {
+    jtx::Vec4f v1(1.0f, 2.0f, 3.0f, 4.0f);
+    jtx::Vec4i v2(v1);
+    REQUIRE(v2.x == 1);
+    REQUIRE(v2.y == 2);
+    REQUIRE(v2.z == 3);
+    REQUIRE(v2.w == 4);
 }
 
 TEST_CASE("Vec4i valid", "[Vec4]") {

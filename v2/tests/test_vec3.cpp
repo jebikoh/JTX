@@ -25,6 +25,14 @@ TEST_CASE("Vec3f copy constructor") {
     REQUIRE(v2.y == 2.0f);
     REQUIRE(v2.z == 3.0f);
 }
+
+TEST_CASE("Vec3f template copy constructor") {
+    jtx::Vec3f v1(1.0f, 2.0f, 3.0f);
+    jtx::Vec3i v2(v1);
+    REQUIRE(v2.x == 1);
+    REQUIRE(v2.y == 2);
+    REQUIRE(v2.z == 3);
+}
 //endregion
 
 //region Vec3: Numerical validity
@@ -469,6 +477,14 @@ TEST_CASE("Vec3i default constructor", "[Vec3]") {
     REQUIRE(v.x == 0);
     REQUIRE(v.y == 0);
     REQUIRE(v.z == 0);
+}
+
+TEST_CASE("Vec3i template copy constructor", "[Vec3]") {
+    jtx::Vec3f v1(1.0f, 2.0f, 3.0f);
+    jtx::Vec3i v2(v1);
+    REQUIRE(v2.x == 1);
+    REQUIRE(v2.y == 2);
+    REQUIRE(v2.z == 3);
 }
 
 TEST_CASE("Vec3i valid", "[Vec3]") {

@@ -26,6 +26,9 @@ namespace jtx {
 
         Vec3(const Vec3 &other) : x(other.x), y(other.y), z(other.z) { ASSERT(valid()); };
 
+        template<typename U>
+        explicit Vec3(const Vec3<U> &other) : x(T(other.x)), y(T(other.y)), z(T(other.z)) { ASSERT(valid()); };
+
         ~Vec3() = default;
         //endregion
 

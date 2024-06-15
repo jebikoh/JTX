@@ -1,6 +1,10 @@
 find_package(Catch2 CONFIG REQUIRED)
 
-add_executable(Tests test_vector.cpp)
+add_executable(Tests test_vec3.cpp
+        test_vec2.cpp
+        test_vec4.cpp
+        tconstants.h
+        tconstants.h)
 
 target_link_libraries(Tests PRIVATE JTXLib Catch2::Catch2WithMain)
 

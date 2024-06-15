@@ -469,6 +469,16 @@ TEST_CASE("Vec3f Gram Schmidt") {
     REQUIRE(c.y == 1.0f);
     REQUIRE(c.z == 0.0f);
 }
+
+TEST_CASE("Vec3f Coordinate System", "[Vec3]") {
+    jtx::Vec3f v1{1.0f, 0.0f, 0.0f};
+    jtx::Vec3f v2{};
+    jtx::Vec3f v3{};
+    jtx::Vec3f::coordinateSystem(v1, &v2, &v3);
+
+    REQUIRE(v2 == jtx::Vec3f{0.0f, 0.0f, -1.0f});
+    REQUIRE(v3 == jtx::Vec3f{0.0f, 1.0f, 0.0f});
+}
 //endregion
 
 //region Vec3i Tests

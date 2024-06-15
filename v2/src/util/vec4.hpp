@@ -106,6 +106,10 @@ namespace jtx {
             return {x * scalar, y * scalar, z * scalar, w * scalar};
         }
 
+        friend inline Vec4 operator*(T scalar, const Vec4 &v) {
+            return v * scalar;
+        }
+
         inline Vec4 operator/(const Vec4 &other) const {
             ASSERT(JTX_ZERO != other.x && JTX_ZERO != other.y && JTX_ZERO != other.z && JTX_ZERO != other.w);
             return {x / other.x, y / other.y, z / other.z, w / other.w};
@@ -114,6 +118,11 @@ namespace jtx {
         inline Vec4 operator/(T scalar) const {
             ASSERT(JTX_ZERO != scalar);
             return {x / scalar, y / scalar, z / scalar, w / scalar};
+        }
+
+        friend inline Vec4 operator/(T scalar, const Vec4 &v) {
+            ASSERT(JTX_ZERO != scalar);
+            return {scalar / v.x, scalar / v.y, scalar / v.z, scalar / v.w};
         }
         //endregion
 
@@ -182,6 +191,26 @@ namespace jtx {
             return this->x * _x + this->y * _y + this->z * _z + this->w * _w;
         }
 
+        inline Vec4 &abs() {
+            x = std::abs(x);
+            y = std::abs(y);
+            z = std::abs(z);
+            w = std::abs(w);
+            return *this;
+        }
+
+        static inline Vec4 abs(const Vec4 &v) {
+            return {std::abs(v.x), std::abs(v.y), std::abs(v.z), std::abs(v.w)};
+        }
+
+        inline T absdot(const Vec4 &other) {
+            return std::abs(dot(other));
+        }
+
+        static inline T absdot(const Vec4 &a, const Vec4 &b) {
+            return std::abs(a.dot(b));
+        }
+
         [[nodiscard]] inline float len() const { return std::sqrt(x * x + y * y + z * z + w * w); }
 
         inline Vec4 &normalize() {
@@ -199,18 +228,6 @@ namespace jtx {
             } else {
                 return Vec4{};
             }
-        }
-
-        inline Vec4 &abs() {
-            x = std::abs(x);
-            y = std::abs(y);
-            z = std::abs(z);
-            w = std::abs(w);
-            return *this;
-        }
-
-        static inline Vec4 abs(const Vec4 &v) {
-            return {std::abs(v.x), std::abs(v.y), std::abs(v.z), std::abs(v.w)};
         }
 
         inline Vec4 &ceil() {

@@ -117,6 +117,7 @@ namespace jtx {
         }
 
         friend inline Vec3 operator/(T scalar, const Vec3 &v) {
+            ASSERT(JTX_ZERO != scalar);
             return {scalar / v.x, scalar / v.y, scalar / v.z};
         }
         //endregion

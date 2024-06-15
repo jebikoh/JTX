@@ -111,7 +111,7 @@ namespace jtx {
         }
 
         friend inline Vec2 operator/(T scalar, const Vec2 &v) {
-            ASSERT(JTX_ZERO != v.x && JTX_ZERO != v.y);
+            ASSERT(JTX_ZERO != scalar);
             return {scalar / v.x, scalar / v.y};
         }
         //endregion

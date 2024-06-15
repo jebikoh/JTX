@@ -201,6 +201,16 @@ TEST_CASE("Vec4f * operator (scalar)", "[Vec4]") {
     REQUIRE(v2.w == 8.0f);
 }
 
+TEST_CASE("Vec4f * operator (LHS scalar)", "[Vec4]") {
+    float s = 2.0f;
+    jtx::Vec4f v1(1.0f, 2.0f, 3.0f, 4.0f);
+    jtx::Vec4f v2 = s * v1;
+    REQUIRE(v2.x == 2.0f);
+    REQUIRE(v2.y == 4.0f);
+    REQUIRE(v2.z == 6.0f);
+    REQUIRE(v2.w == 8.0f);
+}
+
 TEST_CASE("Vec4f / operator", "[Vec4]") {
     jtx::Vec4f v1(4.0f, 10.0f, 18.0f, 28.0f);
     jtx::Vec4f v2(4.0f, 5.0f, 6.0f, 7.0f);
@@ -219,6 +229,16 @@ TEST_CASE("Vec4f / operator (scalar)", "[Vec4]") {
     REQUIRE(v2.y == 2.0f);
     REQUIRE(v2.z == 3.0f);
     REQUIRE(v2.w == 4.0f);
+}
+
+TEST_CASE("Vec4f / operator (LHS scalar)", "[Vec4]") {
+    float s = 8.0f;
+    jtx::Vec4f v1(2.0f, 4.0f, 8.0f, 16.0f);
+    jtx::Vec4f v2 = s / v1;
+    REQUIRE(v2.x == 4.0f);
+    REQUIRE(v2.y == 2.0f);
+    REQUIRE(v2.z == 1.0f);
+    REQUIRE(v2.w == 0.5f);
 }
 //endregion
 
@@ -339,6 +359,21 @@ TEST_CASE("Vec4f abs (static)", "[Vec4]") {
     REQUIRE(v2.y == 2.0f);
     REQUIRE(v2.z == 3.0f);
     REQUIRE(v2.w == 4.0f);
+}
+
+TEST_CASE("Vec4f absdot", "[Vec4]") {
+    jtx::Vec4f v1(1.0f, 2.0f, 3.0f, 4.0f);
+    jtx::Vec4f v2(-4.0f, -5.0f, -6.0f, -7.0f);
+    auto dot = v1.absdot(v2);
+    REQUIRE(dot == 60.0f);
+}
+
+TEST_CASE("Vec4f absdot (static)", "[Vec4]") {
+    jtx::Vec4f v1(1.0f, 2.0f, 3.0f, 4.0f);
+    jtx::Vec4f v2(-4.0f, -5.0f, -6.0f, -7.0f);
+    auto dot = jtx::Vec4f::absdot(v1, v2);
+    REQUIRE(dot == 60.0f);
+
 }
 
 TEST_CASE("Vec4f ceil", "[Vec4]") {

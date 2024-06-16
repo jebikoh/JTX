@@ -1,6 +1,4 @@
 #include "../src/util/ray.hpp"
-#include "../src/util/vec3.hpp"
-#include "./tconstants.h"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 
@@ -154,19 +152,20 @@ TEST_CASE("RayDifferential valid", "[RayDifferential]") {
     REQUIRE(ray.valid());
 }
 
-#ifdef NDEBUG
+#ifdef JTX_TEST
+
 TEST_CASE("Ray invalid", "[Ray]") {
     jtx::Ray ray;
     ray.origin = jtx::Point3f(std::numeric_limits<float>::quiet_NaN(), 2.0f, 3.0f);
     ray.dir = jtx::Vec3f(4.0f, 5.0f, 6.0f);
     ray.time = 7.0f;
-    REQUIRE_FALSE(ray.valid());
+    REQUIRE(!ray.valid());
     ray.origin = jtx::Point3f(1.0f, 2.0f, 3.0f);
     ray.dir = jtx::Vec3f(std::numeric_limits<float>::quiet_NaN(), 5.0f, 6.0f);
-    REQUIRE_FALSE(ray.valid());
+    REQUIRE(!ray.valid());
     ray.dir = jtx::Vec3f(4.0f, 5.0f, 6.0f);
     ray.time = std::numeric_limits<float>::quiet_NaN();
-    REQUIRE_FALSE(ray.valid());
+    REQUIRE(!ray.valid());
 }
 
 TEST_CASE("RayDifferential invalid", "[RayDifferential]") {
@@ -179,20 +178,21 @@ TEST_CASE("RayDifferential invalid", "[RayDifferential]") {
     ray.rxDirection = jtx::Vec3f(4.0f, 5.0f, 6.0f);
     ray.ryDirection = jtx::Vec3f(4.0f, 5.0f, 6.0f);
     ray.hasDiffs = true;
-    REQUIRE_FALSE(ray.valid());
+    REQUIRE(!ray.valid());
     ray.origin = jtx::Point3f(1.0f, 2.0f, 3.0f);
     ray.dir = jtx::Vec3f(4.0f, 5.0f, 6.0f);
     ray.time = 7.0f;
     ray.rxOrigin = jtx::Point3f(std::numeric_limits<float>::quiet_NaN(), 2.0f, 3.0f);
-    REQUIRE_FALSE(ray.valid());
+    REQUIRE(!ray.valid());
     ray.rxOrigin = jtx::Point3f(1.0f, 2.0f, 3.0f);
     ray.ryOrigin = jtx::Point3f(std::numeric_limits<float>::quiet_NaN(), 2.0f, 3.0f);
-    REQUIRE_FALSE(ray.valid());
+    REQUIRE(!ray.valid());
     ray.ryOrigin = jtx::Point3f(1.0f, 2.0f, 3.0f);
     ray.rxDirection = jtx::Vec3f(std::numeric_limits<float>::quiet_NaN(), 5.0f, 6.0f);
-    REQUIRE_FALSE(ray.valid());
+    REQUIRE(!ray.valid());
     ray.rxDirection = jtx::Vec3f(4.0f, 5.0f, 6.0f);
     ray.ryDirection = jtx::Vec3f(std::numeric_limits<float>::quiet_NaN(), 5.0f, 6.0f);
-    REQUIRE_FALSE(ray.valid());
+    REQUIRE(!ray.valid());
 }
+
 #endif

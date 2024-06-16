@@ -39,12 +39,13 @@ TEST_CASE("Vec2f valid", "[Vec2]") {
     REQUIRE(v.valid());
 }
 
-// Vec2::valid() resulting in invalid can only be tested in release mode
-#ifdef NDEBUG
+#ifdef JTX_TEST
+
 TEST_CASE("Vec2f invalid", "[Vec2]") {
     jtx::Vec2f v(1.0f, std::numeric_limits<float>::quiet_NaN());
     REQUIRE(!v.valid());
 }
+
 #endif
 //endregion
 

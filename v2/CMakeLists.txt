@@ -3,6 +3,12 @@ project(JTX)
 
 set(CMAKE_CXX_STANDARD 17)
 
+if (CMAKE_BUILD_TYPE STREQUAL "Test")
+    add_definitions(-DJTX_TEST)
+else (CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_definitions(-DJTX_NDEBUG)
+endif ()
+
 add_library(JTXLib src/util/constants.hpp
         src/util/numerical.hpp
         src/util/vec2.hpp

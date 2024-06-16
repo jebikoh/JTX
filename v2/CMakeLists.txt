@@ -12,7 +12,7 @@ add_library(JTXLib src/util/constants.hpp
         src/util/Mat4.cpp
         src/util/Mat4.hpp
         src/util/math.hpp
-        src/util/math.hpp)
+        src/util/vecmath.hpp)
 
 set_target_properties(JTXLib PROPERTIES LINKER_LANGUAGE CXX)
 

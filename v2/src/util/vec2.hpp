@@ -7,8 +7,7 @@
 #include "./assert.hpp"
 
 namespace jtx {
-    // Only allow numeric types
-    template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
+    JTX_NUM_ONLY
     class Vec2 {
     public:
         T x, y;
@@ -178,16 +177,8 @@ namespace jtx {
             return *this;
         }
 
-        static inline Vec2 abs(const Vec2 &v) {
-            return {std::abs(v.x), std::abs(v.y)};
-        }
-
         inline T absdot(const Vec2 &other) {
             return std::abs(dot(other));
-        }
-
-        static inline T absdot(const Vec2 &a, const Vec2 &b) {
-            return std::abs(a.dot(b));
         }
 
         [[nodiscard]] inline float len() const { return std::sqrt(x * x + y * y); }
@@ -200,23 +191,10 @@ namespace jtx {
             return *this;
         }
 
-        static inline Vec2 normalize(const Vec2 &v) {
-            float l = v.len();
-            if (l != 0) {
-                return v / l;
-            } else {
-                return Vec2{};
-            }
-        }
-
         inline Vec2 &ceil() {
             x = jtx::ceil(x);
             y = jtx::ceil(y);
             return *this;
-        }
-
-        static inline Vec2 ceil(const Vec2 &v) {
-            return {jtx::ceil(v.x), jtx::ceil(v.y)};
         }
 
         inline Vec2 &floor() {
@@ -225,56 +203,23 @@ namespace jtx {
             return *this;
         }
 
-        static inline Vec2 floor(const Vec2 &v) {
-            return {jtx::floor(v.x), jtx::floor(v.y)};
-        }
-
         inline auto min() const {
             return std::min(x, y);
-        }
-
-        static inline Vec2 min(const Vec2 &a, const Vec2 &b) {
-            return {std::min(a.x, b.x), std::min(a.y, b.y)};
         }
 
         inline auto max() const {
             return std::max(x, y);
         }
 
-        static inline Vec2 max(const Vec2 &a, const Vec2 &b) {
-            return {std::max(a.x, b.x), std::max(a.y, b.y)};
-        }
-
         inline T hprod() const {
             return x * y;
         }
-
-        static inline T hprod(const Vec2 &v) {
-            return v.x * v.y;
-        }
-
-        static inline auto lerp(const Vec2 &a, const Vec2 &b, float t) {
-            return a * (1 - t) + b * t;
-        }
-
-        static inline Vec2 fma(const Vec2 &a, const Vec2 &b, const Vec2 &c) {
-            return a * b + c;
-        }
-
-        static inline float angle(const Vec2 &a, const Vec2 &b) {
-            if (a.dot(b) < 0) {
-                return PI_F - 2 * std::asin((a - b).len() / 2);
-            }
-            return 2 * std::asin((a - b).len() / 2);
-        }
-
-        static inline Vec2 gramSchmidt(const Vec2 &a, const Vec2 &b) {
-            return a - (b * a.dot(b));
-        }
         //endregion
     };
-
-
+    
     typedef Vec2<int> Vec2i;
     typedef Vec2<float> Vec2f;
+
+    typedef Vec2<int> Point2i;
+    typedef Vec2<float> Point2f;
 }// namespace jtx

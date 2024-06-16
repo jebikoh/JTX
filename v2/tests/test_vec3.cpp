@@ -1,4 +1,5 @@
 #include "../src/util/vec3.hpp"
+#include "../src/util/vecmath.hpp"
 #include "./tconstants.h"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
@@ -287,7 +288,7 @@ TEST_CASE("Vec3f /= operator (scalar)", "[Vec3]") {
 TEST_CASE("Vec3f cross", "[Vec3]") {
     jtx::Vec3f v1(1.0f, 2.0f, 3.0f);
     jtx::Vec3f v2(4.0f, 5.0f, 6.0f);
-    jtx::Vec3f v3 = jtx::Vec3f::cross(v1, v2);
+    jtx::Vec3f v3 = jtx::cross(v1, v2);
     REQUIRE(v3.x == -3.0f);
     REQUIRE(v3.y == 6.0f);
     REQUIRE(v3.z == -3.0f);
@@ -322,7 +323,7 @@ TEST_CASE("Vec3f normalize", "[Vec3]") {
 
 TEST_CASE("Vec3f normalize (static)", "[Vec3]") {
     jtx::Vec3f v(1.0f, 2.0f, 3.0f);
-    auto v2 = jtx::Vec3f::normalize(v);
+    auto v2 = jtx::normalize(v);
     REQUIRE_THAT(v2.x, Catch::Matchers::WithinRel(0.267261f, T_EPS));
     REQUIRE_THAT(v2.y, Catch::Matchers::WithinRel(0.534522f, T_EPS));
     REQUIRE_THAT(v2.z, Catch::Matchers::WithinRel(0.801784f, T_EPS));
@@ -338,7 +339,7 @@ TEST_CASE("Vec3f abs", "[Vec3]") {
 
 TEST_CASE("Vec3f abs (static)", "[Vec3]") {
     jtx::Vec3f v(-1.0f, -2.0f, -3.0f);
-    auto v2 = jtx::Vec3f::abs(v);
+    auto v2 = jtx::abs(v);
     REQUIRE(v2.x == 1.0f);
     REQUIRE(v2.y == 2.0f);
     REQUIRE(v2.z == 3.0f);
@@ -354,7 +355,7 @@ TEST_CASE("Vec3f absdot", "[Vec3]") {
 TEST_CASE("Vec3f absdot (static)", "[Vec3]") {
     jtx::Vec3f v1(1.0f, 2.0f, 3.0f);
     jtx::Vec3f v2(-4.0f, -5.0f, -6.0f);
-    auto dot = jtx::Vec3f::absdot(v1, v2);
+    auto dot = jtx::absdot(v1, v2);
     REQUIRE(dot == 32.0f);
 
 }
@@ -369,7 +370,7 @@ TEST_CASE("Vec3f ceil", "[Vec3]") {
 
 TEST_CASE("Vec3f ceil (static)", "[Vec3]") {
     jtx::Vec3f v(1.1f, 2.2f, 3.3f);
-    auto v2 = jtx::Vec3f::ceil(v);
+    auto v2 = jtx::ceil(v);
     REQUIRE(v2.x == 2.0f);
     REQUIRE(v2.y == 3.0f);
     REQUIRE(v2.z == 4.0f);
@@ -385,7 +386,7 @@ TEST_CASE("Vec3f floor", "[Vec3]") {
 
 TEST_CASE("Vec3f floor (static)", "[Vec3]") {
     jtx::Vec3f v(1.1f, 2.2f, 3.3f);
-    auto v2 = jtx::Vec3f::floor(v);
+    auto v2 = jtx::floor(v);
     REQUIRE(v2.x == 1.0f);
     REQUIRE(v2.y == 2.0f);
     REQUIRE(v2.z == 3.0f);
@@ -400,7 +401,7 @@ TEST_CASE("Vec3f min", "[Vec3]") {
 TEST_CASE("Vec3f min two vectors", "[Vec3]") {
     jtx::Vec3f v1(1.0f, 2.0f, 3.0f);
     jtx::Vec3f v2(4.0f, 1.0f, 2.0f);
-    auto v3 = jtx::Vec3f::min(v1, v2);
+    auto v3 = jtx::min(v1, v2);
     REQUIRE(v3.x == 1.0f);
     REQUIRE(v3.y == 1.0f);
     REQUIRE(v3.z == 2.0f);
@@ -415,7 +416,7 @@ TEST_CASE("Vec3f max", "[Vec3]") {
 TEST_CASE("Vec3f max two vectors", "[Vec3]") {
     jtx::Vec3f v1(1.0f, 2.0f, 3.0f);
     jtx::Vec3f v2(4.0f, 1.0f, 2.0f);
-    auto v3 = jtx::Vec3f::max(v1, v2);
+    auto v3 = jtx::max(v1, v2);
     REQUIRE(v3.x == 4.0f);
     REQUIRE(v3.y == 2.0f);
     REQUIRE(v3.z == 3.0f);
@@ -429,14 +430,14 @@ TEST_CASE("Vec3f hprod", "[Vec3]") {
 
 TEST_CASE("Vec3f hprod (static)", "[Vec3]") {
     jtx::Vec3f v(1.0f, 2.0f, 3.0f);
-    auto hprod = jtx::Vec3f::hprod(v);
+    auto hprod = jtx::hprod(v);
     REQUIRE(hprod == 6.0f);
 }
 
 TEST_CASE("Vec3f lerp", "[Vec3]") {
     jtx::Vec3f v1(1.0f, 2.0f, 3.0f);
     jtx::Vec3f v2(4.0f, 5.0f, 6.0f);
-    auto v3 = jtx::Vec3f::lerp(v1, v2, 0.5f);
+    auto v3 = jtx::lerp(v1, v2, 0.5f);
     REQUIRE(v3.x == 2.5f);
     REQUIRE(v3.y == 3.5f);
     REQUIRE(v3.z == 4.5f);
@@ -446,7 +447,7 @@ TEST_CASE("Vec3f FMA", "[Vec3]") {
     jtx::Vec3f v1(1.0f, 2.0f, 3.0f);
     jtx::Vec3f v2(4.0f, 5.0f, 6.0f);
     jtx::Vec3f v3(7.0f, 8.0f, 9.0f);
-    auto v4 = jtx::Vec3f::fma(v1, v2, v3);
+    auto v4 = jtx::fma(v1, v2, v3);
     REQUIRE(v4.x == 11.0f);
     REQUIRE(v4.y == 18.0f);
     REQUIRE(v4.z == 27.0f);
@@ -455,7 +456,7 @@ TEST_CASE("Vec3f FMA", "[Vec3]") {
 TEST_CASE("Vec3f angle", "[Vec3]") {
     jtx::Vec3f up{0.0f, 1.0f, 0.0f};
     jtx::Vec3f forward{0.0f, 0.0f, 1.0f};
-    auto theta = jtx::Vec3f::angle(up, forward);
+    auto theta = jtx::angle(up, forward);
     // 90 degrees
     REQUIRE_THAT(theta, Catch::Matchers::WithinRel(T_DEG_90, T_EPS));
 }
@@ -464,7 +465,7 @@ TEST_CASE("Vec3f angle", "[Vec3]") {
 TEST_CASE("Vec3f Gram Schmidt", "[Vec3]") {
     jtx::Vec3f b{1.0f, 0.0f, 0.0f};
     jtx::Vec3f a{1.0f, 1.0f, 0.0f};
-    auto c = jtx::Vec3f::gramSchmidt(a, b);
+    auto c = jtx::gramSchmidt(a, b);
     REQUIRE(c.x == 0.0f);
     REQUIRE(c.y == 1.0f);
     REQUIRE(c.z == 0.0f);
@@ -474,7 +475,7 @@ TEST_CASE("Vec3f Coordinate System", "[Vec3]") {
     jtx::Vec3f v1{1.0f, 0.0f, 0.0f};
     jtx::Vec3f v2{};
     jtx::Vec3f v3{};
-    jtx::Vec3f::coordinateSystem(v1, &v2, &v3);
+    jtx::coordinateSystem(v1, &v2, &v3);
 
     REQUIRE(v2 == jtx::Vec3f{0.0f, 0.0f, -1.0f});
     REQUIRE(v3 == jtx::Vec3f{0.0f, 1.0f, 0.0f});
@@ -512,7 +513,7 @@ TEST_CASE("Vec3i ceil", "[Vec3]") {
 
 TEST_CASE("Vec3i ceil (static)", "[Vec3]") {
     jtx::Vec3i v(1, 2, 3);
-    auto v2 = jtx::Vec3i::ceil(v);
+    auto v2 = jtx::ceil(v);
     REQUIRE(v2.x == 1);
     REQUIRE(v2.y == 2);
     REQUIRE(v2.z == 3);
@@ -528,7 +529,7 @@ TEST_CASE("Vec3i floor", "[Vec3]") {
 
 TEST_CASE("Vec3i floor (static)", "[Vec3]") {
     jtx::Vec3i v(1, 2, 3);
-    auto v2 = jtx::Vec3i::floor(v);
+    auto v2 = jtx::floor(v);
     REQUIRE(v2.x == 1);
     REQUIRE(v2.y == 2);
     REQUIRE(v2.z == 3);
@@ -537,7 +538,7 @@ TEST_CASE("Vec3i floor (static)", "[Vec3]") {
 TEST_CASE("Vec3i cross", "[Vec3]") {
     jtx::Vec3i v1(1, 2, 3);
     jtx::Vec3i v2(4, 5, 6);
-    jtx::Vec3i v3 = jtx::Vec3i::cross(v1, v2);
+    jtx::Vec3i v3 = jtx::cross(v1, v2);
     REQUIRE(v3.x == -3);
     REQUIRE(v3.y == 6);
     REQUIRE(v3.z == -3);

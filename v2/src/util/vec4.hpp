@@ -7,8 +7,7 @@
 #include <stdexcept>
 
 namespace jtx {
-    // Only allow numeric types
-    template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
+    JTX_NUM_ONLY
     class Vec4 {
     public:
         T x, y, z, w;
@@ -204,16 +203,8 @@ namespace jtx {
             return *this;
         }
 
-        static inline Vec4 abs(const Vec4 &v) {
-            return {std::abs(v.x), std::abs(v.y), std::abs(v.z), std::abs(v.w)};
-        }
-
         inline T absdot(const Vec4 &other) {
             return std::abs(dot(other));
-        }
-
-        static inline T absdot(const Vec4 &a, const Vec4 &b) {
-            return std::abs(a.dot(b));
         }
 
         [[nodiscard]] inline float len() const { return std::sqrt(x * x + y * y + z * z + w * w); }
@@ -226,25 +217,12 @@ namespace jtx {
             return *this;
         }
 
-        static inline Vec4 normalize(const Vec4 &v) {
-            float l = v.len();
-            if (l != 0) {
-                return v / l;
-            } else {
-                return Vec4{};
-            }
-        }
-
         inline Vec4 &ceil() {
             x = jtx::ceil(x);
             y = jtx::ceil(y);
             z = jtx::ceil(z);
             w = jtx::ceil(w);
             return *this;
-        }
-
-        static inline Vec4 ceil(const Vec4 &v) {
-            return {jtx::ceil(v.x), jtx::ceil(v.y), jtx::ceil(v.z), jtx::ceil(v.w)};
         }
 
         inline Vec4 &floor() {
@@ -255,45 +233,23 @@ namespace jtx {
             return *this;
         }
 
-        static inline Vec4 floor(const Vec4 &v) {
-            return {jtx::floor(v.x), jtx::floor(v.y), jtx::floor(v.z), jtx::floor(v.w)};
-        }
-
         inline auto min() const {
             return std::min(std::min(z, w), std::min(x, y));
-        }
-
-        static inline Vec4 min(const Vec4 &a, const Vec4 &b) {
-            return {std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z), std::min(a.w, b.w)};
         }
 
         inline auto max() const {
             return std::max(std::max(z, w), std::max(x, y));
         }
 
-        static inline Vec4 max(const Vec4 &a, const Vec4 &b) {
-            return {std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z), std::max(a.w, b.w)};
-        }
-
         inline T hprod() const {
             return x * y * z * w;
         }
-
-        static inline T hprod(const Vec4 &v) {
-            return v.x * v.y * v.z * v.w;
-        }
-
-        static inline auto lerp(const Vec4 &a, const Vec4 &b, float t) {
-            return a * (1 - t) + b * t;
-        }
-
-        static inline Vec4 fma(const Vec4 &a, const Vec4 &b, const Vec4 &c) {
-            return a * b + c;
-        }
         //endregion
     };
-
-
+    
     typedef Vec4<int> Vec4i;
     typedef Vec4<float> Vec4f;
+
+    typedef Vec4<int> Point4i;
+    typedef Vec4<float> Point4f;
 }// namespace jtx

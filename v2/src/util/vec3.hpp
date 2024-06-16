@@ -229,6 +229,13 @@ namespace jtx {
         inline T hprod() const {
             return x * y * z;
         }
+
+        inline Vec3 &align(const Vec3 &other) {
+            if ((*this).dot(other) < 0.0f) {
+                (*this) = -(*this);
+            }
+            return *this;
+        }
         //endregion
     };
 
@@ -237,4 +244,6 @@ namespace jtx {
 
     typedef Vec3<int> Point3i;
     typedef Vec3<float> Point3f;
+
+    typedef Vec3<float> Normal3f;
 }// namespace jtx

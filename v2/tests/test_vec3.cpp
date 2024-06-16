@@ -487,6 +487,24 @@ TEST_CASE("Point3f distance", "[Vec3]") {
     auto dist = jtx::distance(p1, p2);
     REQUIRE_THAT(dist, Catch::Matchers::WithinRel(5.196152f, T_EPS));
 }
+
+TEST_CASE ("Normal3f align", "[Vec3]") {
+    jtx::Normal3f v1{1.0f, 2.0f, 3.0f};
+    jtx::Normal3f v2{-1.0f, -2.0f, -3.0f};
+    v1.align(v2);
+    REQUIRE(v1.x == -1.0f);
+    REQUIRE(v1.y == -2.0f);
+    REQUIRE(v1.z == -3.0f);
+}
+
+TEST_CASE ("Normal3f align (static)", "[Vec3]") {
+    jtx::Normal3f v1{1.0f, 2.0f, 3.0f};
+    jtx::Normal3f v2{-1.0f, -2.0f, -3.0f};
+    auto v3 = jtx::align(v1, v2);
+    REQUIRE(v3.x == -1.0f);
+    REQUIRE(v3.y == -2.0f);
+    REQUIRE(v3.z == -3.0f);
+}
 //endregion
 
 //region Vec3i Tests

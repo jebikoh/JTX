@@ -267,5 +267,10 @@ namespace jtx {
         *v2 = Vec3{1.0f + sign * v1.x * v1.x * a, sign * b, -sign * v1.x};
         *v3 = Vec3{b, sign + v1.y * v1.y * a, -v1.y};
     }
+
+    JTX_NUM_ONLY
+    inline Vec3<T> align(const Vec3<T> &a, const Vec3<T> &b) {
+        return (a.dot(b) < 0.0f) ? -a : a;
+    }
     //endregion
 }

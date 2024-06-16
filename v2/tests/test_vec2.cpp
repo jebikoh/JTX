@@ -255,7 +255,7 @@ TEST_CASE("Vec2f /= operator (scalar)", "[Vec2]") {
 }
 //endregion
 
-//region Vec2: Member functions
+//region Vec2: Functions
 TEST_CASE("Vec2f dot", "[Vec2]") {
     jtx::Vec2f v1(1.0f, 2.0f);
     jtx::Vec2f v2(4.0f, 5.0f);
@@ -417,6 +417,13 @@ TEST_CASE("Vec2f Gram Schmidt", "[Vec2]") {
     auto c = jtx::gramSchmidt(a, b);
     REQUIRE(c.x == 0.0f);
     REQUIRE(c.y == 1.0f);
+}
+
+TEST_CASE("Point2f distance", "[Vec2]") {
+    jtx::Point2f p1{0.0f, 0.0f};
+    jtx::Point2f p2{3.0f, 4.0f};
+    auto d = jtx::distance(p1, p2);
+    REQUIRE_THAT(d, Catch::Matchers::WithinRel(5.0f, T_EPS));
 }
 //endregion
 

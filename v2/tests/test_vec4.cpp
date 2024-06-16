@@ -314,7 +314,7 @@ TEST_CASE("Vec4f /= operator (scalar)", "[Vec4]") {
 }
 //endregion
 
-//region Vec4: Member functions
+//region Vec4: Functions
 
 TEST_CASE("Vec4f dot", "[Vec4]") {
     jtx::Vec4f v1(1.0f, 2.0f, 3.0f, 4.0f);

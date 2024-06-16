@@ -284,7 +284,7 @@ TEST_CASE("Vec3f /= operator (scalar)", "[Vec3]") {
 }
 //endregion
 
-//region Vec3: Member functions
+//region Vec3: Functions
 TEST_CASE("Vec3f cross", "[Vec3]") {
     jtx::Vec3f v1(1.0f, 2.0f, 3.0f);
     jtx::Vec3f v2(4.0f, 5.0f, 6.0f);
@@ -479,6 +479,13 @@ TEST_CASE("Vec3f Coordinate System", "[Vec3]") {
 
     REQUIRE(v2 == jtx::Vec3f{0.0f, 0.0f, -1.0f});
     REQUIRE(v3 == jtx::Vec3f{0.0f, 1.0f, 0.0f});
+}
+
+TEST_CASE("Point3f distance", "[Vec3]") {
+    jtx::Point3f p1{1.0f, 2.0f, 3.0f};
+    jtx::Point3f p2{4.0f, 5.0f, 6.0f};
+    auto dist = jtx::distance(p1, p2);
+    REQUIRE_THAT(dist, Catch::Matchers::WithinRel(5.196152f, T_EPS));
 }
 //endregion
 

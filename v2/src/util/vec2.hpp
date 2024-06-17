@@ -7,7 +7,7 @@
 #include "./assert.hpp"
 
 namespace jtx {
-    JTX_NUM_ONLY
+    JTX_NUM_ONLY_T
     class Vec2 {
     public:
         T x, y;
@@ -220,7 +220,7 @@ namespace jtx {
     typedef Vec2<int> Vec2i;
     typedef Vec2<float> Vec2f;
 
-    JTX_NUM_ONLY
+    JTX_NUM_ONLY_T
     using Point2 = Vec2<T>;
 
     typedef Point2<int> Point2i;

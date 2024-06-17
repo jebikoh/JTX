@@ -7,7 +7,7 @@
 #include <stdexcept>
 
 namespace jtx {
-    JTX_NUM_ONLY
+    JTX_NUM_ONLY_T
     class Vec4 {
     public:
         T x, y, z, w;
@@ -249,8 +249,8 @@ namespace jtx {
 
     typedef Vec4<int> Vec4i;
     typedef Vec4<float> Vec4f;
-    
-    JTX_NUM_ONLY
+
+    JTX_NUM_ONLY_T
     using Point4 = Vec4<T>;
 
     typedef Point4<int> Point4i;

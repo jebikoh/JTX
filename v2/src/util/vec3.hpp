@@ -8,7 +8,7 @@
 #include "./math.hpp"
 
 namespace jtx {
-    JTX_NUM_ONLY
+    JTX_NUM_ONLY_T
     class Vec3 {
     public:
         T x, y, z;
@@ -242,7 +242,7 @@ namespace jtx {
     typedef Vec3<int> Vec3i;
     typedef Vec3<float> Vec3f;
 
-    JTX_NUM_ONLY
+    JTX_NUM_ONLY_T
     using Point3 = Vec3<T>;
 
     typedef Point3<int> Point3i;

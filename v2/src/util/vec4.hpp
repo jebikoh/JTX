@@ -246,10 +246,13 @@ namespace jtx {
         }
         //endregion
     };
-    
+
     typedef Vec4<int> Vec4i;
     typedef Vec4<float> Vec4f;
+    
+    JTX_NUM_ONLY
+    using Point4 = Vec4<T>;
 
-    typedef Vec4<int> Point4i;
-    typedef Vec4<float> Point4f;
+    typedef Point4<int> Point4i;
+    typedef Point4<float> Point4f;
 }// namespace jtx

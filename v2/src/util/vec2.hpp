@@ -216,10 +216,13 @@ namespace jtx {
         }
         //endregion
     };
-    
+
     typedef Vec2<int> Vec2i;
     typedef Vec2<float> Vec2f;
 
-    typedef Vec2<int> Point2i;
-    typedef Vec2<float> Point2f;
+    JTX_NUM_ONLY
+    using Point2 = Vec2<T>;
+
+    typedef Point2<int> Point2i;
+    typedef Point2<float> Point2f;
 }// namespace jtx

@@ -98,8 +98,16 @@ namespace jtx {
             return {x + other.x, y + other.y, z + other.z, w + other.w};
         }
 
+        inline Vec4 operator+(const T scalar) const {
+            return {x + scalar, y + scalar, z + scalar, w + scalar};
+        }
+
         inline Vec4 operator-(const Vec4 &other) const {
             return {x - other.x, y - other.y, z - other.z, w - other.w};
+        }
+
+        inline Vec4 operator-(const T scalar) const {
+            return {x - scalar, y - scalar, z - scalar, w - scalar};
         }
 
         inline Vec4 operator*(const Vec4 &other) const {
@@ -140,11 +148,29 @@ namespace jtx {
             return *this;
         }
 
+        inline Vec4 &operator+=(const T scalar) {
+            x += scalar;
+            y += scalar;
+            z += scalar;
+            w += scalar;
+            ASSERT(valid());
+            return *this;
+        }
+
         inline Vec4 &operator-=(const Vec4 &other) {
             x -= other.x;
             y -= other.y;
             z -= other.z;
             w -= other.w;
+            ASSERT(valid());
+            return *this;
+        }
+
+        inline Vec4 &operator-=(const T scalar) {
+            x -= scalar;
+            y -= scalar;
+            z -= scalar;
+            w -= scalar;
             ASSERT(valid());
             return *this;
         }

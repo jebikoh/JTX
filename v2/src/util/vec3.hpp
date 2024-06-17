@@ -92,8 +92,16 @@ namespace jtx {
             return {x + other.x, y + other.y, z + other.z};
         }
 
+        inline Vec3 operator+(const T scalar) const {
+            return {x + scalar, y + scalar, z + scalar};
+        }
+
         inline Vec3 operator-(const Vec3 &other) const {
             return {x - other.x, y - other.y, z - other.z};
+        }
+
+        inline Vec3 operator-(const T scalar) const {
+            return {x - scalar, y - scalar, z - scalar};
         }
 
         inline Vec3 operator*(const Vec3 &other) const {
@@ -133,10 +141,26 @@ namespace jtx {
             return *this;
         }
 
+        inline Vec3 &operator+=(const T scalar) {
+            x += scalar;
+            y += scalar;
+            z += scalar;
+            ASSERT(valid());
+            return *this;
+        }
+
         inline Vec3 &operator-=(const Vec3 &other) {
             x -= other.x;
             y -= other.y;
             z -= other.z;
+            ASSERT(valid());
+            return *this;
+        }
+
+        inline Vec3 &operator-=(const T scalar) {
+            x -= scalar;
+            y -= scalar;
+            z -= scalar;
             ASSERT(valid());
             return *this;
         }

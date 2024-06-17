@@ -86,8 +86,16 @@ namespace jtx {
             return {x + other.x, y + other.y};
         }
 
+        inline Vec2 operator+(const T scalar) const {
+            return {x + scalar, y + scalar};
+        }
+
         inline Vec2 operator-(const Vec2 &other) const {
             return {x - other.x, y - other.y};
+        }
+
+        inline Vec2 operator-(const T scalar) const {
+            return {x - scalar, y - scalar};
         }
 
         inline Vec2 operator*(const Vec2 &other) const {
@@ -126,9 +134,23 @@ namespace jtx {
             return *this;
         }
 
+        inline Vec2 &operator+=(const T scalar) {
+            x += scalar;
+            y += scalar;
+            ASSERT(valid());
+            return *this;
+        }
+
         inline Vec2 &operator-=(const Vec2 &other) {
             x -= other.x;
             y -= other.y;
+            ASSERT(valid());
+            return *this;
+        }
+
+        inline Vec2 &operator-=(const T scalar) {
+            x -= scalar;
+            y -= scalar;
             ASSERT(valid());
             return *this;
         }

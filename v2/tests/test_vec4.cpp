@@ -182,6 +182,16 @@ TEST_CASE("Vec4f + operator", "[Vec4]") {
     REQUIRE(v3.w == 11.0f);
 }
 
+TEST_CASE("Vec4f + operator (scalar)", "[Vec4]") {
+    jtx::Vec4f v1(1.0f, 2.0f, 3.0f, 4.0f);
+    float s = 2.0f;
+    jtx::Vec4f v2 = v1 + s;
+    REQUIRE(v2.x == 3.0f);
+    REQUIRE(v2.y == 4.0f);
+    REQUIRE(v2.z == 5.0f);
+    REQUIRE(v2.w == 6.0f);
+}
+
 TEST_CASE("Vec4f - operator", "[Vec4]") {
     jtx::Vec4f v1(1.0f, 2.0f, 3.0f, 4.0f);
     jtx::Vec4f v2(4.0f, 5.0f, 6.0f, 7.0f);
@@ -190,6 +200,16 @@ TEST_CASE("Vec4f - operator", "[Vec4]") {
     REQUIRE(v3.y == -3.0f);
     REQUIRE(v3.z == -3.0f);
     REQUIRE(v3.w == -3.0f);
+}
+
+TEST_CASE("Vec4f - operator (scalar)", "[Vec4]") {
+    jtx::Vec4f v1(1.0f, 2.0f, 3.0f, 4.0f);
+    float s = 2.0f;
+    jtx::Vec4f v2 = v1 - s;
+    REQUIRE(v2.x == -1.0f);
+    REQUIRE(v2.y == 0.0f);
+    REQUIRE(v2.z == 1.0f);
+    REQUIRE(v2.w == 2.0f);
 }
 
 TEST_CASE("Vec4f * operator", "[Vec4]") {
@@ -264,6 +284,16 @@ TEST_CASE("Vec4f += operator", "[Vec4]") {
     REQUIRE(v1.w == 11.0f);
 }
 
+TEST_CASE("Vec4f += operator (scalar)", "[Vec4]") {
+    jtx::Vec4f v1(1.0f, 2.0f, 3.0f, 4.0f);
+    float s = 2.0f;
+    v1 += s;
+    REQUIRE(v1.x == 3.0f);
+    REQUIRE(v1.y == 4.0f);
+    REQUIRE(v1.z == 5.0f);
+    REQUIRE(v1.w == 6.0f);
+}
+
 TEST_CASE("Vec4f -= operator", "[Vec4]") {
     jtx::Vec4f v1(1.0f, 2.0f, 3.0f, 4.0f);
     jtx::Vec4f v2(4.0f, 5.0f, 6.0f, 7.0f);
@@ -272,6 +302,16 @@ TEST_CASE("Vec4f -= operator", "[Vec4]") {
     REQUIRE(v1.y == -3.0f);
     REQUIRE(v1.z == -3.0f);
     REQUIRE(v1.w == -3.0f);
+}
+
+TEST_CASE("Vec4f -= operator (scalar)", "[Vec4]") {
+    jtx::Vec4f v1(1.0f, 2.0f, 3.0f, 4.0f);
+    float s = 2.0f;
+    v1 -= s;
+    REQUIRE(v1.x == -1.0f);
+    REQUIRE(v1.y == 0.0f);
+    REQUIRE(v1.z == 1.0f);
+    REQUIRE(v1.w == 2.0f);
 }
 
 TEST_CASE("Vec4f *= operator", "[Vec4]") {

@@ -149,12 +149,28 @@ TEST_CASE("Vec2f + operator", "[Vec2]") {
     REQUIRE(v3.y == 7.0f);
 }
 
+TEST_CASE("Vec2f + operator (scalar)", "[Vec2]") {
+    jtx::Vec2f v1(1.0f, 2.0f);
+    float s = 2.0f;
+    jtx::Vec2f v2 = v1 + s;
+    REQUIRE(v2.x == 3.0f);
+    REQUIRE(v2.y == 4.0f);
+}
+
 TEST_CASE("Vec2f - operator", "[Vec2]") {
     jtx::Vec2f v1(1.0f, 2.0f);
     jtx::Vec2f v2(4.0f, 5.0f);
     jtx::Vec2f v3 = v1 - v2;
     REQUIRE(v3.x == -3.0f);
     REQUIRE(v3.y == -3.0f);
+}
+
+TEST_CASE("Vec2f - scalar operator (scalar)", "[Vec2]") {
+    jtx::Vec2f v1(1.0f, 2.0f);
+    float s = 2.0f;
+    jtx::Vec2f v2 = v1 - s;
+    REQUIRE(v2.x == -1.0f);
+    REQUIRE(v2.y == 0.0f);
 }
 
 TEST_CASE("Vec2f * operator", "[Vec2]") {
@@ -215,12 +231,29 @@ TEST_CASE("Vec2f += operator", "[Vec2]") {
     REQUIRE(v1.y == 7.0f);
 }
 
+TEST_CASE("Vec2f += operator (scalar)", "[Vec2]") {
+    jtx::Vec2f v1(1.0f, 2.0f);
+    float s = 2.0f;
+    v1 += s;
+    REQUIRE(v1.x == 3.0f);
+    REQUIRE(v1.y == 4.0f);
+}
+
 TEST_CASE("Vec2f -= operator", "[Vec2]") {
     jtx::Vec2f v1(1.0f, 2.0f);
     jtx::Vec2f v2(4.0f, 5.0f);
     v1 -= v2;
     REQUIRE(v1.x == -3.0f);
     REQUIRE(v1.y == -3.0f);
+}
+
+TEST_CASE("Vec2f -= operator (scalar)", "[Vec2]") {
+    jtx::Vec2f v1(1.0f, 2.0f);
+    float s = 2.0f;
+    v1 -= s;
+    REQUIRE(v1.x == -1.0f);
+    REQUIRE(v1.y == 0.0f);
+
 }
 
 TEST_CASE("Vec2f *= operator", "[Vec2]") {

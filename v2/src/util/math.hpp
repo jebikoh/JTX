@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./assert.hpp"
+#include "./constants.hpp"
 #include <cmath>
 #include <algorithm>
 

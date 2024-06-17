@@ -5,6 +5,10 @@
 #include <algorithm>
 
 namespace jtx {
+    inline float lerp(float a, float b, float t) {
+        return a + t * (b - a);
+    }
+
     inline float clampAsin(float theta) {
         ASSERT(theta >= -1.0001f && theta <= 1.0001f);
         return std::asin(std::clamp(theta, -1.0f, 1.0f));

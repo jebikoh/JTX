@@ -4,6 +4,7 @@
 #include "./vec3.hpp"
 #include "./vec4.hpp"
 #include "./numerical.hpp"
+#include "./math.hpp"
 
 namespace jtx {
     //region Dot Product
@@ -208,17 +209,17 @@ namespace jtx {
     JTX_NUM_ONLY_T
     inline float angle(const Vec2<T> &a, const Vec2<T> &b) {
         if (a.dot(b) < 0) {
-            return PI_F - 2 * std::asin((a - b).len() / 2);
+            return PI_F - 2 * jtx::clampAsin((a - b).len() / 2);
         }
-        return 2 * std::asin((a - b).len() / 2);
+        return 2 * jtx::clampAsin((a - b).len() / 2);
     }
 
     JTX_NUM_ONLY_T
     inline float angle(const Vec3<T> &a, const Vec3<T> &b) {
         if (a.dot(b) < 0) {
-            return PI_F - 2 * std::asin((a - b).len() / 2);
+            return PI_F - 2 * jtx::clampAsin((a - b).len() / 2);
         }
-        return 2 * std::asin((a - b).len() / 2);
+        return 2 * jtx::clampAsin((a - b).len() / 2);
     }
     //endregion
 

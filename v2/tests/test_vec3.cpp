@@ -323,10 +323,19 @@ TEST_CASE("Vec3f /= operator (scalar)", "[Vec3]") {
 //endregion
 
 //region Vec3: Functions
-TEST_CASE("Vec3f cross", "[Vec3]") {
+TEST_CASE("Vec3f cross (static)", "[Vec3]") {
     jtx::Vec3f v1(1.0f, 2.0f, 3.0f);
     jtx::Vec3f v2(4.0f, 5.0f, 6.0f);
     jtx::Vec3f v3 = jtx::cross(v1, v2);
+    REQUIRE(v3.x == -3.0f);
+    REQUIRE(v3.y == 6.0f);
+    REQUIRE(v3.z == -3.0f);
+}
+
+TEST_CASE("Vec3f cross", "[Vec3]") {
+    jtx::Vec3f v1(1.0f, 2.0f, 3.0f);
+    jtx::Vec3f v2(4.0f, 5.0f, 6.0f);
+    jtx::Vec3f v3 = v1.cross(v2);
     REQUIRE(v3.x == -3.0f);
     REQUIRE(v3.y == 6.0f);
     REQUIRE(v3.z == -3.0f);
@@ -598,7 +607,7 @@ TEST_CASE("Vec3i floor (static)", "[Vec3]") {
     REQUIRE(v2.z == 3);
 }
 
-TEST_CASE("Vec3i cross", "[Vec3]") {
+TEST_CASE("Vec3i cross (static)", "[Vec3]") {
     jtx::Vec3i v1(1, 2, 3);
     jtx::Vec3i v2(4, 5, 6);
     jtx::Vec3i v3 = jtx::cross(v1, v2);

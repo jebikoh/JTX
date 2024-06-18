@@ -20,7 +20,8 @@ add_library(JTXLib src/util/constants.hpp
         src/util/math.hpp
         src/util/vecmath.hpp
         src/util/ray.hpp
-        src/util/bounds.hpp)
+        src/util/bounds.hpp
+        src/util/spherical.hpp)
 
 set_target_properties(JTXLib PROPERTIES LINKER_LANGUAGE CXX)
 

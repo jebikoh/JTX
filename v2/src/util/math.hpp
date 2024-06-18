@@ -6,6 +6,15 @@
 #include <algorithm>
 
 namespace jtx {
+    template<typename T, typename U, typename V>
+    constexpr
+    std::enable_if_t<std::is_arithmetic_v<T> && std::is_arithmetic_v<U> && std::is_arithmetic_v<V>, T>
+    clamp(T val, U lo, V hi) {
+        if (val < lo) return T(lo);
+        else if (val > hi) return T(hi);
+        else return val;
+    }
+
     inline float lerp(float a, float b, float t) {
         return a + t * (b - a);
     }

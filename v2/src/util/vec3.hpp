@@ -225,7 +225,11 @@ namespace jtx {
             return std::abs(dot(other));
         }
 
-        [[nodiscard]] inline float len() const { return std::sqrt(x * x + y * y + z * z); }
+        [[nodiscard]] inline float lenSqr() const {
+            return x * x + y * y + z * z;
+        }
+
+        [[nodiscard]] inline float len() const { return std::sqrt(lenSqr()); }
 
         inline Vec3 &normalize() {
             float l = len();

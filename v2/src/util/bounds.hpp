@@ -1,11 +1,12 @@
 #pragma once
 
 #include "./assert.hpp"
-#include "./numerical.hpp"
 #include "./math.hpp"
-#include "./vecmath.hpp"
-#include "./vec3.hpp"
+#include "./numerical.hpp"
 #include "./vec2.hpp"
+#include "./vec3.hpp"
+#include "./vecmath.hpp"
+#include <iostream>
 
 namespace jtx {
 
@@ -21,6 +22,7 @@ namespace jtx {
 
         //region Constructors
         AABB3() {
+            std::cout << "Default constructor called" << std::endl;
             T minval = std::numeric_limits<T>::lowest();
             T maxval = std::numeric_limits<T>::max();
 
@@ -29,14 +31,24 @@ namespace jtx {
         }
 
         AABB3(const Point3<T> &a, const Point3<T> &b) {
+            std::cout << "Two point constructor called" << std::endl;
             pmin = jtx::min(a, b);
             pmax = jtx::max(a, b);
         }
 
-        explicit AABB3(const Point3<T> &p) : pmin(p), pmax(p) {}
+        explicit AABB3(const Point3<T> &p) : pmin(p), pmax(p) {
+            std::cout << "Point constructor called" << std::endl;
+        }
+
+        AABB3(const AABB3 &other) {
+            std::cout << "Copy constructor called (sametype)" << std::endl;
+            pmin = Point3<T>(other.pmin);
+            pmax = Point3<T>(other.pmax);
+        }
 
         JTX_NUM_ONLY(U)
         explicit AABB3(const AABB3<U> &other) {
+            std::cout << "Copy constructor called" << std::endl;
             if (other.isEmpty()) {
                 *this = AABB3<T>();
             } else {
@@ -110,8 +122,10 @@ namespace jtx {
         [[nodiscard]] inline int maxDim() const {
             Vec3<T> d = diagonal();
             if (d.x > d.y && d.x > d.z) return 0;
-            else if (d.y > d.z) return 1;
-            else return 2;
+            else if (d.y > d.z)
+                return 1;
+            else
+                return 2;
         }
 
         [[nodiscard]] inline Point3f lerp(const Point3f &t) const {
@@ -207,4 +221,4 @@ namespace jtx {
 
     typedef AABB3<int> BB3i;
     typedef AABB3<float> BB3f;
-} // jtx
+}// namespace jtx

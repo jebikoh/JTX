@@ -1,6 +1,7 @@
 #include "../src/util/bounds.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
+#include <iostream>
 
 TEST_CASE("BB3f default constructor", "[BB3]") {
     jtx::BB3f bb;
@@ -36,14 +37,30 @@ TEST_CASE("BB3f copy constructor", "[BB3]") {
     REQUIRE(bbCopy.pmax == jtx::Point3f{4.0f, 8.0f, 6.0f});
 }
 
-TEST_CASE("BB3f copy constructor (empty)", "[BB3]") {
+TEST_CASE("BB3f copy constructor (empty, f->i)", "[BB3]") {
     jtx::BB3f bb;
     bb.pmin = jtx::Point3f{1.0f, 1.0f, 1.0f};
     bb.pmax = jtx::Point3f{0.0f, 0.0f, 0.0f};
-    jtx::BB3f bb2(bb);
-    jtx::BB3f ref = jtx::BB3f();
-    REQUIRE(bb2.pmin == ref.pmin);
-    REQUIRE(bb2.pmax == ref.pmax);
+    REQUIRE(bb.isEmpty() == true);
+    auto bb2 = jtx::BB3i(bb);
+    REQUIRE(bb2.isEmpty() == true);
+    REQUIRE(bb2.pmax.x == std::numeric_limits<int>::lowest());
+    REQUIRE(bb2.pmax.y == std::numeric_limits<int>::lowest());
+    REQUIRE(bb2.pmax.z == std::numeric_limits<int>::lowest());
+    REQUIRE(bb2.pmin.x == std::numeric_limits<int>::max());
+    REQUIRE(bb2.pmin.y == std::numeric_limits<int>::max());
+    REQUIRE(bb2.pmin.z == std::numeric_limits<int>::max());
+}
+
+TEST_CASE("BB3f copy constructor (f->i)", "[BB3]") {
+    jtx::BB3f bb;
+    bb.pmin = jtx::Point3f{0.0f, 0.0f, 0.0f};
+    bb.pmax = jtx::Point3f{1.0f, 1.0f, 1.0f};
+    REQUIRE(bb.isEmpty() == false);
+    auto bb2 = jtx::BB3i(bb);
+    REQUIRE(bb2.isEmpty() == false);
+    REQUIRE(bb2.pmax == jtx::Point3i{1, 1, 1});
+    REQUIRE(bb2.pmin == jtx::Point3i{0, 0, 0});
 }
 
 //region isEmpty() / isDegenerate()

@@ -199,7 +199,7 @@ namespace jtx {
         //region Member functions
         // Modified from https://pbr-book.org/4ed/Geometry_and_Transformations/Bounding_Boxes
         [[nodiscard]] inline Point2<T> corner(int i) const {
-            ASSERT(i >= 0 && i < 8);
+            ASSERT(i >= 0 && i < 4);
             return Point2<T>(i & 1 ? pmax.x : pmin.x,
                              i & 2 ? pmax.y : pmin.y);
         }
@@ -249,16 +249,6 @@ namespace jtx {
             return pmax - pmin;
         }
 
-        inline T surfaceArea() const {
-            Vec2<T> d = diagonal();
-            return 2 * (d.x * d.y + d.x);
-        }
-
-        inline T volume() const {
-            Vec2<T> d = diagonal();
-            return d.x * d.y;
-        }
-
         [[nodiscard]] inline int maxDim() const {
             Vec2<T> d = diagonal();
             if (d.x > d.y) return 0;
@@ -275,12 +265,6 @@ namespace jtx {
             if (pmax.x > pmin.x) o.x /= pmax.x - pmin.x;
             if (pmax.y > pmin.y) o.y /= pmax.y - pmin.y;
             return o;
-        }
-
-        inline void boundingSphere(Point2<T> *center, T *radius) const {
-            *center = (pmin + pmax) / 2;
-            // PBRT: when would the center be outside the box?
-            *radius = inside(*center) ? distance(*center, pmax) : 0;
         }
         //endregion
     };

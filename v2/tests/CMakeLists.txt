@@ -6,7 +6,8 @@ add_executable(Tests test_vec3.cpp
         tconstants.h
         tconstants.h
         test_ray.cpp
-        test_bounding_box.cpp)
+        test_bb.cpp
+)
 
 target_link_libraries(Tests PRIVATE JTXLib Catch2::Catch2WithMain)
 

@@ -207,6 +207,13 @@ namespace jtx {
             return this->x * _x + this->y * _y + this->z * _z;
         }
 
+        inline Vec3 cross(const Vec3 &other) const {
+            return {jtx::dop(y, other.z, z, other.y),
+                    jtx::dop(z, other.x, x, other.z),
+                    jtx::dop(x, other.y, y, other.x)};
+        }
+
+
         inline Vec3 &abs() {
             x = std::abs(x);
             y = std::abs(y);

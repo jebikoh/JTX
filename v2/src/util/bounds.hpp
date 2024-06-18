@@ -69,13 +69,13 @@ namespace jtx {
                              i & 4 ? pmax.z : pmin.z);
         }
 
-        inline AABB3 &merge(const Point3<T> &p) const {
+        inline AABB3 &merge(const Point3<T> &p) {
             pmin = jtx::min(pmin, p);
             pmax = jtx::max(pmax, p);
             return *this;
         }
 
-        inline AABB3 &merge(const AABB3 &b) const {
+        inline AABB3 &merge(const AABB3 &b) {
             pmin = jtx::min(pmin, b.pmin);
             pmax = jtx::max(pmax, b.pmax);
             return *this;
@@ -94,14 +94,22 @@ namespace jtx {
         }
 
         inline bool insideExclusive(const Point3<T> &pt) const {
-            return pt.x >= pmin.x && pt.x < pmax.x &&
-                   pt.y >= pmin.y && pt.y < pmax.y &&
-                   pt.z >= pmin.z && pt.z < pmax.z;
+            return pt.x > pmin.x && pt.x < pmax.x &&
+                   pt.y > pmin.y && pt.y < pmax.y &&
+                   pt.z > pmin.z && pt.z < pmax.z;
         }
 
-        inline AABB3 &expand(T delta) const {
+        inline AABB3 &expand(T delta) {
+            ASSERT(delta >= 0);
             pmin -= delta;
             pmax += delta;
+            return *this;
+        }
+
+        inline AABB3 &shrink(T delta) {
+            ASSERT(delta >= 0);
+            pmin += delta;
+            pmax -= delta;
             return *this;
         }
 
@@ -177,27 +185,22 @@ namespace jtx {
 
     JTX_NUM_ONLY_T
     inline bool overlaps(const AABB3<T> &a, const AABB3<T> &b) {
-        return a.pmin.x <= b.pmax.x && a.pmax.x >= b.pmin.x &&
-               a.pmin.y <= b.pmax.y && a.pmax.y >= b.pmin.y &&
-               a.pmin.z <= b.pmax.z && a.pmax.z >= b.pmin.z;
+        return a.overlaps(b);
     }
 
+    // Added these because the syntax a.inside(p) is semantically confusing
     JTX_NUM_ONLY_T
     inline bool inside(const Point3<T> &p, const AABB3<T> &a) {
-        return p.x >= a.pmin.x && p.x <= a.pmax.x &&
-               p.y >= a.pmin.y && p.y <= a.pmax.y &&
-               p.z >= a.pmin.z && p.z <= a.pmax.z;
+        return a.inside(p);
     }
 
     JTX_NUM_ONLY_T
     inline bool insideExclusive(const Point3<T> &p, const AABB3<T> &a) {
-        return p.x >= a.pmin.x && p.x < a.pmax.x &&
-               p.y >= a.pmin.y && p.y < a.pmax.y &&
-               p.z >= a.pmin.z && p.z < a.pmax.z;
+        return a.insideExclusive(p);
     }
 
     template<typename T, typename U, typename = std::enable_if_t<std::is_arithmetic_v<T> && std::is_arithmetic_v<U>>>
-    inline auto distanceSqr(const AABB3<T> &b, const Point3<T> &p) {
+    inline auto distanceSqr(const AABB3<T> &b, const Point3<U> &p) {
         using TmU = decltype(T{} - U{});
         TmU dx = std::max<TmU>({0, b.pmin.x - p.x, p.x - b.pmax.x});
         TmU dy = std::max<TmU>({0, b.pmin.y - p.y, p.y - b.pmax.y});
@@ -205,16 +208,26 @@ namespace jtx {
         return dx * dx + dy * dy + dz * dz;
     }
 
-    template<typename T, typename U>
-    inline auto distance(const AABB3<T> &b, const Point3<T> &p) {
+    template<typename T, typename U, typename = std::enable_if_t<std::is_arithmetic_v<T> && std::is_arithmetic_v<U>>>
+    inline auto distance(const AABB3<T> &b, const Point3<U> &p) {
         return std::sqrt(distanceSqr(b, p));
     }
 
     JTX_NUM_ONLY_T
     inline AABB3<T> expand(const AABB3<T> &a, T delta) {
+        ASSERT(delta >= 0);
         AABB3<T> res;
         res.pmin = a.pmin - delta;
         res.pmax = a.pmax + delta;
+        return res;
+    }
+
+    JTX_NUM_ONLY_T
+    inline AABB3<T> shrink(const AABB3<T> &a, T delta) {
+        ASSERT(delta >= 0);
+        AABB3<T> res;
+        res.pmin = a.pmin + delta;
+        res.pmax = a.pmax - delta;
         return res;
     }
     //endregion

@@ -508,6 +508,12 @@ TEST_CASE("Vec3f angle", "[Vec3]") {
     REQUIRE_THAT(theta, Catch::Matchers::WithinRel(T_DEG_90, T_EPS));
 }
 
+TEST_CASE("Vec3f L1 Norm", "[Vec3]") {
+    jtx::Vec3f v{1.0f, 2.0f, 3.0f};
+    auto norm = v.l1norm();
+    REQUIRE(norm == 6.0f);
+}
+
 // TODO: this appears to be backwards?!
 TEST_CASE("Vec3f Gram Schmidt", "[Vec3]") {
     jtx::Vec3f b{1.0f, 0.0f, 0.0f};
@@ -614,5 +620,17 @@ TEST_CASE("Vec3i cross (static)", "[Vec3]") {
     REQUIRE(v3.x == -3);
     REQUIRE(v3.y == 6);
     REQUIRE(v3.z == -3);
+}
+//endregion
+
+//region OctahedralVec Tests
+TEST_CASE("OctahedaralVec conserves unit vector", "[Octahedral]") {
+    jtx::Vec3f v{1.0f, 2.0f, 3.0f};
+    v.normalize();
+    jtx::OctahedralVec oct(v);
+    auto v2 = jtx::Vec3f(oct);
+    REQUIRE_THAT(v2.x, Catch::Matchers::WithinRel(v.x, T_EPS));
+    REQUIRE_THAT(v2.y, Catch::Matchers::WithinRel(v.y, T_EPS));
+    REQUIRE_THAT(v2.z, Catch::Matchers::WithinRel(v.z, T_EPS));
 }
 //endregion

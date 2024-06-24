@@ -2,6 +2,7 @@
 
 #include "./assert.hpp"
 #include "./constants.hpp"
+#include "./numerical.hpp"
 #include <cmath>
 #include <algorithm>
 
@@ -69,5 +70,24 @@ namespace jtx {
     typename std::enable_if_t<std::is_integral_v<T>, T>
     dop(T a, T b, T c, T d) {
         return a * b - c * d;
+    }
+
+    JTX_NUM_ONLY_T
+    inline
+    T sqrt(T v) {
+        return std::sqrt(std::max(0.0f, v));
+    }
+
+    template<typename T, typename C, typename = std::enable_if_t<std::is_arithmetic_v<T> && std::is_arithmetic_v<C>>>
+    inline
+    constexpr T evalPolynomial(T t, C c) {
+        return c;
+    }
+
+    template<typename T, typename C, typename... Coeffs,
+            typename = std::enable_if_t<std::is_arithmetic_v<T> && std::is_arithmetic_v<C>>>
+    inline
+    constexpr T evalPolynomial(T t, C c, Coeffs... coeffs) {
+        return jtx::fma(t, evalPolynomial(t, coeffs...), c);
     }
 }

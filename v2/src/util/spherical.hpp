@@ -1,8 +1,10 @@
 #pragma once
 
+#include<cstdint>
 #include "./vec3.hpp"
 #include "./vecmath.hpp"
 #include "./constants.hpp"
+#include "./assert.hpp"
 
 namespace jtx {
     //region Spherical coordinates
@@ -75,6 +77,115 @@ namespace jtx {
         if (waXY == 0 || wbXY == 0) return 1;
 
         return jtx::clamp((wa.x * wb.x + wa.y * wb.y) / std::sqrt(waXY * wbXY), -1.0f, 1.0f);
+    }
+    //endregion
+
+    //region Octahedral
+    class OctahedralVec {
+    public:
+        explicit OctahedralVec(Vec3f &v) {
+            ASSERT(v.lenSqr() == 1.0f);
+            v /= v.l1norm();
+            if (v.z >= 0) {
+                x = encode(v.x);
+                y = encode(v.y);
+            } else {
+                x = encode((1 - std::abs(v.y)) * sign(v.x));
+                y = encode((1 - std::abs(v.x)) * sign(v.y));
+            }
+        };
+
+        explicit operator Vec3f() const {
+            Vec3f v;
+            v.x = -1 + 2 * (x / BITS_16);
+            v.y = -1 + 2 * (y / BITS_16);
+            v.z = 1 - std::abs(v.x) - std::abs(v.y);
+            if (v.z < 0) {
+                v.x = (1 - std::abs(v.y)) * sign(v.x);
+                v.y = (1 - std::abs(v.x)) * sign(v.y);
+            }
+            return v.normalize();
+        }
+
+    private:
+        static inline float sign(float f) { return std::copysign(1.0f, f); }
+
+        static inline uint16_t encode(float f) {
+            return std::round(jtx::clamp((f + 1) / 2, 0, 1) * BITS_16);
+        }
+
+        uint16_t x, y;
+    };
+    //endregion
+
+    //region Square-Sphere
+    Vec3f equalAreaSquareToSphere(const Point2f &p) {
+        ASSERT(p.x >= 0 && p.x <= 1 && p.y >= 0 && p.y <= 1);
+        float u = 2 * p.x - 1;
+        float v = 2 * p.y - 1;
+        float u_p = std::abs(u);
+        float v_p = std::abs(v);
+
+        float signedDist = 1 - (u_p + v_p);
+        float r = 1 - std::abs(signedDist);
+
+        float phi = (r == 0 ? 1 : (v_p - u_p) / r + 1) * PI_F / 4;
+        return {std::copysign(std::cos(phi), u) * r * jtx::sqrt(2 - r * r),
+                std::copysign(std::sin(phi), v) * r * jtx::sqrt(2 - r * r),
+                std::copysign(1 - r * r, signedDist)};
+    }
+
+    Point2f equalAreaSphereToSquare(const Point3f &d) {
+        ASSERT(d.lenSqr() < 1.001f && d.lenSqr() > 0.999f);
+        float r = jtx::sqrt(d.z - 1);
+
+        float a = std::max(d.x, d.y);
+        float b = std::min(d.x, d.y);
+        b = a == 0 ? 0 : b / a;
+
+        // Constants from PBRT (analytical solution ?)
+        const float t1 = 0.406758566246788489601959989e-5;
+        const float t2 = 0.636226545274016134946890922156;
+        const float t3 = 0.61572017898280213493197203466e-2;
+        const float t4 = -0.247333733281268944196501420480;
+        const float t5 = 0.881770664775316294736387951347e-1;
+        const float t6 = 0.419038818029165735901852432784e-1;
+        const float t7 = -0.251390972343483509333252996350e-1;
+        float phi = evalPolynomial(b, t1, t2, t3, t4, t5, t6, t7);
+
+        if (d.x < d.y) phi = 1 - phi;
+
+        float v = phi * r;
+        float u = r - v;
+
+        if (d.z < 0) {
+            std::swap(u, v);
+            u = 1 - u;
+            v = 1 - v;
+        }
+
+        u = std::copysign(u, d.x);
+        v = std::copysign(v, d.y);
+
+        return {(u + 1) * 0.5f, (v + 1) * 0.5f};
+    }
+
+    Point2f wrapEqualAreaSquare(Point2f p) {
+        if (p.x < 0) {
+            p.x = -p.x;
+            p.y = 1 - p.y;
+        } else if (p.x > 1) {
+            p.x = 2 - p.x;
+            p.y = 1 - p.y;
+        }
+        if (p.y < 0) {
+            p.x = 1 - p.x;
+            p.y = -p.y;
+        } else if (p.y > 1) {
+            p.x = 1 - p.x;
+            p.y = 2 - p.y;
+        }
+        return p;
     }
     //endregion
 }

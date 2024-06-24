@@ -2,7 +2,6 @@
 
 #include<cmath>
 #include<stdexcept>
-#include<cstdint>
 #include "./constants.hpp"
 #include "./numerical.hpp"
 #include "./assert.hpp"
@@ -290,41 +289,5 @@ namespace jtx {
 
     typedef Vec3<float> Normal3f;
     //endregion
-
-    class OctahedralVec {
-    public:
-        explicit OctahedralVec(Vec3f v) {
-            v /= v.l1norm();
-            if (v.z >= 0) {
-                x = encode(v.x);
-                y = encode(v.y);
-            } else {
-                x = encode((1 - std::abs(v.y)) * sign(v.x));
-                y = encode((1 - std::abs(v.x)) * sign(v.y));
-            }
-        };
-
-        explicit operator Vec3f() const {
-            Vec3f v;
-            v.x = -1 + 2 * (x / BITS_16);
-            v.y = -1 + 2 * (y / BITS_16);
-            v.z = 1 - std::abs(v.x) - std::abs(v.y);
-            if (v.z < 0) {
-                v.x = (1 - std::abs(v.y)) * sign(v.x);
-                v.y = (1 - std::abs(v.x)) * sign(v.y);
-            }
-            return v.normalize();
-        }
-
-    private:
-        static inline float sign(float f) { return std::copysign(1.0f, f); }
-
-        static inline uint16_t encode(float f) {
-            return std::round(jtx::clamp((f + 1) / 2, 0, 1) * BITS_16);
-        }
-
-        uint16_t x, y;
-    };
-
 
 }// namespace jtx

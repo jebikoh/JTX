@@ -151,7 +151,7 @@ namespace jtx {
         const float t5 = 0.881770664775316294736387951347e-1;
         const float t6 = 0.419038818029165735901852432784e-1;
         const float t7 = -0.251390972343483509333252996350e-1;
-        float phi = evalPolynomial(b, t1, t2, t3, t4, t5, t6, t7);
+        float phi = jtx::evalPolynomial(b, t1, t2, t3, t4, t5, t6, t7);
 
         if (d.x < d.y) phi = 1 - phi;
 

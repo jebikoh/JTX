@@ -1,5 +1,6 @@
 #pragma once
 
+#include <span>
 #include "numerical.hpp"
 #include "vec4.hpp"
 
@@ -73,7 +74,112 @@ namespace jtx {
             return m;
         }
         //endregion
-        
+
+        //region Binary operators
+        std::span<const float> operator[](int i) const {
+            return {m[i]};
+        }
+
+        std::span<float> operator[](int i) {
+            return {m[i]};
+        }
+
+        Mat4 operator+(const Mat4 &other) const {
+            Mat4 res = *this;
+            for (int i = 0; i < 4; ++i) {
+                for (int j = 0; j < 4; ++j) {
+                    res[i][j] += other[i][j];
+                }
+            }
+            return res;
+        }
+
+        Mat4 operator+(const float scalar) const {
+            Mat4 res = *this;
+            for (int i = 0; i < 4; ++i) {
+                for (int j = 0; j < 4; ++j) {
+                    res[i][j] += scalar;
+                }
+            }
+            return res;
+        }
+
+        friend Mat4 operator+(const float scalar, const Mat4 &mat) {
+            return mat + scalar;
+        }
+
+        Mat4 operator-(const Mat4 &other) const {
+            Mat4 res = *this;
+            for (int i = 0; i < 4; ++i) {
+                for (int j = 0; j < 4; ++j) {
+                    res[i][j] -= other[i][j];
+                }
+            }
+            return res;
+        }
+
+        Mat4 operator-(const float scalar) const {
+            Mat4 res = *this;
+            for (int i = 0; i < 4; ++i) {
+                for (int j = 0; j < 4; ++j) {
+                    res[i][j] -= -scalar;
+                }
+            }
+            return res;
+        }
+
+        friend Mat4 operator-(const float scalar, const Mat4 &mat) {
+            return mat - scalar;
+        }
+
+        Mat4 operator*(const float scalar) const {
+            Mat4 res = *this;
+            for (int i = 0; i < 4; ++i) {
+                for (int j = 0; j < 4; ++j) {
+                    res[i][j] *= scalar;
+                }
+            }
+            return res;
+        }
+
+        friend Mat4 operator*(const float scalar, const Mat4 &mat) {
+            return mat * scalar;
+        }
+
+        Mat4 operator/(const float scalar) const {
+            ASSERT(scalar != 0.0f);
+            Mat4 res = *this;
+            for (int i = 0; i < 4; ++i) {
+                for (int j = 0; j < 4; ++j) {
+                    res[i][j] /= scalar;
+                }
+            }
+            return res;
+        }
+
+        bool operator==(const Mat4 &other) const {
+            for (int i = 0; i < 4; ++i) {
+                for (int j = 0; j < 4; ++j) {
+                    if (m[i][j] != other[i][j]) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        bool operator!=(const Mat4 &other) const {
+            for (int i = 0; i < 4; ++i) {
+                for (int j = 0; j < 4; ++j) {
+                    if (m[i][j] != other[i][j]) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        //endregion
+
         //region Methods
         [[nodiscard]] bool isIdentity() const {
             for (int i = 0; i < 4; ++i) {
@@ -91,6 +197,6 @@ namespace jtx {
         }
         //endregion
     private:
-        float m[4][4]{};
+        float m[4][4];
     };
 }

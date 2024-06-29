@@ -15,8 +15,8 @@ add_library(JTXLib src/util/constants.hpp
         src/util/vec3.hpp
         src/util/vec4.hpp
         src/util/assert.hpp
-        src/util/Mat4.cpp
-        src/util/Mat4.hpp
+        src/util/matrix.cpp
+        src/util/matrix.hpp
         src/util/math.hpp
         src/util/vecmath.hpp
         src/util/ray.hpp

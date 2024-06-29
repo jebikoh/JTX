@@ -182,6 +182,11 @@ namespace jtx {
             ASSERT(valid());
             return *this;
         }
+
+        inline T &operator[](int index) {
+            ASSERT(index >= 0 && index < 2);
+            return (&x)[index];
+        }
         //endregion
 
         //region Member functions

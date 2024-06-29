@@ -246,6 +246,13 @@ TEST_CASE("Vec3f / operator (LHS scalar)", "[Vec3]") {
     REQUIRE(v2.y == 0.5f);
     REQUIRE(v2.z == 1.0f / 3.0f);
 }
+
+TEST_CASE("Vec3f [] operator", "[Vec3]") {
+    jtx::Vec3f v = {1.0f, 2.0f, 3.0f};
+    REQUIRE(v[0] == 1.0f);
+    REQUIRE(v[1] == 2.0f);
+    REQUIRE(v[2] == 3.0f);
+}
 //endregion
 
 //region Vec3: In-place operators

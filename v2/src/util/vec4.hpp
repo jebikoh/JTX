@@ -136,6 +136,11 @@ namespace jtx {
             ASSERT(JTX_ZERO != scalar);
             return {scalar / v.x, scalar / v.y, scalar / v.z, scalar / v.w};
         }
+
+        inline T &operator[](int index) {
+            ASSERT(index >= 0 && index < 4);
+            return (&x)[index];
+        }
         //endregion
 
         //region In-place Assignment Operators

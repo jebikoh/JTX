@@ -220,6 +220,12 @@ TEST_CASE("Vec2f / operator (LHS scalar)", "[Vec2]") {
     REQUIRE(v2.x == 1.0f);
     REQUIRE(v2.y == 0.5f);
 }
+
+TEST_CASE("Vec2f [] operator", "[Vec2]") {
+    jtx::Vec2f v = {1.0f, 2.0f};
+    REQUIRE(v[0] == 1.0f);
+    REQUIRE(v[1] == 2.0f);
+}
 //endregion
 
 //region Vec2: In-place operators

@@ -237,6 +237,21 @@ namespace jtx {
 
     //region Distance
     JTX_NUM_ONLY_T
+    inline float distanceSqr(const Vec2<T> &a, const Vec2<T> &b) {
+        return (a - b).lenSqr();
+    }
+
+    JTX_NUM_ONLY_T
+    inline float distanceSqr(const Vec3<T> &a, const Vec3<T> &b) {
+        return (a - b).lenSqr();
+    }
+
+    JTX_NUM_ONLY_T
+    inline float distanceSqr(const Vec4<T> &a, const Vec4<T> &b) {
+        return (a - b).lenSqr();
+    }
+
+    JTX_NUM_ONLY_T
     inline float distance(const Vec2<T> &a, const Vec2<T> &b) {
         return (a - b).len();
     }

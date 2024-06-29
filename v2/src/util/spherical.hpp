@@ -5,6 +5,7 @@
 #include "./vecmath.hpp"
 #include "./constants.hpp"
 #include "./assert.hpp"
+#include "./bounds.hpp"
 
 namespace jtx {
     //region Spherical coordinates
@@ -186,6 +187,63 @@ namespace jtx {
             p.y = 2 - p.y;
         }
         return p;
+    }
+    //endregion
+
+    //region DirectionCone
+    class DirectionCone {
+    public:
+        jtx::Vec3f dir;
+        float cosTheta = jtx::INFINITY_F;
+
+        [[nodiscard]] inline bool isEmpty() const { return cosTheta == jtx::INFINITY_F; }
+
+        //region Constructors
+        DirectionCone() = default;
+
+        DirectionCone(const Vec3f &dir, float cosTheta) : dir(jtx::normalize(dir)), cosTheta(cosTheta) {}
+
+        explicit DirectionCone(const jtx::Vec3f &dir) : DirectionCone(dir, 1.0f) {}
+        //endregion
+
+        static DirectionCone entireSphere() { return {Vec3f(0, 0, 0), -1}; }
+    };
+
+    inline bool inside(const DirectionCone &cone, const Vec3f &v) {
+        return !cone.isEmpty() && cone.dir.dot(v) >= cone.cosTheta;
+    }
+
+    inline DirectionCone boundSubtendedDirection(const BB3f &bounds, const Vec3f &p) {
+        float r;
+        Point3f c;
+        bounds.boundingSphere(&c, &r);
+        if (jtx::distanceSqr(p, c) < r * r) return DirectionCone::entireSphere();
+
+        Vec3f w = jtx::normalize(c - p);
+        return {w, jtx::sqrt(1 - (r * r) / jtx::distanceSqr(p, c))};
+    }
+
+    inline DirectionCone merge(const DirectionCone &a, const DirectionCone &b) {
+        if (a.isEmpty()) return b;
+        if (b.isEmpty()) return a;
+
+        // Case: either cone is inside the other
+        float theta_a = jtx::clampAcos(a.cosTheta);
+        float theta_b = jtx::clampAcos(b.cosTheta);
+        float theta_c = jtx::angle(a.dir, b.dir);
+
+        if (std::min(theta_c + theta_b, PI_F) <= theta_a) return a;
+        if (std::min(theta_c + theta_a, PI_F) <= theta_b) return b;
+
+        // Case: no overlap, need to make a new cone
+        float theta = (theta_a + theta_b + theta_c) / 2;
+        if (theta >= PI_F) return DirectionCone::entireSphere();
+
+        float theta_rotate = theta - theta_a;
+        Vec3f dir = jtx::cross(a.dir, b.dir);
+        if (dir.lenSqr() == 0) return DirectionCone::entireSphere();
+//        w = jtx::rotate(jtx::degrees(theta_rotate), dir)(a.dir);
+        return {dir, std::cos(theta)};
     }
     //endregion
 }

@@ -275,9 +275,9 @@ TEST_CASE("Vec4f / operator (LHS scalar)", "[Vec4]") {
 TEST_CASE("Vec4f [] operator", "[Vec4]") {
     jtx::Vec4f v = {1.0f, 2.0f, 3.0f, 4.0f};
     REQUIRE(v[0] == 1.0f);
-    REQUIRE(v[1] == 1.0f);
-    REQUIRE(v[2] == 2.0f);
-    REQUIRE(v[3] == 3.0f);
+    REQUIRE(v[1] == 2.0f);
+    REQUIRE(v[2] == 3.0f);
+    REQUIRE(v[3] == 4.0f);
 }
 //endregion
 

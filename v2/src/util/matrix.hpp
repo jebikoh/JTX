@@ -184,12 +184,10 @@ namespace jtx {
         [[nodiscard]] bool isIdentity() const {
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
-                    if (i == j && m[i][j] != 1.0f) {
-                        return false;
+                    if (i == j) {
+                        if (m[i][j] != 1) return false;
                     } else {
-                        if (m[i][j] != 0.0f) {
-                            return false;
-                        }
+                        if (m[i][j] != 0) return false;
                     }
                 }
             }
@@ -293,6 +291,17 @@ namespace jtx {
                      invDet * jtx::innerProd(m[0][0], c3, m[0][2], c0, -m[0][1], c1),
                      invDet * jtx::innerProd(-m[3][0], s3, m[3][1], s1, -m[3][2], s0),
                      invDet * jtx::innerProd(m[2][0], s3, m[2][2], s0, -m[2][1], s1)}};
+        }
+
+        [[nodiscard]] std::string toString() const {
+            std::string res;
+            for (auto i: m) {
+                for (int j = 0; j < 4; ++j) {
+                    res += std::to_string(i[j]) + " ";
+                }
+                res += "\n";
+            }
+            return res;
         }
 
         //endregion

@@ -8,6 +8,7 @@ add_executable(Tests test_vec3.cpp
         test_ray.cpp
         test_bb.cpp
         test_spherical.cpp
+        test_matrix.cpp
 )
 
 target_link_libraries(Tests PRIVATE JTXLib Catch2::Catch2WithMain)

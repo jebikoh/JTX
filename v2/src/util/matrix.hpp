@@ -68,13 +68,17 @@ namespace jtx {
             return m;
         }
 
-        static Mat4 diagonal(float d0, float d1, float d2, float d3, float d4) {
+        static Mat4 diagonal(float d0, float d1, float d2, float d3) {
             Mat4 m;
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
-                    m[i][j] = (i == j) ? d0 : 0.0f;
+                    if (i != j) m[i][j] = 0;
                 }
             }
+            m[0][0] = d0;
+            m[1][1] = d1;
+            m[2][2] = d2;
+            m[3][3] = d3;
             return m;
         }
         //endregion
@@ -126,7 +130,7 @@ namespace jtx {
             Mat4 res = *this;
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
-                    res[i][j] -= -scalar;
+                    res[i][j] -= scalar;
                 }
             }
             return res;

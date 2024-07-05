@@ -197,6 +197,11 @@ namespace jtx {
             return *this;
         }
 
+        inline const T &operator[](int index) const {
+            ASSERT(index >= 0 && index < 3);
+            return (&x)[index];
+        }
+
         inline T &operator[](int index) {
             ASSERT(index >= 0 && index < 3);
             return (&x)[index];

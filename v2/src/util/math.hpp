@@ -90,4 +90,51 @@ namespace jtx {
     constexpr T evalPolynomial(T t, C c, Coeffs... coeffs) {
         return jtx::fma(t, evalPolynomial(t, coeffs...), c);
     }
+
+    // EFT
+    struct FloatEFT {
+    public:
+        float v;
+        float err;
+
+        FloatEFT(float v, float err) : v(v), err(err) {}
+
+        explicit operator float() const { return v + err; }
+
+        float operator*(float a) const {
+            return a * float(*this);
+        }
+
+        friend float operator*(float a, const FloatEFT &b) {
+            return a * float(b);
+        }
+    };
+
+    inline FloatEFT twoProd(float a, float b) {
+        float ab = a * b;
+        return {ab, jtx::fma(a, b, -ab)};
+    }
+
+    inline FloatEFT twoSum(float a, float b) {
+        float s = a + b;
+        float delta = s - a;
+        return {s, (a - (s - delta)) + (b - delta)};
+    }
+
+    inline FloatEFT innerProd(float a, float b) {
+        return twoProd(a, b);
+    }
+
+    template<typename... T>
+    inline FloatEFT innerProd(float a, float b, T... terms) {
+        FloatEFT ab = twoProd(a, b);
+        FloatEFT tp = innerProd(terms...);
+        FloatEFT sum = twoSum(ab.v, tp.v);
+        return {sum.v, ab.err + tp.err + sum.err};
+    }
+
+    template<typename... T>
+    inline float innerProdf(float a, float b, T... terms) {
+        return float(innerProd(a, b, terms...));
+    }
 }

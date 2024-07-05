@@ -137,6 +137,11 @@ namespace jtx {
             return {scalar / v.x, scalar / v.y, scalar / v.z, scalar / v.w};
         }
 
+        inline const T &operator[](int index) const {
+            ASSERT(index >= 0 && index < 4);
+            return (&x)[index];
+        }
+
         inline T &operator[](int index) {
             ASSERT(index >= 0 && index < 4);
             return (&x)[index];

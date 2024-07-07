@@ -64,6 +64,62 @@ namespace jtx {
 
         }
 
+        // Need to differentiate because points and normals are just typedefs
+
+        JTX_NUM_ONLY_T
+        inline Point3<T> applyToPoint(const Point3<T> &p) const {
+            T xp = m[0][0] * p.x + m[0][1] * p.y + m[0][2] * p.z + m[0][3];
+            T yp = m[1][0] * p.x + m[1][1] * p.y + m[1][2] * p.z + m[1][3];
+            T zp = m[2][0] * p.x + m[2][1] * p.y + m[2][2] * p.z + m[2][3];
+            T wp = m[3][0] * p.x + m[3][1] * p.y + m[3][2] * p.z + m[3][3];
+
+            if (wp == 1) {
+                return {xp, yp, zp};
+            } else {
+                return Point3f(xp, yp, zp) / wp;
+            }
+        }
+
+        JTX_NUM_ONLY_T
+        inline Point3<T> applyInverseToPoint(const Point3<T> &p) const {
+            T xp = mInv[0][0] * p.x + mInv[0][1] * p.y + mInv[0][2] * p.z + mInv[0][3];
+            T yp = mInv[1][0] * p.x + mInv[1][1] * p.y + mInv[1][2] * p.z + mInv[1][3];
+            T zp = mInv[2][0] * p.x + mInv[2][1] * p.y + mInv[2][2] * p.z + mInv[2][3];
+            T wp = mInv[3][0] * p.x + mInv[3][1] * p.y + mInv[3][2] * p.z + mInv[3][3];
+
+            if (wp == 1) {
+                return {xp, yp, zp};
+            } else {
+                return Point3f(xp, yp, zp) / wp;
+            }
+        }
+
+        JTX_NUM_ONLY_T
+        inline Vec3<T> applyToVec(const Vec3<T> &v) const {
+            return {m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z,
+                    m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z,
+                    m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z};
+        }
+
+        JTX_NUM_ONLY_T
+        inline Vec3<T> applyInverseToVec(const Vec3<T> &v) const {
+            return {mInv[0][0] * v.x + mInv[0][1] * v.y + mInv[0][2] * v.z,
+                    mInv[1][0] * v.x + mInv[1][1] * v.y + mInv[1][2] * v.z,
+                    mInv[2][0] * v.x + mInv[2][1] * v.y + mInv[2][2] * v.z};
+        }
+
+        [[nodiscard]] inline Normal3f applyToNormal(const Normal3f &n) const {
+            return {mInv[0][0] * n.x + mInv[1][0] * n.y + mInv[2][0] * n.z,
+                    mInv[0][1] * n.x + mInv[1][1] * n.y + mInv[2][1] * n.z,
+                    mInv[0][2] * n.x + mInv[1][2] * n.y + mInv[2][2] * n.z};
+        }
+
+        [[nodiscard]] inline Normal3f applyInverseToNormal(const Normal3f &n) const {
+            return {m[0][0] * n.x + m[1][0] * n.y + m[2][0] * n.z,
+                    m[0][1] * n.x + m[1][1] * n.y + m[2][1] * n.z,
+                    m[0][2] * n.x + m[1][2] * n.y + m[2][2] * n.z};
+        }
+
         //endregion
 
         //region Static methods

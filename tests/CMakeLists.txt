@@ -1,12 +1,13 @@
-find_package(Catch2 3 REQUIRED)
-add_executable(Tests test_util.cpp
-        test_core.cpp
-        test_renderer.cpp
-        test_buffer.cpp)
+add_executable(tests
+        test_vec3.cpp
+        test_vec2.cpp
+        test_vec4.cpp
+        test_ray.cpp
+        test_bb.cpp
+        test_spherical.cpp
+        test_matrix.cpp
+)
 
-target_link_libraries(Tests PRIVATE JTX)
-target_link_libraries(Tests PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(tests PRIVATE jtxlib Catch2WithMain)
 
-include(Catch)
-catch_discover_tests(Tests)
-
+catch_discover_tests(tests)

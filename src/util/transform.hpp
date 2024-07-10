@@ -9,7 +9,7 @@ namespace jtx {
     class Transform {
     public:
         //region Constructors
-        Transform() = default;
+        Transform() : m(Mat4(1.0f)), mInv(Mat4(1.0f)) {};
 
         Transform(const Mat4 &m, const Mat4 &mInv) : m(m), mInv(mInv) {};
 
@@ -120,6 +120,7 @@ namespace jtx {
                     m[0][2] * n.x + m[1][2] * n.y + m[2][2] * n.z};
         }
 
+
         //endregion
 
         //region Static methods
@@ -158,6 +159,112 @@ namespace jtx {
                       0, 0, 1 / sz, 0,
                       0, 0, 0, 1);
             return {m, mInv};
+        }
+
+        static Transform rotateX(float theta) {
+            float sinTheta = std::sin(jtx::radians(theta));
+            float cosTheta = std::cos(jtx::radians(theta));
+            Mat4 m(1, 0, 0, 0,
+                   0, cosTheta, -sinTheta, 0,
+                   0, sinTheta, cosTheta, 0,
+                   0, 0, 0, 1);
+            return {m, m.transpose()};
+        }
+
+        static Transform rotateY(float theta) {
+            float sinTheta = std::sin(jtx::radians(theta));
+            float cosTheta = std::cos(jtx::radians(theta));
+            Mat4 m(cosTheta, 0, sinTheta, 0,
+                   0, 1, 0, 0,
+                   -sinTheta, 0, cosTheta, 0,
+                   0, 0, 0, 1);
+            return {m, m.transpose()};
+        }
+
+        static Transform rotateZ(float theta) {
+            float sinTheta = std::sin(jtx::radians(theta));
+            float cosTheta = std::cos(jtx::radians(theta));
+            Mat4 m(cosTheta, -sinTheta, 0, 0,
+                   sinTheta, cosTheta, 0, 0,
+                   0, 0, 1, 0,
+                   0, 0, 0, 1);
+            return {m, m.transpose()};
+        }
+
+        static Transform rotate(float sinTheta, float cosTheta, const Vec3f& axis) {
+            Vec3f a = jtx::normalize(axis);
+            Mat4 m;
+            // Compute rotation of first basis vector
+            m[0][0] = a.x * a.x + (1 - a.x * a.x) * cosTheta;
+            m[0][1] = a.x * a.y * (1 - cosTheta) - a.z * sinTheta;
+            m[0][2] = a.x * a.z * (1 - cosTheta) + a.y * sinTheta;
+            m[0][3] = 0;
+            // Compute rotation of the second basis vector
+            m[1][0] = a.x * a.y * (1 - cosTheta) + a.z * sinTheta;
+            m[1][1] = a.y * a.y + (1 - a.y * a.y) * cosTheta;
+            m[1][2] = a.y * a.z * (1 - cosTheta) - a.x * sinTheta;
+            m[1][3] = 0;
+
+            m[2][0] = a.x * a.z * (1 - cosTheta) - a.y * sinTheta;
+            m[2][1] = a.y * a.z * (1 - cosTheta) + a.x * sinTheta;
+            m[2][2] = a.z * a.z + (1 - a.z * a.z) * cosTheta;
+            m[2][3] = 0;
+
+            m[3][0] = 0;
+            m[3][1] = 0;
+            m[3][2] = 0;
+            m[3][3] = 1;
+
+            return {m, m.transpose()};
+        }
+
+        static Transform rotate(float theta, const Vec3f& axis) {
+            float sinTheta = std::sin(jtx::radians(theta));
+            float cosTheta = std::cos(jtx::radians(theta));
+            return jtx::Transform::rotate(sinTheta, cosTheta, axis);
+        }
+
+        static Transform rotateFromTo(const Vec3f& from, const Vec3f& to) {
+            // Intermediate vector
+            Vec3f refl;
+            if (std::abs(from.x) < 0.72f && std::abs(to.x) < 0.72f) {
+                refl = Vec3f(1, 0, 0);
+            } else if (std::abs(from.y) < 0.72f && std::abs(to.y) < 0.72f) {
+                refl = Vec3f(0, 1, 0);
+            } else {
+                refl = Vec3f(0, 0, 1);
+            }
+            Vec3f u = refl - from;
+            Vec3f v = refl - to;
+
+            Mat4 r;
+            for (int i = 0; i < 3; ++i) {
+                for (int j = 0; j < 3; ++j) {
+                    float uu = jtx::dot(u, u);
+                    float vv = jtx::dot(v, v);
+                    r[i][j] = ((i == j) ? 1.0f : 0.0f) -
+                              (2 / uu) * u[i] * u[j] -
+                              (2 / vv) * v[i] * v[j] +
+                              (4 * jtx::dot(u, v)) / (uu * vv) * u[i] * v[j];
+                }
+            }
+
+            return {r, r.transpose()};
+        }
+
+        // Note to self, PBRT calculates worldFromCamera, then inverts it
+        // Old JTX calculated cameraFromWorld (and also was row-major)
+        static Transform lookAt(const Point3f &pos, const Point3f &look, const Vec3f &up) {
+            Vec3f dir = jtx::normalize(look - pos);
+            ASSERT((jtx::cross(jtx::normalize(up), dir)).len() != 0);
+            Vec3f right = jtx::normalize(jtx::cross(jtx::normalize(up), dir));
+            Vec3f newUp = jtx::cross(dir, right);
+
+            Mat4 m(right.x, newUp.x, dir.x, pos.x,
+                   right.y, newUp.y, dir.y, pos.y,
+                   right.z, newUp.z, dir.z, pos.z,
+                   0, 0, 0, 1);
+            return {jtx::invert(m), m};
         }
         //endregion
 

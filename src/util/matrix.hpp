@@ -1,3 +1,5 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-pro-type-member-init"
 #pragma once
 
 #include <span>
@@ -9,11 +11,20 @@
 namespace jtx {
     class Mat4 {
     public:
+        float m[4][4];
         //region Constructors
         Mat4() {
+            for (auto & i : m) {
+                for (float & j : i) {
+                    j = 0.0f;
+                }
+            }
+        }
+
+        explicit Mat4(float diag) {
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
-                    m[i][j] = (i == j) ? 1.0f : 0.0f;
+                    m[i][j] = (i == j) ? diag : 0.0f;
                 }
             }
         }
@@ -57,16 +68,6 @@ namespace jtx {
         }
 
         ~Mat4() = default;
-
-        static Mat4 zero() {
-            Mat4 m;
-            for (int i = 0; i < 4; ++i) {
-                for (int j = 0; j < 4; ++j) {
-                    m[i][j] = 0.0f;
-                }
-            }
-            return m;
-        }
 
         static Mat4 diagonal(float d0, float d1, float d2, float d3) {
             Mat4 m;
@@ -236,8 +237,6 @@ namespace jtx {
 
         [[nodiscard]] std::optional<Mat4> inverse() const;
         //endregion
-    private:
-        float m[4][4];
     };
 
     inline Vec4f mul(const Mat4 &mat, const Vec4f &vec) { return mat.mul(vec); }
@@ -272,3 +271,4 @@ namespace jtx {
         return jtx::transpose((*AtA_inv).mul(AtB));
     }
 }
+#pragma clang diagnostic pop

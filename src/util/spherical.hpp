@@ -3,6 +3,7 @@
 #include<cstdint>
 #include "./vec3.hpp"
 #include "./vecmath.hpp"
+#include "./matrix.hpp"
 #include "./constants.hpp"
 #include "./assert.hpp"
 #include "./bounds.hpp"

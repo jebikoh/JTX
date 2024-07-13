@@ -9,9 +9,10 @@
 
 namespace jtx {
     /**
- * AVXFloat is a small wrapper around __m256 (AVX2) to be used in a SoA data layout
- * This is based off: https://github.com/dubiousconst282/GLimpSW/blob/main/src/SwRast/SIMD.h
- */
+     * AVXFloat is a small wrapper around __m256 (AVX2) to be used in a SoA data layout
+     * This is based off: https://github.com/dubiousconst282/GLimpSW/blob/main/src/SwRast/SIMD.h
+     * Aligned as 32 bytes (256 bits)
+     */
     struct AVXFloat {
         static constexpr size_t size = sizeof(__m256) / sizeof(float);
 
@@ -54,12 +55,13 @@ namespace jtx {
         return _mm256_mul_ps(a, b);
     }
 
-/**
- * AVXVec3f and AVXVec4f are SoA structs for 3D and 4D vectors
- * Each holds an AVXFloat per component, meaning they hold 8 vectors at a time
- */
+    /**
+     * AVXVec3f and AVXVec4f are SoA structs for 3D and 4D vectors
+     * Each holds an AVXFloat per component, meaning they hold 8 vectors at a time
+     */
     struct AVXVec4f;
 
+    // Aligned as 32 bytes * 3 (96 bytes)
     struct AVXVec3f {
         AVXFloat x, y, z;
 
@@ -71,6 +73,7 @@ namespace jtx {
         AVXVec3f(const AVXVec4f &v);
     };
 
+    // Aligned as 32 bytes * 4 (128 bytes)
     struct AVXVec4f {
         AVXFloat x, y, z, w;
 

@@ -8,6 +8,8 @@
 #include <jtxlib/math/numerical.hpp>
 #include <jtxlib/util/assert.hpp>
 #include <jtxlib/math/vec4.hpp>
+#include <jtxlib/math/vec3.hpp>
+#include <jtxlib/math/vecmath.hpp>
 
 namespace jtx {
     class Mat4 {
@@ -359,7 +361,8 @@ namespace jtx {
         };
     }
 
-    inline Mat4 lookAt(const Vec3f &up, const Vec3f &direction, const Vec3f &position) {
+    inline Mat4 lookAt(const Vec3f &position, const Vec3f &target, const Vec3f &up) {
+        auto direction = (target - position).normalize();
         Vec3f right = jtx::cross(direction, up).normalize();
         Vec3f vup = jtx::cross(right, direction).normalize();
         return lookAt(right, vup, direction, position);

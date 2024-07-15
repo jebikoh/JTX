@@ -70,6 +70,10 @@ namespace jtx {
 
         ~Mat4() = default;
 
+        static Mat4 identity() {
+            return Mat4(1.0f);
+        }
+
         static Mat4 diagonal(float d0, float d1, float d2, float d3) {
             Mat4 m;
             for (int i = 0; i < 4; ++i) {

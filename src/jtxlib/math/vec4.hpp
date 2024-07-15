@@ -292,4 +292,12 @@ namespace jtx {
 
     typedef Point4<int> Point4i;
     typedef Point4<float> Point4f;
+
+    std::string to_string(const Vec4f &vec) {
+        return "Vec4f(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ", " + std::to_string(vec.w) + ")";
+    }
+
+    std::string to_string(const Vec4i &vec) {
+        return "Vec4i(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ", " + std::to_string(vec.w) + ")";
+    }
 }// namespace jtx

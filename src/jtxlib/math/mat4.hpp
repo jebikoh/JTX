@@ -365,5 +365,7 @@ namespace jtx {
         return lookAt(right, vup, direction, position);
     }
     //endregion
+
+    std::string to_string(const Mat4 &mat);
 }
 #pragma clang diagnostic pop

@@ -300,4 +300,11 @@ namespace jtx {
     typedef Vec3<float> Normal3f;
     //endregion
 
+    std::string to_string(const Vec3f &vec) {
+        return "Vec3f(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ")";
+    }
+
+    std::string to_string(const Vec3i &vec) {
+        return "Vec3i(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ")";
+    }
 }// namespace jtx

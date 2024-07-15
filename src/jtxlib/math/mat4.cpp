@@ -129,4 +129,22 @@ namespace jtx {
 
         return r;
     }
+
+    std::string to_string(const Mat4 &mat) {
+        {
+            std::string res = "Mat4(\n";
+            for (int i = 0; i < 4; ++i) {
+                res += "  [";
+                for (int j = 0; j < 4; ++j) {
+                    res += std::to_string(mat[i][j]);
+                    if (j != 3) res += ", ";
+                }
+                res += "]";
+                if (i != 3) res += ",";
+                res += "\n";
+            }
+            res += ")";
+            return res;
+        }
+    }
 }

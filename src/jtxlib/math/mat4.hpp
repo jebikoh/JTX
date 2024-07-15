@@ -275,5 +275,95 @@ namespace jtx {
         if (!AtA_inv.has_value()) { return {}; }
         return jtx::transpose((*AtA_inv).mul(AtB));
     }
+
+    //region Matrix Transformations
+    inline Mat4 translate(const float delta) {
+        return {
+                1.0f, 0.0f, 0.0f, delta,
+                0.0f, 1.0f, 0.0f, delta,
+                0.0f, 0.0f, 1.0f, delta,
+                0.0f, 0.0f, 0.0f, 1.0f
+        };
+    }
+
+    inline Mat4 translate(float x, float y, float z) {
+        return {
+                1.0f, 0.0f, 0.0f, x,
+                0.0f, 1.0f, 0.0f, y,
+                0.0f, 0.0f, 1.0f, z,
+                0.0f, 0.0f, 0.0f, 1.0f
+        };
+    }
+
+    inline Mat4 translate(const jtx::Vec3f& v) {
+        return translate(v.x, v.y, v.z);
+    }
+
+    inline Mat4 scale(float s) {
+        return Mat4::diagonal(s, s, s, 1.0f);
+    }
+
+    inline Mat4 scale(float x, float y, float z) {
+        return Mat4::diagonal(x, y, z, 1.0f);
+    }
+
+    inline Mat4 scale(const jtx::Vec3f& v) {
+        return Mat4::diagonal(v.x, v.y, v.z, 1.0f);
+    }
+
+    inline Mat4 rotateX(float theta) {
+        float sinTheta = std::sin(jtx::radians(theta));
+        float cosTheta = std::cos(jtx::radians(theta));
+        return {
+                1.0f, 0.0f, 0.0f, 0.0f,
+                0.0f, cosTheta, -sinTheta, 0.0f,
+                0.0f, sinTheta, cosTheta, 0.0f,
+                0.0f, 0.0f, 0.0f, 1.0f
+        };
+    }
+
+    inline Mat4 rotateY(float theta) {
+        float sinTheta = std::sin(jtx::radians(theta));
+        float cosTheta = std::cos(jtx::radians(theta));
+        return {
+                cosTheta, 0.0f, sinTheta, 0.0f,
+                0.0f, 1.0f, 0.0f, 0.0f,
+                -sinTheta, 0.0f, cosTheta, 0.0f,
+                0.0f, 0.0f, 0.0f, 1.0f
+        };
+    }
+
+    inline Mat4 rotateZ(float theta) {
+        float sinTheta = std::sin(jtx::radians(theta));
+        float cosTheta = std::cos(jtx::radians(theta));
+        return {
+                cosTheta, -sinTheta, 0.0f, 0.0f,
+                sinTheta, cosTheta, 0.0f, 0.0f,
+                0.0f, 0.0f, 1.0f, 0.0f,
+                0.0f, 0.0f, 0.0f, 1.0f
+        };
+    }
+
+    Mat4 rotate(float sinTheta, float cosTheta, const Vec3f& axis);
+
+    Mat4 rotate(float theta, const jtx::Vec3f& axis);
+
+    Mat4 rotateFromTo(const Vec3f &from, const Vec3f &to);
+
+    inline Mat4 lookAt(const Vec3f &right, const Vec3f &vup, const Vec3f &direction, const Vec3f &position) {
+        return {
+                right.x, right.y, right.z, -jtx::dot(right, position),
+                vup.x, vup.y, vup.z, -jtx::dot(vup, position),
+                -direction.x, -direction.y, -direction.z, jtx::dot(direction, position),
+                0.0f, 0.0f, 0.0f, 1.0f
+        };
+    }
+
+    inline Mat4 lookAt(const Vec3f &up, const Vec3f &direction, const Vec3f &position) {
+        Vec3f right = jtx::cross(direction, up).normalize();
+        Vec3f vup = jtx::cross(right, direction).normalize();
+        return lookAt(right, vup, direction, position);
+    }
+    //endregion
 }
 #pragma clang diagnostic pop

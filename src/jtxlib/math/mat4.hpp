@@ -367,6 +367,25 @@ namespace jtx {
         Vec3f vup = jtx::cross(right, direction).normalize();
         return lookAt(right, vup, direction, position);
     }
+
+    inline Mat4 perspective(float fov, float aspect, float near, float far) {
+        float invTanAng = 1.0f / std::tan(jtx::radians(fov) / 2.0f);
+        return {
+                invTanAng / aspect, 0.0f, 0.0f, 0.0f,
+                0.0f, invTanAng, 0.0f, 0.0f,
+                0.0f, 0.0f, (far + near) / (near - far), 2.0f * far * near / (near - far),
+                0.0f, 0.0f, -1.0f, 0.0f
+        };
+    }
+
+    inline Mat4 orthographic(float left, float right, float bottom, float top, float near, float far) {
+        return {
+                2.0f / (right - left), 0.0f, 0.0f, -(right + left) / (right - left),
+                0.0f, 2.0f / (top - bottom), 0.0f, -(top + bottom) / (top - bottom),
+                0.0f, 0.0f, -2.0f / (far - near), -(far + near) / (far - near),
+                0.0f, 0.0f, 0.0f, 1.0f
+        };
+    }
     //endregion
 
     std::string to_string(const Mat4 &mat);

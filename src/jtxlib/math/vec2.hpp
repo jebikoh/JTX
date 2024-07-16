@@ -258,11 +258,11 @@ namespace jtx {
     typedef Point2<int> Point2i;
     typedef Point2<float> Point2f;
 
-    std::string to_string(const Vec2f &vec) {
+    inline std::string to_string(const Vec2f &vec) {
         return "Vec2f(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ")";
     }
 
-    std::string to_string(const Vec2i &vec) {
+    inline std::string to_string(const Vec2i &vec) {
         return "Vec2i(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ")";
     }
 }// namespace jtx

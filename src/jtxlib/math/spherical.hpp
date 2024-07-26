@@ -57,7 +57,7 @@ namespace jtx {
 
     inline float sin2Theta(const Vec3f &w) { return std::max(0.0f, 1.0f - cos2Theta(w)); }
 
-    inline float sinTheta(const Vec3f &w) { return std::sqrt(sin2Theta(w)); }
+    inline float sinTheta(const Vec3f &w) { return jtx::sqrt(sin2Theta(w)); }
 
     inline float tanTheta(const Vec3f &w) { return sinTheta(w) / cosTheta(w); }
 
@@ -78,7 +78,7 @@ namespace jtx {
         auto wbXY = wb.x * wb.x + wb.y * wb.y;
         if (waXY == 0 || wbXY == 0) return 1;
 
-        return jtx::clamp((wa.x * wb.x + wa.y * wb.y) / std::sqrt(waXY * wbXY), -1.0f, 1.0f);
+        return jtx::clamp((wa.x * wb.x + wa.y * wb.y) / jtx::sqrt(waXY * wbXY), -1.0f, 1.0f);
     }
     //endregion
 
@@ -99,8 +99,8 @@ namespace jtx {
 
         explicit operator Vec3f() const {
             Vec3f v;
-            v.x = -1 + 2 * (x / BITS_16);
-            v.y = -1 + 2 * (y / BITS_16);
+            v.x = -1 + 2 * (float(x) / BITS_16);
+            v.y = -1 + 2 * (float(y) / BITS_16);
             v.z = 1 - std::abs(v.x) - std::abs(v.y);
             if (v.z < 0) {
                 v.x = (1 - std::abs(v.y)) * sign(v.x);
@@ -174,7 +174,7 @@ namespace jtx {
         if (jtx::distanceSqr(p, c) < r * r) return DirectionCone::entireSphere();
 
         Vec3f w = jtx::normalize(c - p);
-        return {w, jtx::sqrt(1 - (r * r) / jtx::distanceSqr(p, c))};
+        return {w, jtx::safeSqrt(1 - (r * r) / jtx::distanceSqr(p, c))};
     }
 
     inline DirectionCone merge(const DirectionCone &a, const DirectionCone &b) {

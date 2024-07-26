@@ -321,7 +321,7 @@ namespace jtx {
 
     template<typename T, typename U, typename = std::enable_if_t<std::is_arithmetic_v<T> && std::is_arithmetic_v<U>>>
     inline auto distance(const AABB3<T> &b, const Point3<U> &p) {
-        return std::sqrt(distanceSqr(b, p));
+        return jtx::sqrt(distanceSqr(b, p));
     }
 
     JTX_NUM_ONLY_T
@@ -394,7 +394,7 @@ namespace jtx {
 
     template<typename T, typename U, typename = std::enable_if_t<std::is_arithmetic_v<T> && std::is_arithmetic_v<U>>>
     inline auto distance(const AABB2<T> &b, const Point2<U> &p) {
-        return std::sqrt(distanceSqr(b, p));
+        return jtx::sqrt(distanceSqr(b, p));
     }
 
     JTX_NUM_ONLY_T

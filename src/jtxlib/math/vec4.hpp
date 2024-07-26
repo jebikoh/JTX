@@ -6,6 +6,7 @@
 #include <jtxlib/math/numerical.hpp>
 #include <jtxlib/util/assert.hpp>
 #include <jtxlib/math/math.hpp>
+#include <string>
 
 namespace jtx {
     JTX_NUM_ONLY_T

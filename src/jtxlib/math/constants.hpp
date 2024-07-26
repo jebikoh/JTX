@@ -1,27 +1,34 @@
 #pragma once
 
 #include <limits>
+#include <jtxlib.hpp>
 
 namespace jtx {
     // TODO: expand as needed
     // Structure from https://github.com/behindthepixels/EDXUtil/
-    static struct Zero {
-        inline explicit operator int() const { return 0; }
+    struct Zero {
+        JTX_HOSTDEV inline explicit operator int() const { return 0; }
 
-        inline explicit operator float() const { return 0.0f; }
+        JTX_HOSTDEV inline explicit operator float() const { return 0.0f; }
 
-        inline explicit operator double() const { return 0.0; }
+        JTX_HOSTDEV inline explicit operator double() const { return 0.0; }
 
         template<typename T>
-        inline bool operator==(const T &other) const {
+        JTX_HOSTDEV inline bool operator==(const T &other) const {
             return static_cast<T>(*this) == other;
         }
 
         template<typename T>
-        inline bool operator!=(const T &other) const {
+        JTX_HOSTDEV inline bool operator!=(const T &other) const {
             return static_cast<T>(*this) != other;
         }
-    } JTX_ZERO;
+    };
+
+    #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+        __constant__ Zero JTX_ZERO;
+    #else
+        constexpr Zero JTX_ZERO;
+    #endif
 
     constexpr double PI = 3.14159265358979323846;
     constexpr float PI_F = 3.14159265358979323846f;

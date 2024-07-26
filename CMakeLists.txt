@@ -1,21 +1,49 @@
 cmake_minimum_required(VERSION 3.28)
-project(jtxlib VERSION 1.0.0 LANGUAGES CXX)
+
+option(USE_CUDA "Enable CUDA support" OFF)
+if(USE_CUDA)
+    project(jtxlib VERSION 1.0.0 LANGUAGES CXX CUDA)
+else()
+    project(jtxlib VERSION 1.0.0 LANGUAGES CXX)
+endif()
+
 set(CMAKE_CXX_STANDARD 20)
 
-add_compile_options(-O3 -mavx2)
+#region Enable CUDA
+if(USE_CUDA)
+    include(CheckLanguage)
+    check_language(CUDA)
+    if(CMAKE_CUDA_COMPILER)
+        enable_language(CUDA)
+        set(CUDA_ENABLED TRUE)
 
-set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Test" CACHE STRING "" FORCE)
+        message(STATUS "CUDA compiler: ${CMAKE_CUDA_COMPILER}")
+        message(STATUS "CUDA compiler version: ${CMAKE_CUDA_COMPILER_VERSION}")
+        message(STATUS "CUDA include directory: ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}")
+    else()
+        message(FATAL_ERROR "CUDA compiler not found, but CUDA support was requested")
+    endif()
+else()
+    set(CUDA_ENABLED FALSE)
+    message(STATUS "CUDA support is disabled")
+    message(STATUS "Enabling CPU optimizations")
+#    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+#        add_compile_options(-O3 -mavx2)
+#    elseif(MSVC)
+#        add_compile_options(/O2 /arch:AVX2)
+#    endif()
+endif()
+#endregion
 
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build" FORCE)
-endif ()
-
+#region Assertion modes
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(DEBUG_ASSERT)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Test")
     add_compile_definitions(TEST_ASSERT)
 endif ()
+#endregion
 
+#region Library Files
 set(JTXLIB_MATH
         src/jtxlib/math/vec2.hpp
         src/jtxlib/math/vec3.hpp
@@ -54,19 +82,38 @@ add_library(jtxlib STATIC
         ${JTXLIB_UTIL}
         ${JTXLIB_HEADERS}
 )
+#endregion
 
+#region jtxlib Properties & Options
 set_target_properties(jtxlib PROPERTIES
         CXX_STANDARD 20
         CXX_STANDARD_REQUIRED ON
 )
 
+set(CUDA_ARCH "75" CACHE STRING "CUDA architecture (e.g. 75 for SM 7.5)")
+if(CUDA_ENABLED)
+    message(STATUS "Building for CUDA architecture ${CUDA_ARCH}")
+    set_target_properties(jtxlib PROPERTIES
+            CUDA_SEPARABLE_COMPILATION ON
+            CUDA_ARCHITECTURES ${CUDA_ARCH}
+    )
+    target_compile_options(jtxlib PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-constexpr>)
+    target_compile_definitions(jtxlib PUBLIC CUDA_ENABLED)
+endif()
+#endregion
+
+#region Include Directories
 target_include_directories(jtxlib
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
+if(CUDA_ENABLED)
+    target_include_directories(jtxlib PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+endif()
+#endregion
 
+#region Tests
 option(BUILD_TESTS "Build tests" OFF)
-
 if (CMAKE_BUILD_TYPE STREQUAL "Test")
     add_subdirectory("lib/Catch2")
     list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/Catch2/extras)
@@ -75,3 +122,4 @@ if (CMAKE_BUILD_TYPE STREQUAL "Test")
 
     add_subdirectory("tests")
 endif ()
+#endregion

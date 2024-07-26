@@ -5,8 +5,10 @@
 #include <jtxlib/math/constants.hpp>
 #include <jtxlib/math/numerical.hpp>
 #include <jtxlib/util/assert.hpp>
+#include <jtxlib.hpp>
 
 namespace jtx {
+    //region Basic Math Functions
     template<typename T, typename U, typename V>
     constexpr
     std::enable_if_t<std::is_arithmetic_v<T> && std::is_arithmetic_v<U> && std::is_arithmetic_v<V>, T>
@@ -16,48 +18,185 @@ namespace jtx {
         else return val;
     }
 
-    inline float lerp(float a, float b, float t) {
-        return a + t * (b - a);
+    JTX_HOSTDEV JTX_INLINE float clamp(float val, float lo, float hi) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::fminf(::fmaxf(val, lo), hi);
+        #else
+                return std::clamp(val, lo, hi);
+        #endif
     }
 
-    inline float clampAsin(float theta) {
+    JTX_HOSTDEV JTX_INLINE double clamp(double val, double lo, double hi) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::fmin(::fmax(val, lo), hi);
+        #else
+                return std::clamp(val, lo, hi);
+        #endif
+    }
+
+    JTX_NUM_ONLY_T
+    JTX_HOSTDEV JTX_INLINE T max(T a, T b) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::max(a, b);
+        #else
+                return std::max(a, b);
+        #endif
+    }
+
+    JTX_NUM_ONLY_T
+    JTX_HOSTDEV JTX_INLINE T min(T a, T b) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::min(a, b);
+        #else
+                return std::min(a, b);
+        #endif
+    }
+
+    JTX_NUM_ONLY_T
+    JTX_HOSTDEV JTX_INLINE T abs(T v) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::abs(v);
+        #else
+                return std::abs(v);
+        #endif
+    }
+    //endregion
+
+    //region Trig Functions
+    // clang-format off
+    JTX_HOSTDEV JTX_INLINE float sin(float theta) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::sinf(theta);
+        #else
+                return std::sin(theta);
+        #endif
+    }
+
+    JTX_HOSTDEV JTX_INLINE double sin(double theta) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::sin(theta);
+        #else
+                return std::sin(theta);
+        #endif
+    }
+
+    JTX_HOSTDEV JTX_INLINE float cos(float theta) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::cosf(theta);
+        #else
+                return std::cos(theta);
+        #endif
+    }
+
+    JTX_HOSTDEV JTX_INLINE double cos(double theta) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::cos(theta);
+        #else
+                return std::cos(theta);
+        #endif
+    }
+
+    JTX_HOSTDEV JTX_INLINE float tan(float theta) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::tanf(theta);
+        #else
+                return std::tan(theta);
+        #endif
+    }
+
+    JTX_HOSTDEV JTX_INLINE double tan(double theta) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::tan(theta);
+        #else
+                return std::tan(theta);
+        #endif
+    }
+
+    JTX_HOSTDEV JTX_INLINE float asin(float theta) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::asinf(theta);
+        #else
+                return std::asin(theta);
+        #endif
+    }
+
+    JTX_HOSTDEV JTX_INLINE double asin(double theta) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::asin(theta);
+        #else
+                return std::asin(theta);
+        #endif
+    }
+
+    JTX_HOSTDEV JTX_INLINE float acos(float theta) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::acosf(theta);
+        #else
+                return std::acos(theta);
+        #endif
+    }
+
+    JTX_HOSTDEV JTX_INLINE double acos(double theta) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::acos(theta);
+        #else
+                return std::acos(theta);
+        #endif
+    }
+
+    JTX_HOSTDEV JTX_INLINE float atan(float theta) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::atanf(theta);
+        #else
+                return std::atan(theta);
+        #endif
+    }
+
+    JTX_HOSTDEV JTX_INLINE double atan(double theta) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::atan(theta);
+        #else
+                return std::atan(theta);
+        #endif
+    }
+
+    JTX_HOSTDEV JTX_INLINE float clampAsin(float theta) {
         ASSERT(theta >= -1.0001f && theta <= 1.0001f);
-        return std::asin(std::clamp(theta, -1.0f, 1.0f));
+        return jtx::asin(jtx::clamp(theta, -1.0f, 1.0f));
     }
 
-    inline float clampAcos(float theta) {
-        ASSERT(theta >= -1.0001f && theta <= 1.0001f);
-        return std::acos(std::clamp(theta, -1.0f, 1.0f));
-    }
-
-    inline double clampAsin(double theta) {
+    JTX_HOSTDEV JTX_INLINE double clampAsin(double theta) {
         ASSERT(theta >= -1.0001f && theta <= 1.0001);
-        return std::asin(std::clamp(theta, -1.0, 1.0));
+        return jtx::asin(jtx::clamp(theta, -1.0, 1.0));
     }
 
-    inline double clampAcos(double theta) {
+    JTX_HOSTDEV JTX_INLINE float clampAcos(float theta) {
+        ASSERT(theta >= -1.0001f && theta <= 1.0001f);
+        return jtx::acos(jtx::clamp(theta, -1.0f, 1.0f));
+    }
+
+    JTX_HOSTDEV JTX_INLINE double clampAcos(double theta) {
         ASSERT(theta >= -1.0001 && theta <= 1.0001);
-        return std::acos(std::clamp(theta, -1.0, 1.0));
+        return jtx::acos(jtx::clamp(theta, -1.0, 1.0));
     }
 
-    inline float radians(float deg) {
+    JTX_HOSTDEV JTX_INLINE float radians(float deg) {
         return deg * PI_F / 180.0f;
     }
 
-    inline float degrees(float rad) {
+    JTX_HOSTDEV JTX_INLINE float degrees(float rad) {
         return rad * 180.0f / PI_F;
     }
+    // clang-format on
+    //endregion
 
     template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
-    inline
-    T
-    fma(T a, T b, T c) {
+    JTX_HOSTDEV JTX_INLINE T fma(T a, T b, T c) {
         return a * b + c;
     }
 
     template<typename T>
-    inline
-    typename std::enable_if_t<std::is_floating_point_v<T>, T>
+    JTX_HOSTDEV JTX_INLINE typename std::enable_if_t<std::is_floating_point_v<T>, T>
     dop(T a, T b, T c, T d) {
         auto cd = c * d;
         auto alpha = jtx::fma(a, b, -cd);
@@ -66,17 +205,30 @@ namespace jtx {
     }
 
     template<typename T>
-    inline
-    typename std::enable_if_t<std::is_integral_v<T>, T>
+    JTX_HOSTDEV JTX_INLINE typename std::enable_if_t<std::is_integral_v<T>, T>
     dop(T a, T b, T c, T d) {
         return a * b - c * d;
     }
 
-    JTX_NUM_ONLY_T
-    inline
-    T sqrt(T v) {
-        return std::sqrt(std::max(0.0f, v));
+    JTX_FP_ONLY_T
+    JTX_HOSTDEV JTX_INLINE T
+    sqrt(T val) {
+        #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+                return ::sqrt(val);
+        #else
+                return std::sqrt(val);
+        #endif
     }
+
+    JTX_FP_ONLY_T
+    JTX_HOSTDEV JTX_INLINE T safeSqrt(T v) {
+        return jtx::sqrt(jtx::max(0.0f, v));
+    }
+
+    JTX_HOSTDEV JTX_INLINE float lerp(float a, float b, float t) {
+        return a + t * (b - a);
+    }
+
 
     template<typename T, typename C, typename = std::enable_if_t<std::is_arithmetic_v<T> && std::is_arithmetic_v<C>>>
     inline
@@ -91,7 +243,7 @@ namespace jtx {
         return jtx::fma(t, evalPolynomial(t, coeffs...), c);
     }
 
-    // EFT
+    //region EFT
     struct FloatEFT {
     public:
         float v;
@@ -137,4 +289,5 @@ namespace jtx {
     inline float innerProdf(float a, float b, T... terms) {
         return float(innerProd(a, b, terms...));
     }
+    //endregion
 }

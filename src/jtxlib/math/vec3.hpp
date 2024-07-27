@@ -13,7 +13,10 @@ namespace jtx {
     JTX_NUM_ONLY_T
     class Vec3 {
     public:
-        T x, y, z;
+        union {
+            struct { T x, y, z; };
+            struct { T r, g, b; };
+        };
 
         // Check for NaN
         [[nodiscard]] JTX_INLINE bool valid() const {

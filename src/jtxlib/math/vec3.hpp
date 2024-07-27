@@ -291,11 +291,11 @@ namespace jtx {
         }
         //endregion
         //region Random
-        static JTX_INLINE Vec3 random() {
+        JTX_HOST JTX_INLINE Vec3 random() {
             return {jtx::random<T>(), jtx::random<T>(), jtx::random<T>()};
         }
 
-        static JTX_INLINE Vec3 random(T min, T max) {
+        JTX_HOST JTX_INLINE Vec3 random(T min, T max) {
             return {jtx::random<T>(min, max), jtx::random<T>(min, max), jtx::random<T>(min, max)};
         }
         //endregion

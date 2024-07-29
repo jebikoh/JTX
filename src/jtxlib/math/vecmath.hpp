@@ -297,10 +297,10 @@ namespace jtx {
     }
 
     JTX_NUM_ONLY_T
-    inline Vec3<T> refract(const Vec3<T> &uv, const Vec3<T> &n, double etai_over_etat) {
-        auto cos_theta  = fmin(dot(-uv, n), 1.0);
+    JTX_HOSTDEV JTX_INLINE Vec3<T> refract(const Vec3<T> &uv, const Vec3<T> &n, T etai_over_etat) {
+        auto cos_theta  = ::fminf(jtx::dot(-uv, n), 1.0);
         auto r_out_perp = etai_over_etat * (uv + cos_theta * n);
-        auto r_out_prll = -std::sqrt(std::fabs(1.0 - r_out_perp.lenSqr())) * n;
+        auto r_out_prll = -::sqrtf(::fabs(1.0 - r_out_perp.lenSqr())) * n;
         return r_out_perp + r_out_prll;
     }
     //endregion

@@ -20,7 +20,7 @@ namespace jtx {
         }
 
         //region Constructors
-        Ray() : origin(), dir(), time(JTX_ZERO) {}
+        JTX_DEV Ray() : origin(), dir(), time(JTX_ZERO) {}
 
         JTX_DEV Ray(const Point3<T> &origin, const Vec3<T> &direction, T time = T(0))
             : origin(origin), dir(direction), time(time) {

@@ -181,7 +181,7 @@ namespace jtx {
     JTX_NUM_ONLY_T
     JTX_HOSTDEV JTX_INLINE auto
     lerp(const Vec3<T> &a, const Vec3<T> &b, float t) {
-        return a * (1 - t) + b * t;
+        return (1.0f - t) * a + t * b;
     }
 
     JTX_NUM_ONLY_T
@@ -280,10 +280,10 @@ namespace jtx {
     JTX_NUM_ONLY_T
     inline void coordinateSystem(const Vec3<T> v1, Vec3<T> *v2, Vec3<T> *v3) {
         float sign = std::copysign(1.0f, v1.z);
-        float a    = -1.0f / (sign + v1.z);
-        float b    = v1.x * v1.y * a;
-        *v2        = Vec3{1.0f + sign * v1.x * v1.x * a, sign * b, -sign * v1.x};
-        *v3        = Vec3{b, sign + v1.y * v1.y * a, -v1.y};
+        float a = -1.0f / (sign + v1.z);
+        float b = v1.x * v1.y * a;
+        *v2 = Vec3{1.0f + sign * v1.x * v1.x * a, sign * b, -sign * v1.x};
+        *v3 = Vec3{b, sign + v1.y * v1.y * a, -v1.y};
     }
 
     JTX_NUM_ONLY_T
@@ -298,7 +298,7 @@ namespace jtx {
 
     JTX_NUM_ONLY_T
     JTX_HOSTDEV JTX_INLINE Vec3<T> refract(const Vec3<T> &uv, const Vec3<T> &n, T etai_over_etat) {
-        auto cos_theta  = ::fminf(jtx::dot(-uv, n), 1.0);
+        auto cos_theta = ::fminf(jtx::dot(-uv, n), 1.0);
         auto r_out_perp = etai_over_etat * (uv + cos_theta * n);
         auto r_out_prll = -::sqrtf(::fabs(1.0 - r_out_perp.lenSqr())) * n;
         return r_out_perp + r_out_prll;

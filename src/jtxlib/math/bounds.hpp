@@ -416,9 +416,9 @@ namespace jtx {
     }
     //endregion
 
-    typedef AABB3<int> BB3i;
-    typedef AABB3<float> BB3f;
+    typedef AABB3<int> BBox3i;
+    typedef AABB3<float> BBox3f;
 
-    typedef AABB2<int> BB2i;
-    typedef AABB2<float> BB2f;
+    typedef AABB2<int> BBox2i;
+    typedef AABB2<float> BBox2f;
 }// namespace jtx

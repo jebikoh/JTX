@@ -167,7 +167,7 @@ namespace jtx {
         return !cone.isEmpty() && cone.dir.dot(v) >= cone.cosTheta;
     }
 
-    inline DirectionCone boundSubtendedDirection(const BB3f &bounds, const Vec3f &p) {
+    inline DirectionCone boundSubtendedDirection(const BBox3f &bounds, const Vec3f &p) {
         float r;
         Point3f c;
         bounds.boundingSphere(&c, &r);

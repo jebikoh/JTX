@@ -11,20 +11,27 @@
 #include <jtxlib/math/vec3.hpp>
 #include <jtxlib/math/vecmath.hpp>
 
+#if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+
+#include <cuda/std/optional>
+#include <cuda/std/span>
+
+#endif
+
 namespace jtx {
     class Mat4 {
     public:
         float data[4][4];
         //region Constructors
-        Mat4() {
-            for (auto & i : data) {
-                for (float & j : i) {
+        JTX_HOSTDEV Mat4() {
+            for (auto &i: data) {
+                for (float &j: i) {
                     j = 0.0f;
                 }
             }
         }
 
-        explicit Mat4(float diag) {
+        JTX_HOSTDEV explicit Mat4(float diag) {
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
                     data[i][j] = (i == j) ? diag : 0.0f;
@@ -32,7 +39,7 @@ namespace jtx {
             }
         }
 
-        Mat4(const Mat4 &mat) {
+        JTX_HOSTDEV Mat4(const Mat4 &mat) {
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
                     data[i][j] = mat[i][j];
@@ -40,10 +47,10 @@ namespace jtx {
             }
         }
 
-        Mat4(float m00, float m01, float m02, float m03,
-             float m10, float m11, float m12, float m13,
-             float m20, float m21, float m22, float m23,
-             float m30, float m31, float m32, float m33) {
+        JTX_HOSTDEV Mat4(float m00, float m01, float m02, float m03,
+                         float m10, float m11, float m12, float m13,
+                         float m20, float m21, float m22, float m23,
+                         float m30, float m31, float m32, float m33) {
             data[0][0] = m00;
             data[0][1] = m01;
             data[0][2] = m02;
@@ -62,7 +69,7 @@ namespace jtx {
             data[3][3] = m33;
         }
 
-        explicit Mat4(const float mat[4][4]) {
+        JTX_HOSTDEV explicit Mat4(const float mat[4][4]) {
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
                     data[i][j] = mat[i][j];
@@ -70,13 +77,13 @@ namespace jtx {
             }
         }
 
-        ~Mat4() = default;
+        JTX_HOSTDEV ~Mat4() = default;
 
-        static Mat4 identity() {
+        JTX_HOSTDEV static Mat4 identity() {
             return Mat4(1.0f);
         }
 
-        static Mat4 diagonal(float d0, float d1, float d2, float d3) {
+        JTX_HOSTDEV static Mat4 diagonal(float d0, float d1, float d2, float d3) {
             Mat4 m;
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
@@ -92,15 +99,26 @@ namespace jtx {
         //endregion
 
         //region Binary operators
-        std::span<const float> operator[](int i) const {
+#if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+        JTX_HOSTDEV cuda::std::span<const float> operator[](int i) const {
             return {data[i]};
         }
 
-        std::span<float> operator[](int i) {
+        JTX_HOSTDEV cuda::std::span<float> operator[](int i) {
+            return {data[i]};
+        }
+#else
+        JTX_HOST std::span<const float> operator[](int i) const {
             return {data[i]};
         }
 
-        Mat4 operator+(const Mat4 &other) const {
+        JTX_HOST std::span<float> operator[](int i) {
+            return {data[i]};
+        }
+
+#endif
+
+        JTX_HOSTDEV Mat4 operator+(const Mat4 &other) const {
             Mat4 res = *this;
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
@@ -110,7 +128,7 @@ namespace jtx {
             return res;
         }
 
-        Mat4 operator+(const float scalar) const {
+        JTX_HOSTDEV Mat4 operator+(const float scalar) const {
             Mat4 res = *this;
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
@@ -120,11 +138,11 @@ namespace jtx {
             return res;
         }
 
-        friend Mat4 operator+(const float scalar, const Mat4 &mat) {
+        JTX_HOSTDEV friend Mat4 operator+(const float scalar, const Mat4 &mat) {
             return mat + scalar;
         }
 
-        Mat4 operator-(const Mat4 &other) const {
+        JTX_HOSTDEV Mat4 operator-(const Mat4 &other) const {
             Mat4 res = *this;
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
@@ -134,7 +152,7 @@ namespace jtx {
             return res;
         }
 
-        Mat4 operator-(const float scalar) const {
+        JTX_HOSTDEV Mat4 operator-(const float scalar) const {
             Mat4 res = *this;
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
@@ -144,7 +162,7 @@ namespace jtx {
             return res;
         }
 
-        Mat4 operator*(const float scalar) const {
+        JTX_HOSTDEV Mat4 operator*(const float scalar) const {
             Mat4 res = *this;
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
@@ -154,11 +172,11 @@ namespace jtx {
             return res;
         }
 
-        friend Mat4 operator*(const float scalar, const Mat4 &mat) {
+        JTX_HOSTDEV friend Mat4 operator*(const float scalar, const Mat4 &mat) {
             return mat * scalar;
         }
 
-        Mat4 operator/(const float scalar) const {
+        JTX_HOSTDEV Mat4 operator/(const float scalar) const {
             ASSERT(scalar != 0.0f);
             Mat4 res = *this;
             for (int i = 0; i < 4; ++i) {
@@ -169,7 +187,7 @@ namespace jtx {
             return res;
         }
 
-        bool operator==(const Mat4 &other) const {
+        JTX_HOSTDEV bool operator==(const Mat4 &other) const {
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
                     if (data[i][j] != other[i][j]) {
@@ -180,7 +198,7 @@ namespace jtx {
             return true;
         }
 
-        bool operator!=(const Mat4 &other) const {
+        JTX_HOSTDEV bool operator!=(const Mat4 &other) const {
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
                     if (data[i][j] != other[i][j]) {
@@ -192,8 +210,8 @@ namespace jtx {
         }
         //endregion
 
-        //region Methods
-        [[nodiscard]] bool isIdentity() const {
+        //region In-line Methods
+        [[nodiscard]] JTX_HOSTDEV bool isIdentity() const {
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
                     if (i == j) {
@@ -206,30 +224,32 @@ namespace jtx {
             return true;
         }
 
-        [[nodiscard]] Vec4f mul(const Vec4f &vec) const {
+        [[nodiscard]] JTX_HOSTDEV Vec4f mul(const Vec4f &vec) const {
             Vec4f res;
             for (int i = 0; i < 4; ++i) {
-                res[i] = jtx::innerProdf(data[i][0], vec[0], data[i][1], vec[1], data[i][2], vec[2], data[i][3], vec[3]);
+                res[i] = jtx::innerProdf(data[i][0], vec[0], data[i][1], vec[1], data[i][2], vec[2], data[i][3],
+                                         vec[3]);
             }
             return res;
         }
 
-        [[nodiscard]] Mat4 mul(const Mat4 &mat) const {
+        [[nodiscard]] JTX_HOSTDEV Mat4 mul(const Mat4 &mat) const {
             Mat4 res;
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
-                    res[i][j] = jtx::innerProdf(data[i][0], mat[0][j], data[i][1], mat[1][j], data[i][2], mat[2][j], data[i][3],
+                    res[i][j] = jtx::innerProdf(data[i][0], mat[0][j], data[i][1], mat[1][j], data[i][2], mat[2][j],
+                                                data[i][3],
                                                 mat[3][j]);
                 }
             }
             return res;
         }
 
-        Mat4 operator*(const Mat4 &other) const {
+        JTX_HOSTDEV Mat4 operator*(const Mat4 &other) const {
             return this->mul(other);
         }
 
-        [[nodiscard]] Mat4 transpose() const {
+        [[nodiscard]] JTX_HOSTDEV Mat4 transpose() const {
             Mat4 res;
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
@@ -239,28 +259,51 @@ namespace jtx {
             return res;
         }
 
-        // PBRT
-        [[nodiscard]] float determinant() const;
+        [[nodiscard]] JTX_HOSTDEV float determinant() const;
 
-        [[nodiscard]] std::optional<Mat4> inverse() const;
+#if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+
+        [[nodiscard]] JTX_HOSTDEV cuda::std::optional<Mat4> inverse() const;
+
+#else
+
+        [[nodiscard]] JTX_HOST std::optional<Mat4> inverse() const;
+
+#endif
         //endregion
     };
 
-    inline Vec4f mul(const Mat4 &mat, const Vec4f &vec) { return mat.mul(vec); }
+    JTX_HOSTDEV JTX_INLINE Vec4f mul(const Mat4 &mat, const Vec4f &vec) { return mat.mul(vec); }
 
-    inline Mat4 mul(const Mat4 &a, const Mat4 &b) { return a.mul(b); }
+    JTX_HOSTDEV JTX_INLINE Mat4 mul(const Mat4 &a, const Mat4 &b) { return a.mul(b); }
 
-    inline Mat4 transpose(const Mat4 &mat) { return mat.transpose(); }
+    JTX_HOSTDEV JTX_INLINE Mat4 transpose(const Mat4 &mat) { return mat.transpose(); }
 
-    inline std::optional<Mat4> inverse(const Mat4 &mat) { return mat.inverse(); }
+#if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+    JTX_HOSTDEV JTX_INLINE cuda::std::optional<Mat4> inverse(const Mat4 &mat) { return mat.inverse(); }
 
-    inline Mat4 invert(const Mat4 &mat) {
-        auto inv = inverse(mat);
-        ASSERT(inv.has_value());
-        return inv.value();
+    JTX_HOSTDEV JTX_INLINE cuda::std::optional<Mat4> linearLS(const Mat4 &A, const Mat4 &B) {
+        Mat4 AtA = Mat4{};
+        Mat4 AtB = Mat4{};
+
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                for (int k = 0; k < 4; ++k) {
+                    AtA[i][j] += A[k][i] * A[k][j];
+                    AtB[i][j] += A[k][i] * B[k][j];
+                }
+            }
+        }
+
+        auto AtA_inv = inverse(AtA);
+        if (!AtA_inv.has_value()) { return {}; }
+        return jtx::transpose((*AtA_inv).mul(AtB));
     }
+#else
 
-    inline std::optional<Mat4> linearLS(const Mat4 &A, const Mat4 &B) {
+    JTX_HOSTDEV JTX_INLINE std::optional<Mat4> inverse(const Mat4 &mat) { return mat.inverse(); }
+
+    JTX_HOSTDEV JTX_INLINE std::optional<Mat4> linearLS(const Mat4 &A, const Mat4 &B) {
         Mat4 AtA = Mat4{};
         Mat4 AtB = Mat4{};
 
@@ -278,8 +321,16 @@ namespace jtx {
         return jtx::transpose((*AtA_inv).mul(AtB));
     }
 
+#endif
+
+    JTX_HOSTDEV JTX_INLINE Mat4 invert(const Mat4 &mat) {
+        auto inv = inverse(mat);
+        ASSERT(inv.has_value());
+        return inv.value();
+    }
+
     //region Matrix Transformations
-    inline Mat4 translate(const float delta) {
+    JTX_HOSTDEV JTX_INLINE Mat4 translate(const float delta) {
         return {
                 1.0f, 0.0f, 0.0f, delta,
                 0.0f, 1.0f, 0.0f, delta,
@@ -288,7 +339,7 @@ namespace jtx {
         };
     }
 
-    inline Mat4 translate(float x, float y, float z) {
+    JTX_HOSTDEV JTX_INLINE Mat4 translate(float x, float y, float z) {
         return {
                 1.0f, 0.0f, 0.0f, x,
                 0.0f, 1.0f, 0.0f, y,
@@ -297,25 +348,25 @@ namespace jtx {
         };
     }
 
-    inline Mat4 translate(const jtx::Vec3f& v) {
+    JTX_HOSTDEV JTX_INLINE Mat4 translate(const jtx::Vec3f &v) {
         return translate(v.x, v.y, v.z);
     }
 
-    inline Mat4 scale(float s) {
+    JTX_HOSTDEV JTX_INLINE Mat4 scale(float s) {
         return Mat4::diagonal(s, s, s, 1.0f);
     }
 
-    inline Mat4 scale(float x, float y, float z) {
+    JTX_HOSTDEV JTX_INLINE Mat4 scale(float x, float y, float z) {
         return Mat4::diagonal(x, y, z, 1.0f);
     }
 
-    inline Mat4 scale(const jtx::Vec3f& v) {
+    JTX_HOSTDEV JTX_INLINE Mat4 scale(const jtx::Vec3f &v) {
         return Mat4::diagonal(v.x, v.y, v.z, 1.0f);
     }
 
-    inline Mat4 rotateX(float theta) {
-        float sinTheta = std::sin(jtx::radians(theta));
-        float cosTheta = std::cos(jtx::radians(theta));
+    JTX_HOSTDEV JTX_INLINE Mat4 rotateX(float theta) {
+        float sinTheta = jtx::sin(jtx::radians(theta));
+        float cosTheta = jtx::cos(jtx::radians(theta));
         return {
                 1.0f, 0.0f, 0.0f, 0.0f,
                 0.0f, cosTheta, -sinTheta, 0.0f,
@@ -324,9 +375,9 @@ namespace jtx {
         };
     }
 
-    inline Mat4 rotateY(float theta) {
-        float sinTheta = std::sin(jtx::radians(theta));
-        float cosTheta = std::cos(jtx::radians(theta));
+    JTX_HOSTDEV JTX_INLINE Mat4 rotateY(float theta) {
+        float sinTheta = jtx::sin(jtx::radians(theta));
+        float cosTheta = jtx::cos(jtx::radians(theta));
         return {
                 cosTheta, 0.0f, sinTheta, 0.0f,
                 0.0f, 1.0f, 0.0f, 0.0f,
@@ -335,9 +386,9 @@ namespace jtx {
         };
     }
 
-    inline Mat4 rotateZ(float theta) {
-        float sinTheta = std::sin(jtx::radians(theta));
-        float cosTheta = std::cos(jtx::radians(theta));
+    JTX_HOSTDEV JTX_INLINE Mat4 rotateZ(float theta) {
+        float sinTheta = jtx::sin(jtx::radians(theta));
+        float cosTheta = jtx::cos(jtx::radians(theta));
         return {
                 cosTheta, -sinTheta, 0.0f, 0.0f,
                 sinTheta, cosTheta, 0.0f, 0.0f,
@@ -346,13 +397,14 @@ namespace jtx {
         };
     }
 
-    Mat4 rotate(float sinTheta, float cosTheta, const Vec3f& axis);
+    JTX_HOSTDEV Mat4 rotate(float sinTheta, float cosTheta, const Vec3f &axis);
 
-    Mat4 rotate(float theta, const jtx::Vec3f& axis);
+    JTX_HOSTDEV Mat4 rotate(float theta, const jtx::Vec3f &axis);
 
-    Mat4 rotateFromTo(const Vec3f &from, const Vec3f &to);
+    JTX_HOSTDEV Mat4 rotateFromTo(const Vec3f &from, const Vec3f &to);
 
-    inline Mat4 lookAt(const Vec3f &right, const Vec3f &vup, const Vec3f &direction, const Vec3f &position) {
+    JTX_HOSTDEV JTX_INLINE Mat4
+    lookAt(const Vec3f &right, const Vec3f &vup, const Vec3f &direction, const Vec3f &position) {
         return {
                 right.x, right.y, right.z, -jtx::dot(right, position),
                 vup.x, vup.y, vup.z, -jtx::dot(vup, position),
@@ -361,14 +413,14 @@ namespace jtx {
         };
     }
 
-    inline Mat4 lookAt(const Vec3f &position, const Vec3f &target, const Vec3f &up) {
+    JTX_HOSTDEV JTX_INLINE Mat4 lookAt(const Vec3f &position, const Vec3f &target, const Vec3f &up) {
         auto direction = (target - position).normalize();
         Vec3f right = jtx::cross(direction, up).normalize();
         Vec3f vup = jtx::cross(right, direction).normalize();
         return lookAt(right, vup, direction, position);
     }
 
-    inline Mat4 perspective(float fov, float aspect, float near, float far) {
+    JTX_HOSTDEV JTX_INLINE Mat4 perspective(float fov, float aspect, float near, float far) {
         float invTanAng = 1.0f / std::tan(jtx::radians(fov) / 2.0f);
         return {
                 invTanAng / aspect, 0.0f, 0.0f, 0.0f,
@@ -378,7 +430,7 @@ namespace jtx {
         };
     }
 
-    inline Mat4 orthographic(float left, float right, float bottom, float top, float near, float far) {
+    JTX_HOSTDEV JTX_INLINE Mat4 orthographic(float left, float right, float bottom, float top, float near, float far) {
         return {
                 2.0f / (right - left), 0.0f, 0.0f, -(right + left) / (right - left),
                 0.0f, 2.0f / (top - bottom), 0.0f, -(top + bottom) / (top - bottom),
@@ -388,6 +440,6 @@ namespace jtx {
     }
     //endregion
 
-    std::string to_string(const Mat4 &mat);
+    JTX_HOST std::string toString(const Mat4 &mat);
 }
 #pragma clang diagnostic pop

@@ -4,6 +4,7 @@
 #include <jtxlib/math/vec3.hpp>
 #include <jtxlib/math/vecmath.hpp>
 #include <jtxlib.hpp>
+#include "mat4.hpp"
 
 namespace jtx {
 
@@ -23,7 +24,7 @@ namespace jtx {
         JTX_DEV Ray() : origin(), dir(), time(JTX_ZERO) {}
 
         JTX_DEV Ray(const Point3<T> &origin, const Vec3<T> &direction, T time = T(0))
-            : origin(origin), dir(direction), time(time) {
+                : origin(origin), dir(direction), time(time) {
             ASSERT(valid());
         }
 
@@ -54,26 +55,30 @@ namespace jtx {
         //region Constructors
         JTX_DEV RayDifferential() : Ray<T>(), rxOrigin(), ryOrigin(), rxDirection(), ryDirection(), hasDiffs(false) {}
 
-        JTX_DEV  RayDifferential(const Point3<T> &origin, const Vec3<T> &direction, T time = T(0))
-            : Ray<T>(origin, direction, time), rxOrigin(), ryOrigin(), rxDirection(), ryDirection(), hasDiffs(false) {
+        JTX_DEV RayDifferential(const Point3<T> &origin, const Vec3<T> &direction, T time = T(0))
+                : Ray<T>(origin, direction, time), rxOrigin(), ryOrigin(), rxDirection(), ryDirection(),
+                  hasDiffs(false) {
             ASSERT(valid());
         }
 
-        JTX_DEV explicit RayDifferential(const Ray<T> &ray) : Ray<T>(ray), rxOrigin(), ryOrigin(), rxDirection(), ryDirection(),
-                                                      hasDiffs(false) {
+        JTX_DEV explicit RayDifferential(const Ray<T> &ray) : Ray<T>(ray), rxOrigin(), ryOrigin(), rxDirection(),
+                                                              ryDirection(),
+                                                              hasDiffs(false) {
             ASSERT(valid());
         }
 
-        JTX_DEV RayDifferential(const RayDifferential &other) : Ray<T>(other), rxOrigin(other.rxOrigin), ryOrigin(other.ryOrigin),
-                                                        rxDirection(other.rxDirection), ryDirection(other.ryDirection),
-                                                        hasDiffs(other.hasDiffs) {
+        JTX_DEV RayDifferential(const RayDifferential &other) : Ray<T>(other), rxOrigin(other.rxOrigin),
+                                                                ryOrigin(other.ryOrigin),
+                                                                rxDirection(other.rxDirection),
+                                                                ryDirection(other.ryDirection),
+                                                                hasDiffs(other.hasDiffs) {
             ASSERT(valid());
         }
         //endregion
 
         JTX_DEV JTX_INLINE void scale(T s) {
-            rxOrigin    = this->origin + (rxOrigin - this->origin) * s;
-            ryOrigin    = this->origin + (ryOrigin - this->origin) * s;
+            rxOrigin = this->origin + (rxOrigin - this->origin) * s;
+            ryOrigin = this->origin + (ryOrigin - this->origin) * s;
             rxDirection = this->dir + (rxDirection - this->dir) * s;
             ryDirection = this->dir + (ryDirection - this->dir) * s;
         }
@@ -83,7 +88,8 @@ namespace jtx {
     [[maybe_unused]] typedef Ray<double> Rayd;
 
     JTX_NUM_ONLY_T
-    JTX_HOST JTX_INLINE std::string to_string(const Ray<T> &ray) {
-        return jtx::to_string(ray.origin) + " + t * " + jtx::to_string(ray.dir) + " (t = " + std::to_string(ray.time) + ")";
+    JTX_HOST JTX_INLINE std::string toString(const Mat4 &ray) {
+        return jtx::to_string(ray.origin) + " + t * " + jtx::to_string(ray.dir) + " (t = " + std::to_string(ray.time) +
+               ")";
     }
 }// namespace jtx

@@ -14,26 +14,30 @@ namespace jtx {
     class Vec3 {
     public:
         union {
-            struct { T x, y, z; };
-            struct { T r, g, b; };
+            struct {
+                T x, y, z;
+            };
+            struct {
+                T r, g, b;
+            };
         };
 
         // Check for NaN
-        [[nodiscard]] JTX_INLINE bool valid() const {
+        [[nodiscard]] JTX_HOST JTX_INLINE bool valid() const {
             return !(jtx::isNaN(x) || jtx::isNaN(y) || jtx::isNaN(z));
         }
 
         //region Constructors
-        JTX_HOSTDEV Vec3() : x(JTX_ZERO), y(JTX_ZERO), z(JTX_ZERO){};
+        JTX_HOSTDEV Vec3() : x(JTX_ZERO), y(JTX_ZERO), z(JTX_ZERO) {};
 
         JTX_HOSTDEV Vec3(T x, T y, T z) : x(x), y(y), z(z) {};
 
-        JTX_HOSTDEV Vec3(const Vec3 &other) : x(other.x), y(other.y), z(other.z) {  };
+        JTX_HOSTDEV Vec3(const Vec3 &other) : x(other.x), y(other.y), z(other.z) {};
 
         template<typename U>
-        JTX_HOSTDEV explicit Vec3(const Vec3<U> &other) : x(T(other.x)), y(T(other.y)), z(T(other.z)) {  };
+        JTX_HOSTDEV explicit Vec3(const Vec3<U> &other) : x(T(other.x)), y(T(other.y)), z(T(other.z)) {};
 
-        ~Vec3() = default;
+        JTX_HOSTDEV ~Vec3() = default;
         //endregion
 
         //region Unary operators

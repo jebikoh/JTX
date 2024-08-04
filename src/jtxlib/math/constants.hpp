@@ -24,20 +24,25 @@ namespace jtx {
         }
     };
 
-    #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
-        __constant__ Zero JTX_ZERO;
-    #else
-        constexpr Zero JTX_ZERO;
-    #endif
-
+#if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+#include <cuda/std/limits>
+    JTX_DEV __constant__ Zero JTX_ZERO;
+    JTX_DEV __constant__ double PI = 3.14159265358979323846;
+    JTX_DEV __constant__ float PI_F = 3.14159265358979323846f;
+    JTX_DEV __constant__ float BITS_16 = 65535.0f;
+    JTX_DEV __constant__ float INFINITY_F = cuda::std::numeric_limits<float>::max();
+    JTX_DEV __constant__ double INFINITY_D = cuda::std::numeric_limits<double>::max();
+    JTX_DEV __constant__ float NEG_INFINITY_F = -cuda::std::numeric_limits<float>::max();
+    JTX_DEV __constant__ double NEG_INFINITY_D = -cuda::std::numeric_limits<double>::max();
+#else
+    constexpr Zero JTX_ZERO;
     constexpr double PI = 3.14159265358979323846;
     constexpr float PI_F = 3.14159265358979323846f;
     constexpr float BITS_16 = 65535.0f;
-
     constexpr float INFINITY_F = std::numeric_limits<float>::infinity();
     constexpr double INFINITY_D = std::numeric_limits<double>::infinity();
-
     constexpr float NEG_INFINITY_F = -std::numeric_limits<float>::infinity();
     constexpr double NEG_INFINITY_D = -std::numeric_limits<double>::infinity();
+#endif
 }
 

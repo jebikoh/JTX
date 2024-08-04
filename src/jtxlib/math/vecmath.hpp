@@ -93,64 +93,64 @@ namespace jtx {
 
     //region Ceil & Floor
     JTX_NUM_ONLY_T
-    JTX_INLINE Vec2<T> ceil(const Vec2<T> &v) {
+    JTX_HOSTDEV JTX_INLINE Vec2<T> ceil(const Vec2<T> &v) {
         return {jtx::ceil(v.x), jtx::ceil(v.y)};
     }
 
     JTX_NUM_ONLY_T
-    JTX_INLINE Vec3<T> ceil(const Vec3<T> &v) {
+    JTX_HOSTDEV JTX_INLINE Vec3<T> ceil(const Vec3<T> &v) {
         return {jtx::ceil(v.x), jtx::ceil(v.y), jtx::ceil(v.z)};
     }
 
     JTX_NUM_ONLY_T
-    JTX_INLINE Vec4<T> ceil(const Vec4<T> &v) {
+    JTX_HOSTDEV JTX_INLINE Vec4<T> ceil(const Vec4<T> &v) {
         return {jtx::ceil(v.x), jtx::ceil(v.y), jtx::ceil(v.z), jtx::ceil(v.w)};
     }
 
     JTX_NUM_ONLY_T
-    JTX_INLINE Vec2<T> floor(const Vec2<T> &v) {
+    JTX_HOSTDEV JTX_INLINE Vec2<T> floor(const Vec2<T> &v) {
         return {jtx::floor(v.x), jtx::floor(v.y)};
     }
 
     JTX_NUM_ONLY_T
-    JTX_INLINE Vec3<T> floor(const Vec3<T> &v) {
+    JTX_HOSTDEV JTX_INLINE Vec3<T> floor(const Vec3<T> &v) {
         return {jtx::floor(v.x), jtx::floor(v.y), jtx::floor(v.z)};
     }
 
     JTX_NUM_ONLY_T
-    JTX_INLINE Vec4<T> floor(const Vec4<T> &v) {
+    JTX_HOSTDEV JTX_INLINE Vec4<T> floor(const Vec4<T> &v) {
         return {jtx::floor(v.x), jtx::floor(v.y), jtx::floor(v.z), jtx::floor(v.w)};
     }
     //endregion
 
     //region Min & Max
     JTX_NUM_ONLY_T
-    JTX_INLINE Vec2<T> min(const Vec2<T> &a, const Vec2<T> &b) {
+    JTX_HOSTDEV JTX_INLINE Vec2<T> min(const Vec2<T> &a, const Vec2<T> &b) {
         return {std::min(a.x, b.x), std::min(a.y, b.y)};
     }
 
     JTX_NUM_ONLY_T
-    JTX_INLINE Vec3<T> min(const Vec3<T> &a, const Vec3<T> &b) {
+    JTX_HOSTDEV JTX_INLINE Vec3<T> min(const Vec3<T> &a, const Vec3<T> &b) {
         return {std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z)};
     }
 
     JTX_NUM_ONLY_T
-    JTX_INLINE Vec4<T> min(const Vec4<T> &a, const Vec4<T> &b) {
+    JTX_HOSTDEV JTX_INLINE Vec4<T> min(const Vec4<T> &a, const Vec4<T> &b) {
         return {std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z), std::min(a.w, b.w)};
     }
 
     JTX_NUM_ONLY_T
-    JTX_INLINE Vec2<T> max(const Vec2<T> &a, const Vec2<T> &b) {
+    JTX_HOSTDEV JTX_INLINE Vec2<T> max(const Vec2<T> &a, const Vec2<T> &b) {
         return {std::max(a.x, b.x), std::max(a.y, b.y)};
     }
 
     JTX_NUM_ONLY_T
-    JTX_INLINE Vec3<T> max(const Vec3<T> &a, const Vec3<T> &b) {
+    JTX_HOSTDEV JTX_INLINE Vec3<T> max(const Vec3<T> &a, const Vec3<T> &b) {
         return {std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z)};
     }
 
     JTX_NUM_ONLY_T
-    JTX_INLINE Vec4<T> max(const Vec4<T> &a, const Vec4<T> &b) {
+    JTX_HOSTDEV JTX_INLINE Vec4<T> max(const Vec4<T> &a, const Vec4<T> &b) {
         return {std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z), std::max(a.w, b.w)};
     }
     //endregion
@@ -278,7 +278,7 @@ namespace jtx {
     }
 
     JTX_NUM_ONLY_T
-    inline void coordinateSystem(const Vec3<T> v1, Vec3<T> *v2, Vec3<T> *v3) {
+    JTX_HOSTDEV JTX_INLINE void coordinateSystem(const Vec3<T> v1, Vec3<T> *v2, Vec3<T> *v3) {
         float sign = std::copysign(1.0f, v1.z);
         float a = -1.0f / (sign + v1.z);
         float b = v1.x * v1.y * a;

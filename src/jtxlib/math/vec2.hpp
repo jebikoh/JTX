@@ -13,52 +13,52 @@ namespace jtx {
         T x, y;
 
         // Check for NaN
-        [[nodiscard]] inline bool valid() const {
+        [[nodiscard]] JTX_HOST JTX_INLINE bool valid() const {
             return !(jtx::isNaN(x) || jtx::isNaN(y));
         }
 
         //region Constructors
-        Vec2() : x(JTX_ZERO), y(JTX_ZERO) {};
+        JTX_HOSTDEV Vec2() : x(JTX_ZERO), y(JTX_ZERO) {};
 
-        Vec2(T x, T y) : x(x), y(y) { ASSERT(valid()); };
+        JTX_HOSTDEV Vec2(T x, T y) : x(x), y(y) { ASSERT(valid()); };
 
-        Vec2(const Vec2 &other) : x(other.x), y(other.y) { ASSERT(valid()); };
+        JTX_HOSTDEV Vec2(const Vec2 &other) : x(other.x), y(other.y) { ASSERT(valid()); };
 
         template<typename U>
-        explicit Vec2(const Vec2<U> &other) : x(T(other.x)), y(T(other.y)) { ASSERT(valid()); };
+        JTX_HOSTDEV explicit Vec2(const Vec2<U> &other) : x(T(other.x)), y(T(other.y)) { ASSERT(valid()); };
 
-        ~Vec2() = default;
+        JTX_HOSTDEV ~Vec2() = default;
         //endregion
 
         //region Unary operators
-        inline Vec2 operator-() const {
+        JTX_HOSTDEV JTX_INLINE Vec2 operator-() const {
             return {-x, -y};
         }
 
-        inline Vec2 operator+() const {
+        JTX_HOSTDEV JTX_INLINE Vec2 operator+() const {
             return {+x, +y};
         }
 
-        inline Vec2 &operator++() {
+        JTX_HOSTDEV JTX_INLINE Vec2 &operator++() {
             x++;
             y++;
             return *this;
         }
 
-        inline Vec2 operator++(int) {
+        JTX_HOSTDEV JTX_INLINE Vec2 operator++(int) {
             Vec2 temp = *this;
             x++;
             y++;
             return temp;
         }
 
-        inline Vec2 &operator--() {
+        JTX_HOSTDEV JTX_INLINE Vec2 &operator--() {
             x--;
             y--;
             return *this;
         }
 
-        inline Vec2 operator--(int) {
+        JTX_HOSTDEV JTX_INLINE Vec2 operator--(int) {
             Vec2 temp = *this;
             x--;
             y--;
@@ -67,155 +67,155 @@ namespace jtx {
         //endregion
 
         //region Binary operators
-        inline Vec2 &operator=(const Vec2 &other) {
+        JTX_HOSTDEV JTX_INLINE Vec2 &operator=(const Vec2 &other) {
             ASSERT(other.valid());
             x = other.x;
             y = other.y;
             return *this;
         }
 
-        inline bool operator==(const Vec2 &other) const {
+        JTX_HOSTDEV JTX_INLINE bool operator==(const Vec2 &other) const {
             return (x == other.x) && (y == other.y);
         }
 
-        inline bool operator!=(const Vec2 &other) const {
+        JTX_HOSTDEV JTX_INLINE bool operator!=(const Vec2 &other) const {
             return (x != other.x) || (y != other.y);
         }
 
-        inline Vec2 operator+(const Vec2 &other) const {
+        JTX_HOSTDEV JTX_INLINE Vec2 operator+(const Vec2 &other) const {
             return {x + other.x, y + other.y};
         }
 
-        inline Vec2 operator+(const T scalar) const {
+        JTX_HOSTDEV JTX_INLINE Vec2 operator+(const T scalar) const {
             return {x + scalar, y + scalar};
         }
 
-        inline Vec2 operator-(const Vec2 &other) const {
+        JTX_HOSTDEV JTX_INLINE Vec2 operator-(const Vec2 &other) const {
             return {x - other.x, y - other.y};
         }
 
-        inline Vec2 operator-(const T scalar) const {
+        JTX_HOSTDEV JTX_INLINE Vec2 operator-(const T scalar) const {
             return {x - scalar, y - scalar};
         }
 
-        inline Vec2 operator*(const Vec2 &other) const {
+        JTX_HOSTDEV JTX_INLINE Vec2 operator*(const Vec2 &other) const {
             return {x * other.x, y * other.y};
         }
 
-        inline Vec2 operator*(T scalar) const {
+        JTX_HOSTDEV JTX_INLINE Vec2 operator*(T scalar) const {
             return {x * scalar, y * scalar};
         }
 
-        friend inline Vec2 operator*(T scalar, const Vec2 &v) {
+        friend JTX_HOSTDEV JTX_INLINE Vec2 operator*(T scalar, const Vec2 &v) {
             return v * scalar;
         }
 
-        inline Vec2 operator/(const Vec2 &other) const {
+        JTX_HOSTDEV JTX_INLINE Vec2 operator/(const Vec2 &other) const {
             ASSERT(JTX_ZERO != other.x && JTX_ZERO != other.y);
             return {x / other.x, y / other.y};
         }
 
-        inline Vec2 operator/(T scalar) const {
+        JTX_HOSTDEV JTX_INLINE Vec2 operator/(T scalar) const {
             ASSERT(JTX_ZERO != scalar);
             return {x / scalar, y / scalar};
         }
 
-        friend inline Vec2 operator/(T scalar, const Vec2 &v) {
+        friend JTX_HOSTDEV JTX_INLINE Vec2 operator/(T scalar, const Vec2 &v) {
             ASSERT(JTX_ZERO != scalar);
             return {scalar / v.x, scalar / v.y};
         }
         //endregion
 
         //region In-place Assignment Operators
-        inline Vec2 &operator+=(const Vec2 &other) {
+        JTX_HOSTDEV JTX_INLINE Vec2 &operator+=(const Vec2 &other) {
             x += other.x;
             y += other.y;
             ASSERT(valid());
             return *this;
         }
 
-        inline Vec2 &operator+=(const T scalar) {
+        JTX_HOSTDEV JTX_INLINE Vec2 &operator+=(const T scalar) {
             x += scalar;
             y += scalar;
             ASSERT(valid());
             return *this;
         }
 
-        inline Vec2 &operator-=(const Vec2 &other) {
+        JTX_HOSTDEV JTX_INLINE Vec2 &operator-=(const Vec2 &other) {
             x -= other.x;
             y -= other.y;
             ASSERT(valid());
             return *this;
         }
 
-        inline Vec2 &operator-=(const T scalar) {
+        JTX_HOSTDEV JTX_INLINE Vec2 &operator-=(const T scalar) {
             x -= scalar;
             y -= scalar;
             ASSERT(valid());
             return *this;
         }
 
-        inline Vec2 &operator*=(const Vec2 &other) {
+        JTX_HOSTDEV JTX_INLINE Vec2 &operator*=(const Vec2 &other) {
             x *= other.x;
             y *= other.y;
             ASSERT(valid());
             return *this;
         }
 
-        inline Vec2 &operator*=(T scalar) {
+        JTX_HOSTDEV JTX_INLINE Vec2 &operator*=(T scalar) {
             x *= scalar;
             y *= scalar;
             ASSERT(valid());
             return *this;
         }
 
-        inline Vec2 &operator/=(const Vec2 &other) {
+        JTX_HOSTDEV JTX_INLINE Vec2 &operator/=(const Vec2 &other) {
             x /= other.x;
             y /= other.y;
             ASSERT(valid());
             return *this;
         }
 
-        inline Vec2 &operator/=(T scalar) {
+        JTX_HOSTDEV JTX_INLINE Vec2 &operator/=(T scalar) {
             x /= scalar;
             y /= scalar;
             ASSERT(valid());
             return *this;
         }
 
-        inline const T &operator[](int index) const {
+        JTX_HOSTDEV JTX_INLINE const T &operator[](int index) const {
             ASSERT(index >= 0 && index < 2);
             return (&x)[index];
         }
 
-        inline T &operator[](int index) {
+        JTX_HOSTDEV JTX_INLINE T &operator[](int index) {
             ASSERT(index >= 0 && index < 2);
             return (&x)[index];
         }
         //endregion
 
         //region Member functions
-        [[nodiscard]] inline T dot(const Vec2 &other) const {
+        [[nodiscard]] JTX_HOSTDEV JTX_INLINE T dot(const Vec2 &other) const {
             return x * other.x + y * other.y;
         }
 
-        [[nodiscard]] inline T dot(const T _x, const T _y) const {
+        [[nodiscard]] JTX_HOSTDEV JTX_INLINE T dot(const T _x, const T _y) const {
             return this->x * _x + this->y * _y;
         }
 
-        inline Vec2 &abs() {
-            x = std::abs(x);
-            y = std::abs(y);
+        JTX_HOSTDEV JTX_INLINE Vec2 &abs() {
+            x = jtx::abs(x);
+            y = jtx::abs(y);
             return *this;
         }
 
-        inline T absdot(const Vec2 &other) {
-            return std::abs(dot(other));
+        JTX_HOSTDEV JTX_INLINE T absdot(const Vec2 &other) {
+            return jtx::abs(dot(other));
         }
 
-        [[nodiscard]] inline float len() const { return std::sqrt(x * x + y * y); }
+        [[nodiscard]] inline float len() const { return jtx::sqrt(x * x + y * y); }
 
-        inline Vec2 &normalize() {
+        JTX_HOSTDEV JTX_INLINE Vec2 &normalize() {
             float l = len();
             if (l != 0) {
                 *this /= l;
@@ -223,27 +223,27 @@ namespace jtx {
             return *this;
         }
 
-        inline Vec2 &ceil() {
+        JTX_HOSTDEV JTX_INLINE Vec2 &ceil() {
             x = jtx::ceil(x);
             y = jtx::ceil(y);
             return *this;
         }
 
-        inline Vec2 &floor() {
+        JTX_HOSTDEV JTX_INLINE Vec2 &floor() {
             x = jtx::floor(x);
             y = jtx::floor(y);
             return *this;
         }
 
-        inline auto min() const {
-            return std::min(x, y);
+        JTX_HOSTDEV JTX_INLINE auto min() const {
+            return jtx::min(x, y);
         }
 
-        inline auto max() const {
-            return std::max(x, y);
+        JTX_HOSTDEV JTX_INLINE auto max() const {
+            return jtx::max(x, y);
         }
 
-        inline T hprod() const {
+        JTX_HOSTDEV JTX_INLINE T hprod() const {
             return x * y;
         }
         //endregion
@@ -258,11 +258,11 @@ namespace jtx {
     typedef Point2<int> Point2i;
     typedef Point2<float> Point2f;
 
-    inline std::string to_string(const Vec2f &vec) {
+    JTX_HOST JTX_INLINE std::string to_string(const Vec2f &vec) {
         return "Vec2f(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ")";
     }
 
-    inline std::string to_string(const Vec2i &vec) {
+    JTX_HOST JTX_INLINE std::string to_string(const Vec2i &vec) {
         return "Vec2i(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ")";
     }
 }// namespace jtx

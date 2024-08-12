@@ -331,9 +331,9 @@ namespace jtx {
     template<typename T, typename U, typename = std::enable_if_t<std::is_arithmetic_v<T> && std::is_arithmetic_v<U>>>
     JTX_DEV JTX_INLINE auto distanceSqr(const AABB3<T> &b, const Point3<U> &p) {
         using TmU = decltype(T{} - U{});
-        TmU dx = jtx::max<TmU>({0, b.pmin.x - p.x, p.x - b.pmax.x});
-        TmU dy = jtx::max<TmU>({0, b.pmin.y - p.y, p.y - b.pmax.y});
-        TmU dz = jtx::max<TmU>({0, b.pmin.z - p.z, p.z - b.pmax.z});
+        TmU dx = jtx::max<TmU>(0, b.pmin.x - p.x, p.x - b.pmax.x);
+        TmU dy = jtx::max<TmU>(0, b.pmin.y - p.y, p.y - b.pmax.y);
+        TmU dz = jtx::max<TmU>(0, b.pmin.z - p.z, p.z - b.pmax.z);
         return dx * dx + dy * dy + dz * dz;
     }
 
@@ -405,8 +405,8 @@ namespace jtx {
     template<typename T, typename U, typename = std::enable_if_t<std::is_arithmetic_v<T> && std::is_arithmetic_v<U>>>
     JTX_DEV JTX_INLINE auto distanceSqr(const AABB2<T> &b, const Point2<U> &p) {
         using TmU = decltype(T{} - U{});
-        TmU dx = jtx::max<TmU>({0, b.pmin.x - p.x, p.x - b.pmax.x});
-        TmU dy = jtx::max<TmU>({0, b.pmin.y - p.y, p.y - b.pmax.y});
+        TmU dx = jtx::max<TmU>(0, b.pmin.x - p.x, p.x - b.pmax.x);
+        TmU dy = jtx::max<TmU>(0, b.pmin.y - p.y, p.y - b.pmax.y);
         return dx * dx + dy * dy;
     }
 

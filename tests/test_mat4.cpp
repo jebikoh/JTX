@@ -168,3 +168,90 @@ TEST_CASE("Mat4 inverse", "[Mat4]") {
     REQUIRE(inv * mat == identity);
     REQUIRE(mat * inv == identity);
 }
+
+TEST_CASE("Mat4 Linear LS", "[Mat4]") {
+    // TODO: write linear LS equation
+}
+
+TEST_CASE("Mat4 Translations", "[Mat4]") {
+    auto mat1 = jtx::translate(1.0f, 2.0f, 3.0f);
+    auto mat2 = jtx::translate(jtx::Vec3f{1.0f, 2.0f, 3.0f});
+    auto mat3 = jtx::translate(2.0f);
+
+    jtx::Mat4 ref1_2 = {
+        1.0f, 0.0f, 0.0f, 1.0f,
+        0.0f, 1.0f, 0.0f, 2.0f,
+        0.0f, 0.0f, 1.0f, 3.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
+
+    jtx::Mat4 ref3 = {
+        1.0f, 0.0f, 0.0f, 2.0f,
+        0.0f, 1.0f, 0.0f, 2.0f,
+        0.0f, 0.0f, 1.0f, 2.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
+
+    REQUIRE(mat1 == ref1_2);
+    REQUIRE(mat2 == ref1_2);
+    REQUIRE(mat3 == ref3);
+}
+
+TEST_CASE("Mat4 Scale", "[Mat4]") {
+    auto mat1 = jtx::scale(1.0f, 2.0f, 3.0f);
+    auto mat2 = jtx::scale(jtx::Vec3f{1.0f, 2.0f, 3.0f});
+    auto mat3 = jtx::scale(2.0f);
+
+    jtx::Mat4 ref1_2 = {
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 2.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 3.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
+
+    jtx::Mat4 ref3 = {
+        2.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 2.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 2.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
+
+    REQUIRE(mat1 == ref1_2);
+    REQUIRE(mat2 == ref1_2);
+    REQUIRE(mat3 == ref3);
+}
+
+TEST_CASE("Mat4 rotate XYZ", "[Mat4]") {
+    SECTION("ROTATE X") {
+        auto mat1 = jtx::rotateX(90.0f);
+        jtx::Mat4 ref = {
+            1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, -1.0f, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        };
+        REQUIRE(mat1.equals(ref, T_EPS));
+    }
+
+    SECTION("ROTATE Y") {
+        auto mat1 = jtx::rotateY(90.0f);
+        jtx::Mat4 ref = {
+            0.0f, 0.0f, 1.0f, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            -1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        };
+        REQUIRE(mat1.equals(ref, T_EPS));
+    }
+
+    SECTION("ROTATE Z") {
+        auto mat1 = jtx::rotateZ(90.0f);
+        jtx::Mat4 ref = {
+            0.0f, -1.0f, 0.0f, 0.0f,
+            1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        };
+        REQUIRE(mat1.equals(ref, T_EPS));
+    }
+}

@@ -87,8 +87,11 @@ namespace jtx {
     [[maybe_unused]] typedef Ray<float> Rayf;
     [[maybe_unused]] typedef Ray<double> Rayd;
 
+    typedef RayDifferential<float> RayfDifferential;
+    typedef RayDifferential<double> RaydDifferential;
+
     JTX_NUM_ONLY_T
-    JTX_HOST JTX_INLINE std::string toString(const Mat4 &ray) {
+    JTX_HOST JTX_INLINE std::string toString(const Ray<T> &ray) {
         return jtx::to_string(ray.origin) + " + t * " + jtx::to_string(ray.dir) + " (t = " + std::to_string(ray.time) +
                ")";
     }

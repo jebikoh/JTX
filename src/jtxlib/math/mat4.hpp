@@ -211,6 +211,17 @@ namespace jtx {
         //endregion
 
         //region In-line Methods
+        JTX_HOSTDEV bool equals(const Mat4 &other, float epsilon = EPSILON) {
+            for (int i = 0; i < 4; ++i) {
+                for (int j = 0; j < 4; ++j) {
+                    if (jtx::abs(data[i][j] - other[i][j]) > epsilon) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
         [[nodiscard]] JTX_HOSTDEV bool isIdentity() const {
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {

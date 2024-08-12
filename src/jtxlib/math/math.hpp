@@ -39,7 +39,16 @@ namespace jtx {
 #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
         return ::max(a, b);
 #else
-        return std::max(a, b);
+        return std::max<T>(a, b);
+#endif
+    }
+
+    JTX_NUM_ONLY_T
+    JTX_HOSTDEV JTX_INLINE T max(T a, T b, T c) {
+#if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+        return ::max(0, ::max(a, b));
+#else
+        return std::max<T>({a, b, c});
 #endif
     }
 
@@ -48,7 +57,16 @@ namespace jtx {
 #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
         return ::min(a, b);
 #else
-        return std::min(a, b);
+        return std::min<T>(a, b);
+#endif
+    }
+
+    JTX_NUM_ONLY_T
+    JTX_HOSTDEV JTX_INLINE T min(T a, T b, T c) {
+#if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+        return ::min(0, ::min(a, b));
+#else
+        return std::min<T>({a, b, c});
 #endif
     }
 

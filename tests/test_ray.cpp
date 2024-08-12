@@ -3,7 +3,7 @@
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 
 TEST_CASE("Ray default constructor", "[Ray]") {
-    jtx::Ray ray;
+    jtx::Rayf ray;
     REQUIRE(ray.origin == jtx::Point3f(0.0f, 0.0f, 0.0f));
     REQUIRE(ray.dir == jtx::Vec3f(0.0f, 0.0f, 0.0f));
     REQUIRE(ray.time == 0.0f);
@@ -13,7 +13,7 @@ TEST_CASE("Ray constructor with parameters", "[Ray]") {
     jtx::Point3f origin(1.0f, 2.0f, 3.0f);
     jtx::Vec3f dir(4.0f, 5.0f, 6.0f);
     float time = 7.0f;
-    jtx::Ray ray(origin, dir, time);
+    jtx::Rayf ray(origin, dir, time);
     REQUIRE(ray.origin == origin);
     REQUIRE(ray.dir == dir);
     REQUIRE(ray.time == time);
@@ -23,8 +23,8 @@ TEST_CASE("Ray copy constructor", "[Ray]") {
     jtx::Point3f origin(1.0f, 2.0f, 3.0f);
     jtx::Vec3f dir(4.0f, 5.0f, 6.0f);
     float time = 7.0f;
-    jtx::Ray ray(origin, dir, time);
-    jtx::Ray rayCopy(ray);
+    jtx::Rayf ray(origin, dir, time);
+    jtx::Rayf rayCopy(ray);
     REQUIRE(rayCopy.origin == origin);
     REQUIRE(rayCopy.dir == dir);
     REQUIRE(rayCopy.time == time);
@@ -34,14 +34,14 @@ TEST_CASE("Ray at", "[Ray]") {
     jtx::Point3f origin(1.0f, 2.0f, 3.0f);
     jtx::Vec3f dir(4.0f, 5.0f, 6.0f);
     float time = 0.0f;
-    jtx::Ray ray(origin, dir, time);
+    jtx::Rayf ray(origin, dir, time);
     float t = 1.0f;
     jtx::Point3f expected(5.0f, 7.0f, 9.0f);
     REQUIRE(ray.at(t) == expected);
 }
 
 TEST_CASE("RayDifferential default constructor", "[RayDifferential]") {
-    jtx::RayDifferential ray;
+    jtx::RayfDifferential ray;
     REQUIRE(ray.origin == jtx::Point3f(0.0f, 0.0f, 0.0f));
     REQUIRE(ray.dir == jtx::Vec3f(0.0f, 0.0f, 0.0f));
     REQUIRE(ray.time == 0.0f);
@@ -92,7 +92,7 @@ TEST_CASE("RayDifferential copy constructor (Ray)", "[RayDifferential]") {
     jtx::Point3f origin(1.0f, 2.0f, 3.0f);
     jtx::Vec3f dir(4.0f, 5.0f, 6.0f);
     float time = 7.0f;
-    jtx::Ray ray(origin, dir, time);
+    jtx::Rayf ray(origin, dir, time);
     jtx::RayDifferential rayCopy(ray);
     REQUIRE(rayCopy.origin == origin);
     REQUIRE(rayCopy.dir == dir);
@@ -121,7 +121,7 @@ TEST_CASE("RayDifferential scale", "[RayDifferential]") {
 }
 
 TEST_CASE("Ray valid", "[Ray]") {
-    jtx::Ray ray;
+    jtx::Rayf ray;
     REQUIRE(ray.valid());
     ray.origin = jtx::Point3f(1.0f, 2.0f, 3.0f);
     REQUIRE(ray.valid());
@@ -132,7 +132,7 @@ TEST_CASE("Ray valid", "[Ray]") {
 }
 
 TEST_CASE("RayDifferential valid", "[RayDifferential]") {
-    jtx::RayDifferential ray;
+    jtx::RayfDifferential ray;
     REQUIRE(ray.valid());
     ray.origin = jtx::Point3f(1.0f, 2.0f, 3.0f);
     REQUIRE(ray.valid());
@@ -155,7 +155,7 @@ TEST_CASE("RayDifferential valid", "[RayDifferential]") {
 #ifdef JTX_TEST
 
 TEST_CASE("Ray invalid", "[Ray]") {
-    jtx::Ray ray;
+    jtx::Rayf ray;
     ray.origin = jtx::Point3f(std::numeric_limits<float>::quiet_NaN(), 2.0f, 3.0f);
     ray.dir = jtx::Vec3f(4.0f, 5.0f, 6.0f);
     ray.time = 7.0f;

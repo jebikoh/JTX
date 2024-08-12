@@ -5,6 +5,7 @@
 #include <jtxlib/math/constants.hpp>
 #include <jtxlib/math/numerical.hpp>
 #include <jtxlib/util/assert.hpp>
+#include <jtxlib/math/math.hpp>
 
 namespace jtx {
     JTX_NUM_ONLY_T

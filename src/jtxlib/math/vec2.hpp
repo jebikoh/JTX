@@ -8,6 +8,9 @@
 #include <jtxlib/math/math.hpp>
 
 namespace jtx {
+    template<typename T> class Vec3;
+    template<typename T> class Vec4;
+
     template<typename T>
     class Vec2 {
         static_assert(std::is_arithmetic_v<T>, "Vec2 can only be instantiated with arithmetic types");
@@ -28,6 +31,10 @@ namespace jtx {
 
         template<typename U>
         JTX_HOSTDEV explicit Vec2(const Vec2<U> &other) : x(T(other.x)), y(T(other.y)) { ASSERT(valid()); };
+
+        JTX_HOSTDEV Vec2(const Vec3<T> &other, T z) : x(other.x), y(other.y) { ASSERT(valid()); };
+
+        JTX_HOSTDEV Vec2(const Vec4<T> &other) : x(other.x), y(other.y) { ASSERT(valid()); };
 
         JTX_HOSTDEV ~Vec2() = default;
         //endregion

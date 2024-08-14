@@ -34,6 +34,24 @@ TEST_CASE("Vec3f template copy constructor", "[Vec3]") {
     REQUIRE(v2.y == 2);
     REQUIRE(v2.z == 3);
 }
+
+TEST_CASE("Vec3f vector constructors", "[Vec3]") {
+    SECTION("Vec2 constructor") {
+        jtx::Vec2f v2(2.0f, 4.0f);
+        jtx::Vec3f v3(v2, 6.0f);
+        REQUIRE(v3.x == 2.0f);
+        REQUIRE(v3.y == 4.0f);
+        REQUIRE(v3.z == 6.0f);
+    }
+
+    SECTION("Vec4 constructor") {
+        jtx::Vec4f v4(2.0f, 4.0f, 6.0f, 8.0f);
+        jtx::Vec3f v3(v4);
+        REQUIRE(v3.x == 2.0f);
+        REQUIRE(v3.y == 4.0f);
+        REQUIRE(v3.z == 6.0f);
+    }
+}
 //endregion
 
 //region Vec3: Numerical validity

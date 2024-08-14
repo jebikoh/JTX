@@ -38,6 +38,26 @@ TEST_CASE("Vec4f template copy constructor", "[Vec4]") {
     REQUIRE(v2.z == 3);
     REQUIRE(v2.w == 4);
 }
+
+TEST_CASE("Vec4f vector constructor", "[Vec4]") {
+    SECTION("Vec2 constructor") {
+        jtx::Vec2f v2(1.0f, 2.0f);
+        jtx::Vec4f v(v2, 3.0f, 4.0f);
+        REQUIRE(v.x == 1.0f);
+        REQUIRE(v.y == 2.0f);
+        REQUIRE(v.z == 3.0f);
+        REQUIRE(v.w == 4.0f);
+    }
+
+    SECTION("Vec3 constructor") {
+        jtx::Vec3f v3(1.0f, 2.0f, 3.0f);
+        jtx::Vec4f v(v3, 4.0f);
+        REQUIRE(v.x == 1.0f);
+        REQUIRE(v.y == 2.0f);
+        REQUIRE(v.z == 3.0f);
+        REQUIRE(v.w == 4.0f);
+    }
+}
 //endregion
 
 //region Vec4: Numerical validity

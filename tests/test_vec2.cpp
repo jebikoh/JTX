@@ -31,6 +31,22 @@ TEST_CASE("Vec2f template copy constructor", "[Vec2]") {
     REQUIRE(v2.x == 1.0f);
     REQUIRE(v2.y == 2.0f);
 }
+
+TEST_CASE("Vec2f vector constructors", "[Vec2]") {
+    SECTION("Vec3 constructor") {
+        jtx::Vec3f v3(1.0f, 2.0f, 3.0f);
+        jtx::Vec2f v2(v3, 4.0f);
+        REQUIRE(v2.x == 1.0f);
+        REQUIRE(v2.y == 2.0f);
+    }
+
+    SECTION("Vec4 constructor") {
+        jtx::Vec4f v4(1.0f, 2.0f, 3.0f, 4.0f);
+        jtx::Vec2f v2(v4);
+        REQUIRE(v2.x == 1.0f);
+        REQUIRE(v2.y == 2.0f);
+    }
+}
 //endregion
 
 //region Vec2: Numerical validity

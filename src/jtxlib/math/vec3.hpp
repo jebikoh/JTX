@@ -10,8 +10,10 @@
 #include <stdexcept>
 
 namespace jtx {
-    JTX_NUM_ONLY_T
+    //region Vec3
+    template<typename T>
     class Vec3 {
+        static_assert(std::is_arithmetic_v<T>, "Vec3 can only be instantiated with arithmetic types");
     public:
         union {
             struct {
@@ -329,4 +331,5 @@ namespace jtx {
     JTX_HOST JTX_INLINE std::string toString(const Vec3<T> &vec) {
         return "Vec3(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ")";
     }
+    //endregion
 }// namespace jtx

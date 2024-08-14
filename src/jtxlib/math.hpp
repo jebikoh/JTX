@@ -8,7 +8,4 @@
 #include "math/ray.hpp"
 #include "math/spherical.hpp"
 #include "math/transform.hpp"
-#include "math/vec2.hpp"
-#include "math/vec3.hpp"
-#include "math/vec4.hpp"
-#include "math/vecmath.hpp"
+#include "math/vector.hpp"

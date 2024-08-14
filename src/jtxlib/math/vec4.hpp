@@ -9,8 +9,9 @@
 #include <string>
 
 namespace jtx {
-    JTX_NUM_ONLY_T
+    template<typename T>
     class Vec4 {
+        static_assert(std::is_arithmetic_v<T>, "Vec4 can only be instantiated with arithmetic types");
     public:
         union {
             struct {

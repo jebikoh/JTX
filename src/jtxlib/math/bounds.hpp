@@ -12,9 +12,9 @@
 #endif
 
 namespace jtx {
-
-    JTX_NUM_ONLY_T
+    template<typename T>
     class AABB3 {
+        static_assert(std::is_arithmetic_v<T>, "AABB3 can only be instantiated with arithmetic types");
     public:
         Point3<T> pmin, pmax;
 
@@ -165,8 +165,9 @@ namespace jtx {
         //endregion
     };
 
-    JTX_NUM_ONLY_T
+    template<typename T>
     class AABB2 {
+        static_assert(std::is_arithmetic_v<T>, "AABB2 can only be instantiated with arithmetic types");
     public:
         Point2<T> pmin, pmax;
 

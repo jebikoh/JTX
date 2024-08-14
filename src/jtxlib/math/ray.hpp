@@ -8,8 +8,9 @@
 
 namespace jtx {
 
-    JTX_NUM_ONLY_T
+    template<typename T>
     class Ray {
+        static_assert(std::is_arithmetic_v<T>, "Ray can only be instantiated with arithmetic types");
     public:
         Point3<T> origin;
         Vec3<T> dir;
@@ -40,8 +41,9 @@ namespace jtx {
         }
     };
 
-    JTX_NUM_ONLY_T
+    template<typename T>
     class RayDifferential : public Ray<T> {
+        static_assert(std::is_arithmetic_v<T>, "RayDifferential can only be instantiated with arithmetic types");
     public:
         Point3<T> rxOrigin, ryOrigin;
         Vec3<T> rxDirection, ryDirection;

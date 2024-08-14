@@ -74,7 +74,9 @@ set(JTXLIB_HEADERS
         src/jtxlib/math.hpp
         src/jtxlib/simd.hpp
         src/jtxlib/util.hpp
-        src/jtxlib/util/rand.hpp)
+        src/jtxlib/util/rand.hpp
+        src/jtxlib/math/vector.hpp
+)
 
 add_library(jtxlib STATIC
         ${JTXLIB_MATH}

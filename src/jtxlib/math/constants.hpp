@@ -34,7 +34,7 @@ namespace jtx {
     JTX_DEV __constant__ double INFINITY_D = cuda::std::numeric_limits<double>::max();
     JTX_DEV __constant__ float NEG_INFINITY_F = -cuda::std::numeric_limits<float>::max();
     JTX_DEV __constant__ double NEG_INFINITY_D = -cuda::std::numeric_limits<double>::max();
-    JTX_DEV __constant__ float EPSILON = cuda::std::numeric_limits<float>::epsilon();
+    JTX_DEV __constant__ float EPSILON = 0.00001f;
 #else
     constexpr Zero JTX_ZERO;
     constexpr double PI = 3.14159265358979323846;
@@ -44,7 +44,7 @@ namespace jtx {
     constexpr double INFINITY_D = std::numeric_limits<double>::infinity();
     constexpr float NEG_INFINITY_F = -std::numeric_limits<float>::infinity();
     constexpr double NEG_INFINITY_D = -std::numeric_limits<double>::infinity();
-    constexpr float EPSILON = std::numeric_limits<float>::epsilon();
+    constexpr float EPSILON = 0.00001f;
 #endif
 }
 

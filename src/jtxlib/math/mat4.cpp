@@ -146,17 +146,17 @@ namespace jtx {
     }
 
     JTX_HOSTDEV Mat4 rotate(float theta, const jtx::Vec3f &axis) {
-        float sinTheta = std::sin(jtx::radians(theta));
-        float cosTheta = std::cos(jtx::radians(theta));
+        float sinTheta = jtx::sin(jtx::radians(theta));
+        float cosTheta = jtx::cos(jtx::radians(theta));
         return jtx::rotate(sinTheta, cosTheta, axis);
     }
 
     JTX_HOSTDEV Mat4 rotateFromTo(const Vec3f &from, const Vec3f &to) {
         // Intermediate vector
         Vec3f refl;
-        if (std::abs(from.x) < 0.72f && std::abs(to.x) < 0.72f) {
+        if (jtx::abs(from.x) < 0.72f && jtx::abs(to.x) < 0.72f) {
             refl = Vec3f(1, 0, 0);
-        } else if (std::abs(from.y) < 0.72f && std::abs(to.y) < 0.72f) {
+        } else if (jtx::abs(from.y) < 0.72f && jtx::abs(to.y) < 0.72f) {
             refl = Vec3f(0, 1, 0);
         } else {
             refl = Vec3f(0, 0, 1);
@@ -172,7 +172,7 @@ namespace jtx {
                 r[i][j] = ((i == j) ? 1.0f : 0.0f) -
                           (2 / uu) * u[i] * u[j] -
                           (2 / vv) * v[i] * v[j] +
-                          (4 * jtx::dot(u, v)) / (uu * vv) * u[i] * v[j];
+                          (4 * jtx::dot(u, v)) / (uu * vv) * v[i] * u[j];
             }
         }
 

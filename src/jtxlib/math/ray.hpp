@@ -92,7 +92,7 @@ namespace jtx {
 
     JTX_NUM_ONLY_T
     JTX_HOST JTX_INLINE std::string toString(const Ray<T> &ray) {
-        return jtx::to_string(ray.origin) + " + t * " + jtx::to_string(ray.dir) + " (t = " + std::to_string(ray.time) +
+        return jtx::toString(ray.origin) + " + t * " + jtx::toString(ray.dir) + " (t = " + std::to_string(ray.time) +
                ")";
     }
 }// namespace jtx

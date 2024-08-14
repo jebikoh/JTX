@@ -255,3 +255,91 @@ TEST_CASE("Mat4 rotate XYZ", "[Mat4]") {
         REQUIRE(mat1.equals(ref, T_EPS));
     }
 }
+
+TEST_CASE("Mat4 rotate", "[Mat4]") {
+    jtx::Mat4 ref = {
+            1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, -1.0f, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f};
+
+    SECTION("Rotate via sin theta and cos theta") {
+        float sinTheta = std::sin(jtx::radians(90.0f));
+        float cosTheta = std::cos(jtx::radians(90.0f));
+        jtx::Vec3f axis = {1.0f, 0.0f, 0.0f};
+        auto mat = jtx::rotate(sinTheta, cosTheta, axis);
+        REQUIRE(mat.equals(ref, T_EPS));
+    }
+
+    SECTION("Rotate via theta and axis") {
+        float theta = 90.0f;
+        jtx::Vec3f axis = {1.0f, 0.0f, 0.0f};
+        auto mat = jtx::rotate(theta, axis);
+        REQUIRE(mat.equals(ref, T_EPS));
+    }
+}
+
+TEST_CASE("Mat4 rotate from to", "[Mat4]") {
+    jtx::Vec3f from = {1.0f, 0.0f, 0.0f};
+    jtx::Vec3f to = {0.0f, 1.0f, 0.0f};
+    auto mat1 = jtx::rotateFromTo(from, to);
+
+    jtx::Vec4f result = mat1.mul(jtx::Vec4f{1.0f, 0.0f, 0.0f, 1.0f});
+    jtx::Vec4f ref{0.0f, 1.0f, 0.0f, 0.0f};
+
+    REQUIRE(result.equals(ref, T_EPS));
+}
+
+TEST_CASE("Mat4 lookAt", "[Mat4]") {
+    jtx::Vec3f position = {0.0f, 0.0f, 1.0f};
+    jtx::Vec3f target = {0.0f, 0.0f, 0.0f};
+    jtx::Vec3f up = {0.0f, 1.0f, 0.0f};
+
+    auto mat1 = jtx::lookAt(position, target, up);
+    jtx::Mat4 ref = {
+            1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 1.0f, -1.0f,
+            0.0f, 0.0f, 0.0f, 1.0f,
+    };
+
+    REQUIRE(mat1.equals(ref, T_EPS));
+}
+
+TEST_CASE("Mat4 perspective projection", "[Mat4]") {
+    float fov    = 60.0f;
+    float aspect = 16.0f / 9.0f;
+    float near   = 0.1f;
+    float far    = 100.0f;
+
+    auto mat = jtx::perspective(fov, aspect, near, far);
+    jtx::Mat4 ref = {
+            0.974279f, 0.0f, 0.0f, 0.0f,
+            0.0f, 1.732051f, 0.0f, 0.0f,
+            0.0f, 0.0f, -1.002002f, -0.2002002f,
+            0.0f, 0.0f, -1.0f, 0.0f
+    };
+    std::cout << jtx::toString(mat) << std::endl;
+    REQUIRE(mat.equals(ref, T_EPS));
+}
+
+TEST_CASE("Mat4 orthographic projection", "[Mat4]") {
+    float top    = 1.0f;
+    float bottom = -1.0f;
+    float left   = -1.0f;
+    float right  = 1.0f;
+    float near   = 0.1f;
+    float far    = 100.0f;
+
+    auto mat = jtx::orthographic(left, right, top, bottom, near, far);
+    // Reference from GLM, so we have to transpose
+    jtx::Mat4 ref = {
+            1.000000f, 0.000000f, 0.000000f, 0.000000f,
+            0.000000f, 1.000000f, 0.000000f, 0.00000f,
+            0.000000f, 0.000000f, -0.020020f, 0.000000f,
+            -0.000000, -0.000000, -1.002002, 1.000000,
+    };
+    ref = ref.transpose();
+
+    REQUIRE(mat.equals(ref, T_EPS));
+}

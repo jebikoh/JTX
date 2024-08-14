@@ -232,6 +232,11 @@ namespace jtx {
         //endregion
 
         //region Member functions
+        JTX_HOSTDEV bool equals(const Vec4 &other, float epsilon = EPSILON) {
+            return jtx::equals(x, other.x, epsilon) && jtx::equals(y, other.y, epsilon) &&
+                   jtx::equals(z, other.z, epsilon) && jtx::equals(w, other.w, epsilon);
+        }
+
         [[nodiscard]] JTX_HOSTDEV JTX_INLINE T dot(const Vec4 &other) const {
             return x * other.x + y * other.y + z * other.z + w * other.w;
         }
@@ -301,12 +306,12 @@ namespace jtx {
     typedef Point4<int> Point4i;
     typedef Point4<float> Point4f;
 
-    JTX_HOST JTX_INLINE std::string to_string(const Vec4f &vec) {
+    JTX_HOST JTX_INLINE std::string toString(const Vec4f &vec) {
         return "Vec4f(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ", " +
                std::to_string(vec.w) + ")";
     }
 
-    JTX_HOST JTX_INLINE std::string to_string(const Vec4i &vec) {
+    JTX_HOST JTX_INLINE std::string toString(const Vec4i &vec) {
         return "Vec4i(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ", " +
                std::to_string(vec.w) + ")";
     }

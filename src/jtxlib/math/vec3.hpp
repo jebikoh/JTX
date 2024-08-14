@@ -217,6 +217,11 @@ namespace jtx {
         //endregion
 
         //region Member functions
+        JTX_HOSTDEV bool equals(const Vec3 &other, float epsilon = EPSILON) {
+            return jtx::equals(x, other.x, epsilon) && jtx::equals(y, other.y, epsilon) &&
+                   jtx::equals(z, other.z, epsilon);
+        }
+
         [[nodiscard]] JTX_HOSTDEV JTX_INLINE T dot(const Vec3 &other) const {
             return x * other.x + y * other.y + z * other.z;
         }
@@ -321,7 +326,7 @@ namespace jtx {
     //endregion
 
     JTX_NUM_ONLY_T
-    JTX_HOST JTX_INLINE std::string to_string(const Vec3<T> &vec) {
+    JTX_HOST JTX_INLINE std::string toString(const Vec3<T> &vec) {
         return "Vec3(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ")";
     }
 }// namespace jtx

@@ -441,7 +441,7 @@ namespace jtx {
         };
     }
 
-    JTX_HOSTDEV JTX_INLINE Mat4 orthographic(float left, float right, float bottom, float top, float near, float far) {
+    JTX_HOSTDEV JTX_INLINE Mat4 orthographic(float left, float right, float top, float bottom, float near, float far) {
         return {
                 2.0f / (right - left), 0.0f, 0.0f, -(right + left) / (right - left),
                 0.0f, 2.0f / (top - bottom), 0.0f, -(top + bottom) / (top - bottom),

@@ -76,6 +76,9 @@ namespace jtx {
             T zp = m[2][0] * p.x + m[2][1] * p.y + m[2][2] * p.z + m[2][3];
             T wp = m[3][0] * p.x + m[3][1] * p.y + m[3][2] * p.z + m[3][3];
 
+            std::cout << "wp: " << wp << std::endl;
+
+            ASSERT(wp != 0.0f);
             if (wp == 1) {
                 return {xp, yp, zp};
             } else {
@@ -90,6 +93,7 @@ namespace jtx {
             T zp = mInv[2][0] * p.x + mInv[2][1] * p.y + mInv[2][2] * p.z + mInv[2][3];
             T wp = mInv[3][0] * p.x + mInv[3][1] * p.y + mInv[3][2] * p.z + mInv[3][3];
 
+            ASSERT(wp != 0.0f);
             if (wp == 1) {
                 return {xp, yp, zp};
             } else {
@@ -167,6 +171,7 @@ namespace jtx {
             return {m, m.transpose()};
         }
 
+        // NOTE: should only be used on vectors
         static Transform rotateFromTo(const Vec3f& from, const Vec3f& to) {
             Mat4 m = jtx::rotateFromTo(from, to);
             return {m, m.transpose()};

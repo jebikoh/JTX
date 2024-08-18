@@ -235,6 +235,17 @@ namespace jtx {
             return true;
         }
 
+        [[nodiscard]] JTX_HOSTDEV bool hasNaN() const {
+            for (auto i : data) {
+                for (int j = 0; j < 4; ++j) {
+                    if (jtx::isNaN(i[j])) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         [[nodiscard]] JTX_HOSTDEV Vec4f mul(const Vec4f &vec) const {
             Vec4f res;
             for (int i = 0; i < 4; ++i) {
@@ -419,15 +430,15 @@ namespace jtx {
         return {
                 right.x, right.y, right.z, -jtx::dot(right, position),
                 vup.x, vup.y, vup.z, -jtx::dot(vup, position),
-                -direction.x, -direction.y, -direction.z, jtx::dot(direction, position),
+                direction.x, direction.y, direction.z, -jtx::dot(direction, position),
                 0.0f, 0.0f, 0.0f, 1.0f
         };
     }
 
     JTX_HOSTDEV JTX_INLINE Mat4 lookAt(const Vec3f &position, const Vec3f &target, const Vec3f &up) {
         auto direction = (target - position).normalize();
-        Vec3f right = jtx::cross(direction, up).normalize();
-        Vec3f vup = jtx::cross(right, direction).normalize();
+        Vec3f right = jtx::cross(up, direction).normalize();
+        Vec3f vup = jtx::cross(direction, right).normalize();
         return lookAt(right, vup, direction, position);
     }
 

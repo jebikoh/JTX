@@ -1,4 +1,5 @@
 #include <jtxlib/math/mat4.hpp>
+#include <jtxlib/math/transform.hpp>
 #include "tconstants.h"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
@@ -121,6 +122,12 @@ TEST_CASE("Mat4 isIdentity", "[Mat4]") {
 
     jtx::Mat4 mat3{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 2.0f};
     REQUIRE_FALSE(mat3.isIdentity());
+}
+
+TEST_CASE("Mat4 isNaN", "[Mat4]") {
+    jtx::Mat4 mat{1.0f};
+    mat[0][0] = std::numeric_limits<float>::quiet_NaN();
+    REQUIRE(mat.hasNaN());
 }
 
 TEST_CASE("Mat4 mul (Vec4f)", "[Mat4]") {
@@ -297,9 +304,9 @@ TEST_CASE("Mat4 lookAt", "[Mat4]") {
 
     auto mat1 = jtx::lookAt(position, target, up);
     jtx::Mat4 ref = {
-            1.0f, 0.0f, 0.0f, 0.0f,
+            -1.0f, 0.0f, 0.0f, 0.0f,
             0.0f, 1.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 1.0f, -1.0f,
+            0.0f, 0.0f, -1.0f, 1.0f,
             0.0f, 0.0f, 0.0f, 1.0f,
     };
 
@@ -342,4 +349,189 @@ TEST_CASE("Mat4 orthographic projection", "[Mat4]") {
     ref = ref.transpose();
 
     REQUIRE(mat.equals(ref, T_EPS));
+}
+
+// Transform tests
+TEST_CASE("Transform matrix constructor", "[Transform]") {
+    SECTION("Invertible Matrix") {
+        jtx::Mat4 m = jtx::Mat4{1.0f};
+        jtx::Transform t{m};
+        REQUIRE(t.getInverseMatrix().isIdentity());
+    }
+
+    SECTION("Non-Invertible Matrix") {
+        jtx::Mat4 m = jtx::Mat4{1.0f};
+        m[0][0] = 0.0f;
+        jtx::Transform t{m};
+        REQUIRE(t.getInverseMatrix().hasNaN());
+    }
+}
+
+TEST_CASE("Transform isIdentity", "[Transform]") {
+    jtx::Mat4 m{1.0f};
+    jtx::Mat4 mInv{1.0f};
+    jtx::Transform t{m, mInv};
+    REQUIRE(t.isIdentity());
+}
+
+TEST_CASE("Transform inverse", "[Transform]") {
+    jtx::Mat4 m{1.0f};
+    jtx::Mat4 mInv{2.0f};
+    jtx::Transform t{m, mInv};
+    t = t.inverse();
+    REQUIRE(t.getMatrix() == mInv);
+    REQUIRE(t.getInverseMatrix() == m);
+}
+
+TEST_CASE("Transform transpose", "[Transform]") {
+    jtx::Mat4 m{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+    jtx::Mat4 mT{1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15, 4, 8, 12, 16};
+    jtx::Transform t{m, mT};
+    t = t.transpose();
+    REQUIRE(t.getMatrix() == mT);
+    REQUIRE(t.getInverseMatrix() == m);
+}
+
+TEST_CASE("Transform (in)equality", "[Transform]") {
+    SECTION("Equality: equal matrices") {
+        jtx::Mat4 m{1.0f};
+        jtx::Transform t1{m};
+        jtx::Transform t2{m};
+        REQUIRE(t1 == t2);
+    }
+
+    SECTION("Equality: unequal matrices") {
+        jtx::Mat4 m1{1.0f};
+        jtx::Mat4 m2{2.0f};
+        jtx::Transform t1{m1};
+        jtx::Transform t2{m2};
+        REQUIRE_FALSE(t1 == t2);
+    }
+
+    SECTION("Inequality: equal matrices") {
+        jtx::Mat4 m{1.0f};
+        jtx::Transform t1{m};
+        jtx::Transform t2{m};
+        REQUIRE_FALSE(t1 != t2);
+    }
+
+    SECTION("Inequality: unequal matrices") {
+        jtx::Mat4 m1{1.0f};
+        jtx::Mat4 m2{2.0f};
+        jtx::Transform t1{m1};
+        jtx::Transform t2{m2};
+        REQUIRE(t1 != t2);
+    }
+}
+
+TEST_CASE("Transform apply", "[Transform]") {
+    SECTION("Point") {
+        jtx::Mat4 m{1.0f};
+        jtx::Transform t{m};
+        jtx::Vec3f point{1.0f, 2.0f, 3.0f};
+
+        jtx::Vec3f result = t.applyToPoint(point);
+        REQUIRE(result == point);
+
+        result = t.applyInverseToPoint(point);
+        REQUIRE(result == point);
+    }
+
+    SECTION("Vector") {
+        jtx::Mat4 m{1.0f};
+        jtx::Transform t{m};
+        jtx::Vec3f vec{1.0f, 2.0f, 3.0f};
+
+        jtx::Vec3f result = t.applyToNormal(vec);
+        REQUIRE(result == vec);
+
+        result = t.applyInverseToNormal(vec);
+        REQUIRE(result == vec);
+    }
+
+    SECTION("Normal") {
+        jtx::Mat4 m{1.0f};
+        jtx::Transform t{m};
+        jtx::Normal3f normal{1.0f, 2.0f, 3.0f};
+
+        jtx::Normal3f result = t.applyToNormal(normal);
+        REQUIRE(result == normal);
+
+        result = t.applyInverseToNormal(normal);
+        REQUIRE(result == normal);
+    }
+
+    SECTION("Normal (using rotate)") {
+        jtx::Normal3f normal{1.0f, 0.0f, 0.0f};
+        jtx::Mat4 m = jtx::rotateY(90.0f);
+        jtx::Mat4 mInv = jtx::rotateY(-90.0f).transpose();
+        auto ref = mInv.mul(jtx::Vec4f{normal.x, normal.y, normal.z, 1.0f});
+
+        jtx::Transform t{m};
+        auto result = t.applyToNormal(normal);
+
+
+        REQUIRE(result.equals(jtx::Vec3f(ref), T_EPS));
+    }
+}
+
+// These tests check the application of the transform and its inverse preserve the value
+// The actual transformations are tested in the Mat4 tests
+TEST_CASE("Transform translate", "[Transform]") {
+    jtx::Transform t = jtx::Transform::translate(1.0f);
+    jtx::Vec3f point{1.0f, 2.0f, 3.0f};
+    jtx::Vec3f result = t.applyToPoint(point);
+    result = t.applyInverseToPoint(result);
+    REQUIRE(result.equals(point, T_EPS));
+}
+
+TEST_CASE("Transform scale", "[Transform]") {
+    jtx::Transform t = jtx::Transform::scale(1.0f, 2.0f, 3.0f);
+    jtx::Vec3f point{1.0f, 2.0f, 3.0f};
+    jtx::Vec3f result = t.applyToPoint(point);
+    result = t.applyInverseToPoint(result);
+    REQUIRE(result.equals(point, T_EPS));
+}
+
+TEST_CASE("Transform rotateXYZ", "[Transform]") {
+    jtx::Transform t = jtx::Transform::rotateX(90.0f);
+    jtx::Vec3f point{1.0f, 2.0f, 3.0f};
+    jtx::Vec3f result = t.applyToPoint(point);
+    result = t.applyInverseToPoint(result);
+    REQUIRE(result.equals(point, T_EPS));
+}
+
+TEST_CASE("Transform rotate", "[Transform]") {
+    jtx::Transform t = jtx::Transform::rotate(90.0f, jtx::Vec3f{1.0f, 0.0f, 0.0f});
+    jtx::Vec3f point{1.0f, 2.0f, 3.0f};
+    jtx::Vec3f result = t.applyToPoint(point);
+    result = t.applyInverseToPoint(result);
+    REQUIRE(result.equals(point, T_EPS));
+}
+
+TEST_CASE("Transform rotateFromTo", "[Transform]") {
+    jtx::Vec3f from = {1.0f, 0.0f, 0.0f};
+    jtx::Vec3f to = {0.0f, 1.0f, 0.0f};
+    auto t = jtx::Transform::rotateFromTo(from, to);
+
+    auto result = t.applyToVec(from);
+
+    result = t.applyInverseToVec(result);
+    REQUIRE(result.equals(from, T_EPS));
+}
+
+// Transform class calculates lookAt in reverse.
+// This checks to make sure it's consistent with Mat4
+TEST_CASE("Transform lookAt", "[Transform]") {
+    jtx::Vec3f position = {0.0f, 0.0f, 1.0f};
+    jtx::Vec3f target = {0.0f, 0.0f, 0.0f};
+    jtx::Vec3f up = {0.0f, 1.0f, 0.0f};
+
+    auto mat1 = jtx::lookAt(position, target, up);
+    auto mat2 = jtx::Transform::lookAt(position, target, up);
+
+    REQUIRE(mat1.equals(mat2.getMatrix(), T_EPS));
+    auto mat1_inv = jtx::inverse(mat1);
+    REQUIRE(mat1_inv.has_value());
+    REQUIRE(mat1_inv.value().equals(mat2.getInverseMatrix(), T_EPS));
 }

@@ -326,7 +326,6 @@ TEST_CASE("Mat4 perspective projection", "[Mat4]") {
             0.0f, 0.0f, -1.002002f, -0.2002002f,
             0.0f, 0.0f, -1.0f, 0.0f
     };
-    std::cout << jtx::toString(mat) << std::endl;
     REQUIRE(mat.equals(ref, T_EPS));
 }
 
@@ -459,6 +458,39 @@ TEST_CASE("Transform apply", "[Transform]") {
 
         result = t.applyInverseToNormal(normal);
         REQUIRE(result == normal);
+    }
+
+    SECTION("Ray") {
+        jtx::Rayf ray{jtx::Point3f{1.0f, 2.0f, 3.0f}, jtx::Vec3f{1.0f, 0.0f, 0.0f}};
+        auto m = jtx::Mat4{1.0f};
+        jtx::Transform t{m};
+
+        auto result = t.applyToRay(ray);
+        REQUIRE(result == ray);
+        result = t.applyInverseToRay(ray);
+        REQUIRE(result == ray);
+    }
+
+    SECTION("Ray Differential") {
+        jtx::RayfDifferential ray{jtx::Point3f{1.0f, 2.0f, 3.0f}, jtx::Vec3f{1.0f, 0.0f, 0.0f}};
+        auto m = jtx::Mat4{1.0f};
+        jtx::Transform t{m};
+
+        auto result = t.applyToRayDiff(ray);
+        REQUIRE(result == ray);
+        result = t.applyInverseToRayDiff(ray);
+        REQUIRE(result == ray);
+    }
+
+    SECTION("BBox") {
+        jtx::BBox3f bbox{jtx::Point3f{1.0f, 2.0f, 3.0f}, jtx::Point3f{4.0f, 5.0f, 6.0f}};
+        auto m = jtx::Mat4{1.0f};
+        jtx::Transform t{m};
+
+        auto result = t.applyToBBox(bbox);
+        REQUIRE(result == bbox);
+        result = t.applyInverseToBBox(bbox);
+        REQUIRE(result == bbox);
     }
 
     SECTION("Normal (using rotate)") {

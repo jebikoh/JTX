@@ -6,6 +6,8 @@
 #include <jtxlib/math/mat4.hpp>
 #include <jtxlib/math/vec3.hpp>
 #include <jtxlib/math/vecmath.hpp>
+#include <jtxlib/math/ray.hpp>
+#include <jtxlib/math/bounds.hpp>
 
 
 namespace jtx {
@@ -58,11 +60,11 @@ namespace jtx {
         //region Methods
         [[nodiscard]] bool isIdentity() const { return m.isIdentity(); }
 
-        [[nodiscard]] inline Transform inverse() const {
+        [[nodiscard]] JTX_INLINE Transform inverse() const {
             return {mInv, m};
         }
 
-        [[nodiscard]] inline Transform transpose() const {
+        [[nodiscard]] JTX_INLINE Transform transpose() const {
             return {m.transpose(), mInv.transpose()};
 
         }
@@ -70,13 +72,11 @@ namespace jtx {
         // Need to differentiate because points and normals are just typedefs
 
         JTX_NUM_ONLY_T
-        inline Point3<T> applyToPoint(const Point3<T> &p) const {
+        [[nodiscard]] JTX_INLINE Point3<T> applyToPoint(const Point3<T> &p) const {
             T xp = m[0][0] * p.x + m[0][1] * p.y + m[0][2] * p.z + m[0][3];
             T yp = m[1][0] * p.x + m[1][1] * p.y + m[1][2] * p.z + m[1][3];
             T zp = m[2][0] * p.x + m[2][1] * p.y + m[2][2] * p.z + m[2][3];
             T wp = m[3][0] * p.x + m[3][1] * p.y + m[3][2] * p.z + m[3][3];
-
-            std::cout << "wp: " << wp << std::endl;
 
             ASSERT(wp != 0.0f);
             if (wp == 1) {
@@ -87,7 +87,7 @@ namespace jtx {
         }
 
         JTX_NUM_ONLY_T
-        inline Point3<T> applyInverseToPoint(const Point3<T> &p) const {
+        [[nodiscard]] JTX_INLINE Point3<T> applyInverseToPoint(const Point3<T> &p) const {
             T xp = mInv[0][0] * p.x + mInv[0][1] * p.y + mInv[0][2] * p.z + mInv[0][3];
             T yp = mInv[1][0] * p.x + mInv[1][1] * p.y + mInv[1][2] * p.z + mInv[1][3];
             T zp = mInv[2][0] * p.x + mInv[2][1] * p.y + mInv[2][2] * p.z + mInv[2][3];
@@ -102,29 +102,84 @@ namespace jtx {
         }
 
         JTX_NUM_ONLY_T
-        inline Vec3<T> applyToVec(const Vec3<T> &v) const {
+        [[nodiscard]] JTX_INLINE Vec3<T> applyToVec(const Vec3<T> &v) const {
             return {m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z,
                     m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z,
                     m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z};
         }
 
         JTX_NUM_ONLY_T
-        inline Vec3<T> applyInverseToVec(const Vec3<T> &v) const {
+        [[nodiscard]] JTX_INLINE Vec3<T> applyInverseToVec(const Vec3<T> &v) const {
             return {mInv[0][0] * v.x + mInv[0][1] * v.y + mInv[0][2] * v.z,
                     mInv[1][0] * v.x + mInv[1][1] * v.y + mInv[1][2] * v.z,
                     mInv[2][0] * v.x + mInv[2][1] * v.y + mInv[2][2] * v.z};
         }
 
-        [[nodiscard]] inline Normal3f applyToNormal(const Normal3f &n) const {
+        [[nodiscard]] JTX_INLINE Normal3f applyToNormal(const Normal3f &n) const {
             return {mInv[0][0] * n.x + mInv[1][0] * n.y + mInv[2][0] * n.z,
                     mInv[0][1] * n.x + mInv[1][1] * n.y + mInv[2][1] * n.z,
                     mInv[0][2] * n.x + mInv[1][2] * n.y + mInv[2][2] * n.z};
         }
 
-        [[nodiscard]] inline Normal3f applyInverseToNormal(const Normal3f &n) const {
+        [[nodiscard]] JTX_INLINE Normal3f applyInverseToNormal(const Normal3f &n) const {
             return {m[0][0] * n.x + m[1][0] * n.y + m[2][0] * n.z,
                     m[0][1] * n.x + m[1][1] * n.y + m[2][1] * n.z,
                     m[0][2] * n.x + m[1][2] * n.y + m[2][2] * n.z};
+        }
+
+        // TODO: add edge of error corrections
+        [[nodiscard]] JTX_INLINE Rayf applyToRay(const Rayf &ray) const {
+            auto o = (*this).applyToPoint(ray.origin);
+            auto d = (*this).applyToVec(ray.dir);
+            return {o, d, ray.time};
+        }
+
+        [[nodiscard]] JTX_INLINE Rayf applyInverseToRay(const Rayf &ray) const {
+            auto o = (*this).applyInverseToPoint(ray.origin);
+            auto d = (*this).applyInverseToVec(ray.dir);
+            return {o, d, ray.time};
+        }
+
+        JTX_INLINE RayfDifferential applyToRayDiff(const RayfDifferential &ray) const {
+            Rayf r = applyToRay(ray);
+            RayfDifferential ret(r);
+            if (ray.hasDiffs) {
+                ret.hasDiffs = true;
+                ret.rxOrigin = applyToPoint(ray.rxOrigin);
+                ret.ryOrigin = applyToPoint(ray.ryOrigin);
+                ret.rxDirection = applyToVec(ray.rxDirection);
+                ret.ryDirection = applyToVec(ray.ryDirection);
+            }
+            return ret;
+        }
+
+        JTX_INLINE RayfDifferential applyInverseToRayDiff(const RayfDifferential &ray) const {
+            Rayf r = applyInverseToRay(ray);
+            RayfDifferential ret(r);
+            if (ray.hasDiffs) {
+                ret.hasDiffs = true;
+                ret.rxOrigin = applyInverseToPoint(ray.rxOrigin);
+                ret.ryOrigin = applyInverseToPoint(ray.ryOrigin);
+                ret.rxDirection = applyInverseToVec(ray.rxDirection);
+                ret.ryDirection = applyInverseToVec(ray.ryDirection);
+            }
+            return ret;
+        }
+
+        JTX_INLINE BBox3f applyToBBox(const BBox3f &bbox) const {
+            BBox3f ret;
+            for (int i = 0; i < 8; i++) {
+                ret = ret.merge(applyToPoint(bbox.corner(i)));
+            }
+            return ret;
+        }
+
+        JTX_INLINE BBox3f applyInverseToBBox(const BBox3f &bbox) const {
+            BBox3f ret;
+            for (int i = 0; i < 8; i++) {
+                ret = ret.merge(applyInverseToPoint(bbox.corner(i)));
+            }
+            return ret;
         }
         //endregion
 
@@ -198,11 +253,11 @@ namespace jtx {
         Mat4 mInv;
     };
 
-    inline Transform inverse(const Transform &t) {
+    JTX_INLINE Transform inverse(const Transform &t) {
         return t.inverse();
     }
 
-    inline Transform transpose(const Transform &t) {
+    JTX_INLINE Transform transpose(const Transform &t) {
         return t.transpose();
     }
 }

@@ -67,7 +67,21 @@ namespace jtx {
         JTX_DEV ~AABB3() = default;
         //endregion
 
+        //region Operators
+        JTX_DEV JTX_INLINE bool operator==(const AABB3 &other) const {
+            return pmin == other.pmin && pmax == other.pmax;
+        }
+
+        JTX_DEV JTX_INLINE bool operator!=(const AABB3 &other) const {
+            return pmin != other.pmin || pmax != other.pmax;
+        }
+        //endregion
+
         //region Member functions
+        JTX_DEV JTX_INLINE bool equals(const AABB3 &other, T epsilon) const {
+            return pmin.equals(other.pmin, epsilon) && pmax.equals(other.pmax, epsilon);
+        }
+
         // Modified from https://pbr-book.org/4ed/Geometry_and_Transformations/Bounding_Boxes
         [[nodiscard]] JTX_DEV JTX_INLINE Point3<T> corner(int i) const {
             ASSERT(i >= 0 && i < 8);
@@ -215,7 +229,21 @@ namespace jtx {
         JTX_DEV ~AABB2() = default;
         //endregion
 
+        //region Operators
+        JTX_DEV JTX_INLINE bool operator==(const AABB2 &other) const {
+            return pmin == other.pmin && pmax == other.pmax;
+        }
+
+        JTX_DEV JTX_INLINE bool operator!=(const AABB2 &other) const {
+            return pmin != other.pmin || pmax != other.pmax;
+        }
+        //endregion
+
         //region Member functions
+        JTX_DEV JTX_INLINE bool equals(const AABB2 &other, T epsilon) const {
+            return pmin.equals(other.pmin, epsilon) && pmax.equals(other.pmax, epsilon);
+        }
+
         // Modified from https://pbr-book.org/4ed/Geometry_and_Transformations/Bounding_Boxes
         [[nodiscard]] JTX_DEV JTX_INLINE Point2<T> corner(int i) const {
             ASSERT(i >= 0 && i < 4);

@@ -36,6 +36,19 @@ namespace jtx {
         ~Ray() = default;
         //endregion
 
+        JTX_DEV JTX_INLINE bool operator==(const Ray &other) const {
+            return origin == other.origin && dir == other.dir && time == other.time;
+        }
+
+        JTX_DEV JTX_INLINE bool operator!=(const Ray &other) const {
+            return !(*this == other);
+        }
+
+        JTX_DEV JTX_INLINE bool equals(const Ray &other, T epsilon) const {
+            return origin.equals(other.origin, epsilon) && dir.equals(other.dir, epsilon) &&
+                   jtx::equals(time, other.time, epsilon);
+        }
+
         [[nodiscard]] JTX_DEV JTX_INLINE Point3<T> at(T t) const {
             return origin + t * dir;
         }
@@ -77,6 +90,21 @@ namespace jtx {
             ASSERT(valid());
         }
         //endregion
+
+        JTX_DEV JTX_INLINE bool operator==(const RayDifferential &other) const {
+            return Ray<T>::operator==(other) && rxOrigin == other.rxOrigin && ryOrigin == other.ryOrigin &&
+                   rxDirection == other.rxDirection && ryDirection == other.ryDirection && hasDiffs == other.hasDiffs;
+        }
+
+        JTX_DEV JTX_INLINE bool operator!=(const RayDifferential &other) const {
+            return !(*this == other);
+        }
+
+        JTX_DEV JTX_INLINE bool equals(const RayDifferential &other, T epsilon) const {
+            return Ray<T>::equals(other, epsilon) && rxOrigin.equals(other.rxOrigin, epsilon) &&
+                   ryOrigin.equals(other.ryOrigin, epsilon) && rxDirection.equals(other.rxDirection, epsilon) &&
+                   ryDirection.equals(other.ryDirection, epsilon) && hasDiffs == other.hasDiffs;
+        }
 
         JTX_DEV JTX_INLINE void scale(T s) {
             rxOrigin = this->origin + (rxOrigin - this->origin) * s;

@@ -329,8 +329,11 @@ namespace jtx {
     typedef Point3<float> Point3f;
     typedef Point3<double> Point3d;
 
-    typedef Vec3<float> Normal3f;
-    typedef Vec3<double> Normal3d;
+    JTX_NUM_ONLY_T
+    using Normal3 = Vec3<T>;
+    typedef Normal3<int> Normal3i;
+    typedef Normal3<float> Normal3f;
+    typedef Normal3<double> Normal3d;
     //endregion
 
     JTX_NUM_ONLY_T

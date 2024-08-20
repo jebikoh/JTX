@@ -4,7 +4,6 @@
 #include <jtxlib/math/vec3.hpp>
 #include <jtxlib/math/vecmath.hpp>
 #include <jtxlib.hpp>
-#include "mat4.hpp"
 
 namespace jtx {
 

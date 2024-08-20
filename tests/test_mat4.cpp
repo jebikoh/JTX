@@ -423,6 +423,7 @@ TEST_CASE("Transform (in)equality", "[Transform]") {
     }
 }
 
+// This one just makes sure the applicators work per target class
 TEST_CASE("Transform apply", "[Transform]") {
     SECTION("Point") {
         jtx::Mat4 m{1.0f};
@@ -508,6 +509,7 @@ TEST_CASE("Transform apply", "[Transform]") {
 }
 
 // These tests check the application of the transform and its inverse preserve the value
+// (So this also tests the apply...() methods from Mat4
 // The actual transformations are tested in the Mat4 tests
 TEST_CASE("Transform translate", "[Transform]") {
     jtx::Transform t = jtx::Transform::translate(1.0f);

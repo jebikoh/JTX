@@ -10,6 +10,8 @@
 #include <jtxlib/math/vec4.hpp>
 #include <jtxlib/math/vec3.hpp>
 #include <jtxlib/math/vecmath.hpp>
+#include <jtxlib/math/ray.hpp>
+#include <jtxlib/math/bounds.hpp>
 
 #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
 
@@ -246,6 +248,8 @@ namespace jtx {
             return false;
         }
 
+        // Use .mul() for higher precision
+        // Use .apply() when not required (they're faster)
         [[nodiscard]] JTX_HOSTDEV Vec4f mul(const Vec4f &vec) const {
             Vec4f res;
             for (int i = 0; i < 4; ++i) {
@@ -269,6 +273,70 @@ namespace jtx {
 
         JTX_HOSTDEV Mat4 operator*(const Mat4 &other) const {
             return this->mul(other);
+        }
+
+        JTX_NUM_ONLY_T
+        [[nodiscard]] JTX_HOSTDEV JTX_INLINE Point3<T> applyToPoint(const Point3<T> &p) const {
+            T xp = data[0][0] * p.x + data[0][1] * p.y + data[0][2] * p.z + data[0][3];
+            T yp = data[1][0] * p.x + data[1][1] * p.y + data[1][2] * p.z + data[1][3];
+            T zp = data[2][0] * p.x + data[2][1] * p.y + data[2][2] * p.z + data[2][3];
+            T wp = data[3][0] * p.x + data[3][1] * p.y + data[3][2] * p.z + data[3][3];
+
+            ASSERT(wp != 0.0f);
+            if (wp == 1) {
+                return {xp, yp, zp};
+            } else {
+                return Point3f(xp, yp, zp) / wp;
+            }
+        }
+
+        JTX_NUM_ONLY_T
+        [[nodiscard]] JTX_HOSTDEV JTX_INLINE Vec3<T> applyToVec(const Vec3<T> &v) const {
+            return {data[0][0] * v.x + data[0][1] * v.y + data[0][2] * v.z,
+                    data[1][0] * v.x + data[1][1] * v.y + data[1][2] * v.z,
+                    data[2][0] * v.x + data[2][1] * v.y + data[2][2] * v.z};
+        }
+
+        JTX_NUM_ONLY_T
+        [[nodiscard]] JTX_HOSTDEV JTX_INLINE Vec4<T> applyToVec(const Vec4<T> &v) const {
+            return {data[0][0] * v.x + data[0][1] * v.y + data[0][2] * v.z + data[0][3] * v.w,
+                    data[1][0] * v.x + data[1][1] * v.y + data[1][2] * v.z + data[1][3] * v.w,
+                    data[2][0] * v.x + data[2][1] * v.y + data[2][2] * v.z + data[2][3] * v.w,
+                    data[3][0] * v.x + data[3][1] * v.y + data[3][2] * v.z + data[3][3] * v.w};
+        }
+
+        JTX_NUM_ONLY_T
+        [[nodiscard]] JTX_HOSTDEV JTX_INLINE Normal3<T> applyToNormal(const Normal3<T> &n) const {
+            return {data[0][0] * n.x + data[1][0] * n.y + data[2][0] * n.z,
+                    data[0][1] * n.x + data[1][1] * n.y + data[2][1] * n.z,
+                    data[0][2] * n.x + data[1][2] * n.y + data[2][2] * n.z};
+        }
+
+        [[nodiscard]] JTX_HOSTDEV JTX_INLINE Rayf applyToRay(const Rayf &ray) const {
+            auto o = (*this).applyToPoint(ray.origin);
+            auto d = (*this).applyToVec(ray.dir);
+            return {o, d, ray.time};
+        }
+
+        [[nodiscard]] JTX_HOSTDEV JTX_INLINE RayfDifferential applyToRayDiff(const RayfDifferential &ray) const {
+            Rayf r = applyToRay(ray);
+            RayfDifferential ret(r);
+            if (ray.hasDiffs) {
+                ret.hasDiffs = true;
+                ret.rxOrigin = applyToPoint(ray.rxOrigin);
+                ret.ryOrigin = applyToPoint(ray.ryOrigin);
+                ret.rxDirection = applyToVec(ray.rxDirection);
+                ret.ryDirection = applyToVec(ray.ryDirection);
+            }
+            return ret;
+        }
+
+        [[nodiscard]] JTX_HOSTDEV JTX_INLINE BBox3f applyToBBox(const BBox3f &bbox) const {
+            BBox3f ret;
+            for (int i = 0; i < 8; i++) {
+                ret = ret.merge(applyToPoint(bbox.corner(i)));
+            }
+            return ret;
         }
 
         [[nodiscard]] JTX_HOSTDEV Mat4 transpose() const {

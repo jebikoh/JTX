@@ -55,6 +55,10 @@ namespace jtx {
         bool operator!=(const Transform &other) const {
             return m != other.m;
         }
+
+        JTX_INLINE Transform operator*(const Transform &other) const {
+            return {m * other.m, other.mInv * mInv};
+        }
         //endregion
 
         //region Methods
@@ -124,6 +128,10 @@ namespace jtx {
 
         [[nodiscard]] JTX_INLINE BBox3f applyInverseToBBox(const BBox3f &bbox) const {
             return mInv.applyToBBox(bbox);
+        }
+
+        [[nodiscard]] JTX_INLINE bool swapsHandedness() const {
+            return m.determinant3x3() < 0;
         }
         //endregion
 

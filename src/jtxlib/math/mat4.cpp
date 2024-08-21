@@ -25,6 +25,13 @@ namespace jtx {
                jtx::dop(s5, c0, s4, c1);
     }
 
+    float Mat4::determinant3x3() const {
+        float m12 = jtx::dop(data[1][1], data[2][2], data[1][2], data[2][1]);
+        float m02 = jtx::dop(data[1][0], data[2][2], data[1][2], data[2][0]);
+        float m01 = jtx::dop(data[1][0], data[2][1], data[1][1], data[2][0]);
+        return jtx::fma(data[0][2], m01, jtx::dop(data[0][0], m12, data[0][1], m02));
+    }
+
     // Avoid using this if possible
 #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
     JTX_HOSTDEV cuda::std::optional<Mat4> inverse() const {
@@ -114,7 +121,6 @@ namespace jtx {
                  invDet * jtx::innerProd(-data[3][0], s3, data[3][1], s1, -data[3][2], s0),
                  invDet * jtx::innerProd(data[2][0], s3, data[2][2], s0, -data[2][1], s1)}};
     }
-
 #endif
 
 

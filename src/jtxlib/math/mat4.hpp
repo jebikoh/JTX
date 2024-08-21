@@ -351,6 +351,8 @@ namespace jtx {
 
         [[nodiscard]] JTX_HOSTDEV float determinant() const;
 
+        [[nodiscard]] JTX_HOSTDEV float determinant3x3() const;
+
 #if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
 
         [[nodiscard]] JTX_HOSTDEV cuda::std::optional<Mat4> inverse() const;

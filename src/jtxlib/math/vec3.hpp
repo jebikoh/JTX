@@ -340,5 +340,65 @@ namespace jtx {
     JTX_HOST JTX_INLINE std::string toString(const Vec3<T> &vec) {
         return "Vec3(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ")";
     }
+
+    //region Vector Frame
+    JTX_NUM_ONLY_T
+    JTX_HOSTDEV JTX_INLINE void coordinateSystem(const Vec3<T> v1, Vec3<T> *v2, Vec3<T> *v3) {
+        float sign = std::copysign(1.0f, v1.z);
+        float a = -1.0f / (sign + v1.z);
+        float b = v1.x * v1.y * a;
+        *v2 = Vec3{1.0f + sign * v1.x * v1.x * a, sign * b, -sign * v1.x};
+        *v3 = Vec3{b, sign + v1.y * v1.y * a, -v1.y};
+    }
+
+    class Frame {
+    public:
+        Vec3f x, y, z;
+
+        JTX_HOSTDEV Frame(): x{1.0f, 0.0f, 0.0f}, y{0.0f, 1.0f, 0.0f}, z{0.0f, 0.0f, 1.0f} {}
+        JTX_HOSTDEV Frame(const Vec3f &x, const Vec3f &y, const Vec3f &z): x(x), y(y), z(z) {}
+
+        JTX_HOSTDEV JTX_INLINE static Frame fromXZ(const Vec3f &x, const Vec3f &z) {
+            return {x, z.cross(x), z};
+        }
+
+        JTX_HOSTDEV JTX_INLINE static Frame fromXY(const Vec3f &x, const Vec3f &y) {
+            return {x, y, x.cross(y)};
+        }
+
+        JTX_HOSTDEV JTX_INLINE static Frame fromYZ(const Vec3f &y, const Vec3f &z) {
+            return {y.cross(z), y, z};
+        }
+
+        JTX_HOSTDEV JTX_INLINE static Frame fromZ(const Vec3f &z) {
+            Vec3f x, y;
+            coordinateSystem(z, &x, &y);
+            return {x, y, z};
+        }
+
+        JTX_HOSTDEV JTX_INLINE static Frame fromX(const Vec3f &x) {
+            Vec3f y, z;
+            coordinateSystem(x, &y, &z);
+            return {x, y, z};
+        }
+
+        JTX_HOSTDEV JTX_INLINE static Frame fromY(const Vec3f &y) {
+            Vec3f x, z;
+            coordinateSystem(y, &z, &x);
+            return {x, y, z};
+        }
+
+        [[nodiscard]] JTX_HOSTDEV JTX_INLINE Vec3f toLocal(const Vec3f &v) const {
+            return {v.dot(x), v.dot(y), v.dot(z)};
+        }
+
+        [[nodiscard]] JTX_HOSTDEV JTX_INLINE Vec3f toWorld(const Vec3f &v) const {
+            return x * v.x + y * v.y + z * v.z;
+        }
+    };
+
+    JTX_HOST JTX_INLINE std::string toString(const Frame &vec) {
+        return "Frame(" + jtx::toString(vec.x) + ", " + jtx::toString(vec.y) + ", " + jtx::toString(vec.z) + ")";
+    }
     //endregion
 }// namespace jtx

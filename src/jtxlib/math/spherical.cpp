@@ -12,9 +12,9 @@ namespace jtx{
         float r = 1 - std::abs(signedDist);
 
         float phi = (r == 0 ? 1 : (v_p - u_p) / r + 1) * PI_F / 4;
-        return {std::copysign(std::cos(phi), u) * r * jtx::safeSqrt(2 - r * r),
-                std::copysign(std::sin(phi), v) * r * jtx::safeSqrt(2 - r * r),
-                std::copysign(1 - r * r, signedDist)};
+        return {jtx::copysign(std::cos(phi), u) * r * jtx::safeSqrt(2 - r * r),
+                jtx::copysign(std::sin(phi), v) * r * jtx::safeSqrt(2 - r * r),
+                jtx::copysign(1 - r * r, signedDist)};
     }
 
     Point2f equalAreaSphereToSquare(const Point3f &d) {
@@ -46,8 +46,8 @@ namespace jtx{
             v = 1 - v;
         }
 
-        u = std::copysign(u, d.x);
-        v = std::copysign(v, d.y);
+        u = jtx::copysign(u, d.x);
+        v = jtx::copysign(v, d.y);
 
         return {(u + 1) * 0.5f, (v + 1) * 0.5f};
     }

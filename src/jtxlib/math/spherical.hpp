@@ -110,7 +110,7 @@ namespace jtx {
         }
 
     private:
-        static inline float sign(float f) { return std::copysign(1.0f, f); }
+        static inline float sign(float f) { return jtx::copysign(1.0f, f); }
 
         static inline uint16_t encode(float f) {
             return std::round(jtx::clamp((f + 1) / 2, 0, 1) * BITS_16);

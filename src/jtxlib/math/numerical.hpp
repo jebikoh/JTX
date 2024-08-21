@@ -22,48 +22,70 @@
 
 namespace jtx {
     template<typename T>
-    JTX_INLINE
+    JTX_HOSTDEV JTX_INLINE
     JTX_ENABLE_FP_BOOL
     isNaN(T v) {
+#if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+        return ::isnan(v);
+#else
         return std::isnan(v);
+#endif
     }
 
     template<typename T>
-    JTX_INLINE
+    JTX_HOSTDEV JTX_INLINE
     JTX_ENABLE_INT_BOOL
     isNaN(T v) {
         return false;
     }
 
     template<typename T>
-    JTX_INLINE
+    JTX_HOSTDEV JTX_INLINE
     JTX_ENABLE_FP_T
     ceil(T v) {
+#if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+        return ::ceil(v);
+#else
         return std::ceil(v);
+#endif
     }
 
     template<typename T>
-    JTX_INLINE
+    JTX_HOSTDEV JTX_INLINE
     JTX_ENABLE_INT_T
     ceil(T v) {
         return v;
     }
 
     template<typename T>
-    JTX_INLINE
+    JTX_HOSTDEV JTX_INLINE
     JTX_ENABLE_FP_T
     floor(T v) {
+#if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+        return ::floor(v);
+#else
         return std::floor(v);
+#endif
     }
 
     template<typename T>
-    JTX_INLINE
+    JTX_HOSTDEV JTX_INLINE
     JTX_ENABLE_INT_T
     floor(T v) {
         return v;
     }
 
     JTX_FP_ONLY_T
+    JTX_HOSTDEV JTX_INLINE
+    T copysign(T mag, T sgn) {
+#if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+        return ::copysign(mag, sgn);
+#else
+        return std::copysign(mag, sgn);
+#endif
+    }
+
+    JTX_HOST JTX_FP_ONLY_T
     JTX_INLINE
     bool equals(T a, T b, T epsilon = EPSILON) {
         return std::abs(a - b) < epsilon;

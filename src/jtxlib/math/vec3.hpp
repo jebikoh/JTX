@@ -344,7 +344,7 @@ namespace jtx {
     //region Vector Frame
     JTX_NUM_ONLY_T
     JTX_HOSTDEV JTX_INLINE void coordinateSystem(const Vec3<T> v1, Vec3<T> *v2, Vec3<T> *v3) {
-        float sign = std::copysign(1.0f, v1.z);
+        float sign = jtx::copysign(1.0f, v1.z);
         float a = -1.0f / (sign + v1.z);
         float b = v1.x * v1.y * a;
         *v2 = Vec3{1.0f + sign * v1.x * v1.x * a, sign * b, -sign * v1.x};
@@ -356,7 +356,15 @@ namespace jtx {
         Vec3f x, y, z;
 
         JTX_HOSTDEV Frame(): x{1.0f, 0.0f, 0.0f}, y{0.0f, 1.0f, 0.0f}, z{0.0f, 0.0f, 1.0f} {}
-        JTX_HOSTDEV Frame(const Vec3f &x, const Vec3f &y, const Vec3f &z): x(x), y(y), z(z) {}
+        JTX_HOSTDEV Frame(const Vec3f &x, const Vec3f &y, const Vec3f &z): x(x), y(y), z(z) {
+            const float eps = 1e-4f;
+            ASSERT(jtx::equals(x.lenSqr(), 1.0f, eps));
+            ASSERT(jtx::equals(y.lenSqr(), 1.0f, eps));
+            ASSERT(jtx::equals(z.lenSqr(), 1.0f, eps));
+            ASSERT(jtx::equals(x.dot(y), 0.0f, eps));
+            ASSERT(jtx::equals(y.dot(z), 0.0f, eps));
+            ASSERT(jtx::equals(z.dot(x), 0.0f, eps));
+        }
 
         JTX_HOSTDEV JTX_INLINE static Frame fromXZ(const Vec3f &x, const Vec3f &z) {
             return {x, z.cross(x), z};

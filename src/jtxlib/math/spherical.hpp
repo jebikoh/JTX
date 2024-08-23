@@ -165,6 +165,14 @@ namespace jtx {
         explicit DirectionCone(const jtx::Vec3f &dir) : DirectionCone(dir, 1.0f) {}
         //endregion
 
+        inline bool operator==(const DirectionCone &other) const {
+            return dir == other.dir && cosTheta == other.cosTheta;
+        }
+
+        [[nodiscard]] inline bool equals(const DirectionCone &other, float epsilon) const {
+            return dir.equals(other.dir, epsilon) && jtx::equals(cosTheta, other.cosTheta, epsilon);
+        }
+
         static DirectionCone entireSphere() { return {Vec3f(0, 0, 0), -1}; }
     };
 

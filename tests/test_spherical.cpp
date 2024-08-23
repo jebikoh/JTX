@@ -7,7 +7,6 @@
 using namespace jtx;
 
 //region Spherical Area
-//region Spherical Area
 TEST_CASE("Spherical Triangle Area", "[Spherical]") {
     Vec3f a(1, 0, 0);
     Vec3f b(0, 1, 0);
@@ -32,7 +31,7 @@ TEST_CASE("Spherical To Cartesian", "[Spherical]") {
 }
 //endregion
 
-//region Octahedral encoding
+//region Octahedral Encoding
 TEST_CASE("Octahedral Vec Constructor - Valid Input", "[Octahedral]") {
     const float OCT_EPS = 1e-2;
 
@@ -128,5 +127,76 @@ TEST_CASE("Wrap equal area sphere", "[Spherical]") {
         Point2f result = wrapEqualAreaSquare(p);
         REQUIRE(result.equals(Point2f(0.9f, 0.9f), T_EPS));
     }
+}
+//endregion
+
+//region Direction Cone
+TEST_CASE("DirectionCone default constructor creates an empty cone", "[DirectionCone]") {
+    jtx::DirectionCone cone;
+    REQUIRE(cone.isEmpty());
+}
+
+TEST_CASE("DirectionCone entireSphere creates a cone covering the entire sphere", "[DirectionCone]") {
+    auto cone = jtx::DirectionCone::entireSphere();
+    REQUIRE(cone.dir == jtx::Vec3f(0, 0, 0));
+    REQUIRE(cone.cosTheta == -1);
+
+    Vec3f v = Vec3f(1, 0, 0);
+    REQUIRE(jtx::inside(cone, v));
+}
+
+TEST_CASE("inside() returns true for vectors inside the cone", "[DirectionCone]") {
+    jtx::Vec3f dir(0.0f, 0.0f, 1.0f);
+    jtx::DirectionCone cone(dir, 0.5f);
+    jtx::Vec3f v(0.0f, 0.5f, 0.5f);
+    REQUIRE(jtx::inside(cone, v));
+}
+
+TEST_CASE("inside() returns false for vectors outside the cone", "[DirectionCone]") {
+    jtx::Vec3f dir(0.0f, 0.0f, 1.0f);
+    jtx::DirectionCone cone(dir, 0.5f);
+    jtx::Vec3f v(1.0f, 0.0f, 0.0f);
+    REQUIRE_FALSE(jtx::inside(cone, v));
+}
+
+TEST_CASE("boundSubtendedDirection returns entire sphere if point is inside bbox", "[DirectionCone]") {
+    jtx::BBox3f bounds(jtx::Point3f(-1, -1, -1), jtx::Point3f(1, 1, 1));
+    jtx::Vec3f p(0.0f, 0.0f, 0.0f);
+    auto cone = jtx::boundSubtendedDirection(bounds, p);
+    REQUIRE(cone.equals(jtx::DirectionCone::entireSphere(), T_EPS));
+}
+
+TEST_CASE("boundSubtendedDirection returns correct cone", "[DirectionCone]") {
+    jtx::BBox3f bounds(jtx::Point3f(-1, -1, -1), jtx::Point3f(1, 1, 1));
+    jtx::Vec3f p(3.0f, 0.0f, 0.0f);
+    auto cone = jtx::boundSubtendedDirection(bounds, p);
+    REQUIRE(cone.dir.equals(jtx::Vec3f(-1, 0, 0), T_EPS));
+
+    // Check if the bound maxes are included--the cone does not intersect the
+    // equivalent bounding sphere at the maxes.
+    REQUIRE(jtx::inside(cone, jtx::Point3f(-1, -1, -1) - p));
+    REQUIRE(jtx::inside(cone, jtx::Point3f(1, 1, 1) - p));
+}
+
+TEST_CASE("merge returns the larger cone when one cone is inside the other", "[DirectionCone]") {
+    float theta1 = 0.5f;
+    float theta2 = 0.8f;
+    jtx::Vec3f dir1(0.0f, 0.0f, 1.0f);
+    jtx::DirectionCone cone1(dir1, jtx::cos(theta1));
+    jtx::Vec3f dir2(0.0f, 0.0f, 1.0f);
+    jtx::DirectionCone cone2(dir2, jtx::cos(theta2));
+    auto mergedCone = jtx::merge(cone1, cone2);
+    REQUIRE(mergedCone.equals(cone2, T_EPS));
+}
+
+TEST_CASE("merge returns a new cone when cones are not inside each other", "[DirectionCone]") {
+    jtx::Vec3f dir1(1.0f, 0.0f, 0.0f);
+    jtx::DirectionCone cone1(dir1, 0.5f);
+    jtx::Vec3f dir2(0.0f, 1.0f, 0.0f);
+    jtx::DirectionCone cone2(dir2, 0.5f);
+    auto mergedCone = jtx::merge(cone1, cone2);
+    REQUIRE(mergedCone.dir.equals(jtx::Vec3f(1, 1, 0).normalize(), T_EPS));
+    REQUIRE(inside(mergedCone, jtx::Vec3f(1, 0, 0)));
+    REQUIRE(inside(mergedCone, jtx::Vec3f(0, 1, 0)));
 }
 //endregion

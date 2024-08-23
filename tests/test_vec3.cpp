@@ -647,3 +647,70 @@ TEST_CASE("Vec3i cross (static)", "[Vec3]") {
     REQUIRE(v3.z == -3);
 }
 //endregion
+
+//region Frame
+TEST_CASE("Frame static constructors with two vectors", "[Frame]") {
+    jtx::Vec3f x = {1.0f, 0.0f, 0.0f};
+    jtx::Vec3f y = {0.0f, 1.0f, 0.0f};
+    jtx::Vec3f z = {0.0f, 0.0f, 1.0f};
+
+    SECTION("From XZ") {
+        auto frame = jtx::Frame::fromXZ(x, z);
+        REQUIRE(frame.x == x);
+        REQUIRE(frame.y == y);
+        REQUIRE(frame.z == z);
+    }
+
+    SECTION("From XY") {
+        auto frame = jtx::Frame::fromXY(x, y);
+        REQUIRE(frame.x == x);
+        REQUIRE(frame.y == y);
+        REQUIRE(frame.z == z);
+    }
+
+    SECTION("From YZ") {
+        auto frame = jtx::Frame::fromYZ(y, z);
+        REQUIRE(frame.x == x);
+        REQUIRE(frame.y == y);
+        REQUIRE(frame.z == z);
+    }
+}
+
+TEST_CASE("Frame static constructors with one vector", "[Frame]") {
+    jtx::Vec3f x = {1.0f, 0.0f, 0.0f};
+    jtx::Vec3f y = {0.0f, 1.0f, 0.0f};
+    jtx::Vec3f z = {0.0f, 0.0f, 1.0f};
+
+    SECTION("From X") {
+        auto frame = jtx::Frame::fromX(x);
+        REQUIRE(frame.x.dot(frame.y) == 0.0f);
+        REQUIRE(frame.x.dot(frame.z) == 0.0f);
+        REQUIRE(frame.y.dot(frame.z) == 0.0f);
+    }
+
+    SECTION("From Y") {
+        auto frame = jtx::Frame::fromY(y);
+        REQUIRE(frame.x.dot(frame.y) == 0.0f);
+        REQUIRE(frame.x.dot(frame.z) == 0.0f);
+        REQUIRE(frame.y.dot(frame.z) == 0.0f);
+    }
+
+    SECTION("From Z") {
+        auto frame = jtx::Frame::fromZ(z);
+        REQUIRE(frame.x.dot(frame.y) == 0.0f);
+        REQUIRE(frame.x.dot(frame.z) == 0.0f);
+        REQUIRE(frame.y.dot(frame.z) == 0.0f);
+    }
+}
+
+TEST_CASE("Frame toLocal, fromLocal, preserves the vector", "[Frame]") {
+    jtx::Vec3f x(1.0f / std::sqrt(2.0f), 1.0f / std::sqrt(2.0f), 0.0f);
+    jtx::Vec3f z(0.0f, 0.0f, 1.0f);
+    jtx::Frame frame = jtx::Frame::fromXZ(x, z);
+
+    jtx::Vec3f v(1.0f, 2.0f, 3.0f);
+    auto v2 = frame.toLocal(v);
+    auto v3 = frame.toWorld(v2);
+    REQUIRE(v.equals(v3, T_EPS));
+}
+//endregion

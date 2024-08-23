@@ -377,6 +377,8 @@ namespace jtx {
             return {y.cross(z), y, z};
         }
 
+        // WARNING: THESE FUNCTIONS SET THE 2 CALCULATED VECTORS ARBITRARILY
+
         JTX_HOSTDEV JTX_INLINE static Frame fromZ(const Vec3f &z) {
             Vec3f x, y;
             coordinateSystem(z, &x, &y);

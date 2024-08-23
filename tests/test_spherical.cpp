@@ -114,4 +114,19 @@ TEST_CASE("Point to square to sphere to square preserves point", "[Spherical]") 
     Point2f p2 = equalAreaSphereToSquare(v);
     REQUIRE(p.equals(p2, eps));
 }
+
+TEST_CASE("Wrap equal area sphere", "[Spherical]") {
+    SECTION("Top and right") {
+        Point2f p(1.1f, 1.1f);
+        Point2f result = wrapEqualAreaSquare(p);
+        std::cout << toString(result) << std::endl;
+        REQUIRE(result.equals(Point2f(0.1f, 0.1f), T_EPS));
+    }
+
+    SECTION("Bottom and left") {
+        Point2f p(-0.1f, -0.1f);
+        Point2f result = wrapEqualAreaSquare(p);
+        REQUIRE(result.equals(Point2f(0.9f, 0.9f), T_EPS));
+    }
+}
 //endregion

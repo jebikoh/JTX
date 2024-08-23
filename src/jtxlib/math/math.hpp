@@ -178,6 +178,14 @@ namespace jtx {
 #endif
     }
 
+    JTX_HOSTDEV JTX_INLINE float atan2(float y, float x) {
+#if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+        return ::atan2f(y, x);
+#else
+        return std::atan2(y, x);
+#endif
+    }
+
     JTX_HOSTDEV JTX_INLINE float clampAsin(float theta) {
         ASSERT(theta >= -1.0001f && theta <= 1.0001f);
         return jtx::asin(jtx::clamp(theta, -1.0f, 1.0f));

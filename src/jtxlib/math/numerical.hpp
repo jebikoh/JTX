@@ -90,4 +90,12 @@ namespace jtx {
     bool equals(T a, T b, T epsilon = EPSILON) {
         return std::abs(a - b) < epsilon;
     }
+
+    JTX_HOSTDEV JTX_INLINE float round(float v) {
+#if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+        return ::round(v);
+#else
+        return std::round(v);
+#endif
+    }
 } // jtx

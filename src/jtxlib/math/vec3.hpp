@@ -357,13 +357,12 @@ namespace jtx {
 
         JTX_HOSTDEV Frame(): x{1.0f, 0.0f, 0.0f}, y{0.0f, 1.0f, 0.0f}, z{0.0f, 0.0f, 1.0f} {}
         JTX_HOSTDEV Frame(const Vec3f &x, const Vec3f &y, const Vec3f &z): x(x), y(y), z(z) {
-            const float eps = 1e-4f;
-            ASSERT(jtx::equals(x.lenSqr(), 1.0f, eps));
-            ASSERT(jtx::equals(y.lenSqr(), 1.0f, eps));
-            ASSERT(jtx::equals(z.lenSqr(), 1.0f, eps));
-            ASSERT(jtx::equals(x.dot(y), 0.0f, eps));
-            ASSERT(jtx::equals(y.dot(z), 0.0f, eps));
-            ASSERT(jtx::equals(z.dot(x), 0.0f, eps));
+            ASSERT(jtx::equals(x.lenSqr(), 1.0f, 1e-4f));
+            ASSERT(jtx::equals(y.lenSqr(), 1.0f, 1e-4f));
+            ASSERT(jtx::equals(z.lenSqr(), 1.0f, 1e-4f));
+            ASSERT(jtx::equals(x.dot(y), 0.0f, 1e-4f));
+            ASSERT(jtx::equals(y.dot(z), 0.0f, 1e-4f));
+            ASSERT(jtx::equals(z.dot(x), 0.0f, 1e-4f));
         }
 
         JTX_HOSTDEV JTX_INLINE static Frame fromXZ(const Vec3f &x, const Vec3f &z) {

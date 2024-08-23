@@ -11,7 +11,7 @@
 namespace jtx {
     //region Spherical coordinates
     inline float sphericalTriangleArea(Vec3f &a, Vec3f &b, Vec3f &c) {
-        return std::abs(2 * std::atan2(a.dot(b.cross(c)), 1 + a.dot(b) + b.dot(c) + c.dot(a)));
+        return jtx::abs(2 * jtx::atan2(a.dot(b.cross(c)), 1 + a.dot(b) + b.dot(c) + c.dot(a)));
     }
 
     inline float sphericalQuadArea(Vec3f &a, Vec3f &b, Vec3f &c, Vec3f &d) {
@@ -27,14 +27,17 @@ namespace jtx {
         cd.normalize();
         da.normalize();
 
-        return std::abs(
+        return jtx::abs(
                 jtx::angle(da, -ab) + jtx::angle(ab, -bc) + jtx::angle(bc, -cd) + jtx::angle(cd, -da) - 2 * PI_F);
     }
 
+    /**
+     * Parameters should be given in radians
+     */
     inline Vec3f sphericalToCartesian(float sinTheta, float cosTheta, float phi) {
         return {
-                jtx::clamp(sinTheta, -1.0f, 1.0f) * std::cos(phi),
-                jtx::clamp(sinTheta, -1.0f, 1.0f) * std::sin(phi),
+                jtx::clamp(sinTheta, -1.0f, 1.0f) * jtx::cos(phi),
+                jtx::clamp(sinTheta, -1.0f, 1.0f) * jtx::sin(phi),
                 jtx::clamp(cosTheta, -1.0f, 1.0f)
         };
     }
@@ -45,7 +48,7 @@ namespace jtx {
     }
 
     inline float sphericalPhi(const Vec3f &v) {
-        float p = std::atan2(v.y, v.x);
+        float p = jtx::atan2(v.y, v.x);
         return (p < 0) ? p + 2 * PI_F : p;
     }
 
@@ -53,9 +56,9 @@ namespace jtx {
 
     inline float cos2Theta(const Vec3f &w) { return w.z * w.z; }
 
-    inline float absCosTheta(const Vec3f &w) { return std::abs(w.z); }
+    inline float absCosTheta(const Vec3f &w) { return jtx::abs(w.z); }
 
-    inline float sin2Theta(const Vec3f &w) { return std::max(0.0f, 1.0f - cos2Theta(w)); }
+    inline float sin2Theta(const Vec3f &w) { return jtx::max(0.0f, 1.0f - cos2Theta(w)); }
 
     inline float sinTheta(const Vec3f &w) { return jtx::sqrt(sin2Theta(w)); }
 
@@ -85,26 +88,28 @@ namespace jtx {
     //region Octahedral
     class OctahedralVec {
     public:
-        explicit OctahedralVec(Vec3f &v) {
-            ASSERT(v.lenSqr() == 1.0f);
-            v /= v.l1norm();
-            if (v.z >= 0) {
-                x = encode(v.x);
-                y = encode(v.y);
+        // WARNING: PBRT modified the input vector, but this version doesn't
+        explicit OctahedralVec(const Vec3f &v) {
+            ASSERT(jtx::equals(v.lenSqr(), 1.0f, 1e-6f));
+            auto vec = v / v.l1norm();
+            if (vec.z >= 0) {
+                x = encode(vec.x);
+                y = encode(vec.y);
             } else {
-                x = encode((1 - std::abs(v.y)) * sign(v.x));
-                y = encode((1 - std::abs(v.x)) * sign(v.y));
+                x = encode((1 - jtx::abs(vec.y)) * sign(vec.x));
+                y = encode((1 - jtx::abs(vec.x)) * sign(vec.y));
             }
         };
 
         explicit operator Vec3f() const {
             Vec3f v;
-            v.x = -1 + 2 * (float(x) / BITS_16);
-            v.y = -1 + 2 * (float(y) / BITS_16);
-            v.z = 1 - std::abs(v.x) - std::abs(v.y);
+            v.x = -1 + 2 * (static_cast<float>(x) / BITS_16);
+            v.y = -1 + 2 * (static_cast<float>(y) / BITS_16);
+            v.z = 1 - jtx::abs(v.x) - jtx::abs(v.y);
             if (v.z < 0) {
-                v.x = (1 - std::abs(v.y)) * sign(v.x);
-                v.y = (1 - std::abs(v.x)) * sign(v.y);
+                auto xo = v.x;
+                v.x = (1 - jtx::abs(v.y)) * sign(xo);
+                v.y = (1 - jtx::abs(xo)) * sign(v.y);
             }
             return v.normalize();
         }
@@ -113,7 +118,7 @@ namespace jtx {
         static inline float sign(float f) { return jtx::copysign(1.0f, f); }
 
         static inline uint16_t encode(float f) {
-            return std::round(jtx::clamp((f + 1) / 2, 0, 1) * BITS_16);
+            return static_cast<uint16_t>(jtx::round(jtx::clamp((f + 1) / 2, 0, 1) * BITS_16));
         }
 
         uint16_t x, y;
@@ -181,23 +186,23 @@ namespace jtx {
         if (a.isEmpty()) return b;
         if (b.isEmpty()) return a;
 
-        // Case: either cone is inside the other
+        // Case 1: One cone is inside the other
         float theta_a = jtx::clampAcos(a.cosTheta);
         float theta_b = jtx::clampAcos(b.cosTheta);
-        float theta_c = jtx::angle(a.dir, b.dir);
+        float theta_d = jtx::angle(a.dir, b.dir);
 
-        if (std::min(theta_c + theta_b, PI_F) <= theta_a) return a;
-        if (std::min(theta_c + theta_a, PI_F) <= theta_b) return b;
+        if (jtx::min(theta_d + theta_b, PI_F) <= theta_a) return a;
+        if (jtx::min(theta_d + theta_a, PI_F) <= theta_b) return b;
 
-        // Case: no overlap, need to make a new cone
-        float theta = (theta_a + theta_b + theta_c) / 2;
-        if (theta >= PI_F) return DirectionCone::entireSphere();
+        // Case 2: New cone
+        float theta_o = (theta_a + theta_b + theta_d) / 2;
+        if (theta_o >= PI_F) return DirectionCone::entireSphere();
 
-        float theta_rotate = theta - theta_a;
-        Vec3f dir = jtx::cross(a.dir, b.dir);
-        if (dir.lenSqr() == 0) return DirectionCone::entireSphere();
-//        w = jtx::rotate(jtx::degrees(theta_rotate), dir)(a.dir);
-        return {dir, std::cos(theta)};
+        float theta_r = theta_o - theta_a;
+        Vec3f wr = jtx::cross(a.dir, b.dir);
+        if (wr.lenSqr() == 0) return DirectionCone::entireSphere();
+        auto w = jtx::rotate(jtx::degrees(theta_r), wr).applyToVec(a.dir);
+        return {w, jtx::cos(theta_o)};
     }
     //endregion
 }

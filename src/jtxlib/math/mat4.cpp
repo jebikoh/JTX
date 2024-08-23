@@ -151,6 +151,12 @@ namespace jtx {
         return m;
     }
 
+    /**
+     * Builds a transformation matrix for a rotation of theta about the axis
+     * @param theta Rotation in DEGREES
+     * @param axis Axis of rotation
+     * @return Transformation matrix
+     */
     JTX_HOSTDEV Mat4 rotate(float theta, const jtx::Vec3f &axis) {
         float sinTheta = jtx::sin(jtx::radians(theta));
         float cosTheta = jtx::cos(jtx::radians(theta));

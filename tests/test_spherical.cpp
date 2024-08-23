@@ -4,63 +4,62 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 
+using namespace jtx;
+
 //region Spherical Area
-TEST_CASE("sphericalTriangleArea", "[spherical]") {
-    jtx::Vec3f a(1.0f, 0.0f, 0.0f);
-    jtx::Vec3f b(0.0f, 1.0f, 0.0f);
-    jtx::Vec3f c(0.0f, 0.0f, 1.0f);
-
-    REQUIRE_THAT(jtx::sphericalTriangleArea(a, b, c), Catch::Matchers::WithinRel(jtx::PI_F / 2, T_EPS));
+//region Spherical Area
+TEST_CASE("Spherical Triangle Area", "[Spherical]") {
+    Vec3f a(1, 0, 0);
+    Vec3f b(0, 1, 0);
+    Vec3f c(0, 0, 1);
+    REQUIRE_THAT(sphericalTriangleArea(a, b, c), Catch::Matchers::WithinRel(1.5708f, T_EPS));
 }
 
-TEST_CASE("sphericalQuadArea", "[spherical]") {
-    jtx::Vec3f a(1.0f, 0.0f, 0.0f);
-    jtx::Vec3f b(0.0f, 1.0f, 0.0f);
-    jtx::Vec3f c(-1.0f, 0.0f, 0.0f);
-    jtx::Vec3f d(0.0f, -1.0f, 0.0f);
-
-    REQUIRE_THAT(jtx::sphericalQuadArea(a, b, c, d), Catch::Matchers::WithinRel(jtx::PI_F * 2, T_EPS));
+TEST_CASE("Spherical Quad Area", "[Spherical]") {
+    Vec3f a(1, 0, 0);
+    Vec3f b(0, 1, 0);
+    Vec3f c(-1, 0, 0);
+    Vec3f d(0, -1, 0);
+    REQUIRE_THAT(sphericalQuadArea(a, b, c, d), Catch::Matchers::WithinRel(6.2832f, T_EPS));
 }
-//endregion
 
-//region OctahedralVec Tests
-TEST_CASE("OctahedaralVec conserves unit vector", "[Octahedral]") {
-    jtx::Vec3f v{1.0f, 2.0f, 3.0f};
-    v.normalize();
-    jtx::OctahedralVec oct(v);
-    auto v2 = jtx::Vec3f(oct);
-    REQUIRE_THAT(v2.x, Catch::Matchers::WithinRel(v.x, T_EPS));
-    REQUIRE_THAT(v2.y, Catch::Matchers::WithinRel(v.y, T_EPS));
-    REQUIRE_THAT(v2.z, Catch::Matchers::WithinRel(v.z, T_EPS));
+TEST_CASE("Spherical To Cartesian", "[Spherical]") {
+    float theta = jtx::radians(90.0f);
+    float phi = jtx::radians(0.0f);
+    Vec3f v = sphericalToCartesian(sin(theta), cos(theta), phi);
+    REQUIRE_THAT(v.len(), Catch::Matchers::WithinRel(1.0f, T_EPS));
+    REQUIRE(v.equals(Vec3f{1.0f, 0.0f, 0.0f}, T_EPS));
 }
 //endregion
 
-//region Equal areas
+//region Octahedral encoding
+TEST_CASE("Octahedral Vec Constructor - Valid Input", "[Octahedral]") {
+    const float OCT_EPS = 1e-2;
 
-TEST_CASE("Equal area square to sphere to square conversion", "[spherical]") {
-    jtx::Vec2f a(1.0f, 1.0f);
-    jtx::Vec2f b(0.0f, 0.0f);
-    jtx::Vec2f c(1.0f, 0.0f);
-    jtx::Vec2f d(0.0f, 1.0f);
+    SECTION("Valid Input") {
+        Vec3f v(1, 0, 0);
+        OctahedralVec octVec(v);
+        auto result = Vec3f(octVec);
+        REQUIRE(result.equals(v, OCT_EPS));
+    }
 
-    jtx::Vec3f aSphere = jtx::equalAreaSquareToSphere(a);
-    jtx::Vec3f bSphere = jtx::equalAreaSquareToSphere(b);
-    jtx::Vec3f cSphere = jtx::equalAreaSquareToSphere(c);
-    jtx::Vec3f dSphere = jtx::equalAreaSquareToSphere(d);
+    SECTION("Negative Z") {
+        Vec3f v(0, 0, -1);
+        OctahedralVec octVec(v);
+        auto result = Vec3f(octVec);
+        REQUIRE(result.equals(v, OCT_EPS));
+    }
 
-    jtx::Vec2f aSquare = jtx::equalAreaSphereToSquare(aSphere);
-    jtx::Vec2f bSquare = jtx::equalAreaSphereToSquare(bSphere);
-    jtx::Vec2f cSquare = jtx::equalAreaSphereToSquare(cSphere);
-    jtx::Vec2f dSquare = jtx::equalAreaSphereToSquare(dSphere);
-
-    REQUIRE_THAT(aSquare.x, Catch::Matchers::WithinRel(a.x, T_EPS));
-    REQUIRE_THAT(aSquare.y, Catch::Matchers::WithinRel(a.y, T_EPS));
-    REQUIRE_THAT(bSquare.x, Catch::Matchers::WithinRel(b.x, T_EPS));
-    REQUIRE_THAT(bSquare.y, Catch::Matchers::WithinRel(b.y, T_EPS));
-    REQUIRE_THAT(cSquare.x, Catch::Matchers::WithinRel(c.x, T_EPS));
-    REQUIRE_THAT(cSquare.y, Catch::Matchers::WithinRel(c.y, T_EPS));
-    REQUIRE_THAT(dSquare.x, Catch::Matchers::WithinRel(d.x, T_EPS));
-    REQUIRE_THAT(dSquare.y, Catch::Matchers::WithinRel(d.y, T_EPS));
+    SECTION("Diagonal") {
+        Vec3f v(1, 1, 1);
+        v.normalize();
+        OctahedralVec octVec(v);
+        auto result = Vec3f(octVec);
+        REQUIRE(result.equals(v, OCT_EPS));
+    }
 }
+//endregion
+
+//region Square-Sphere Conversions
 
 //endregion

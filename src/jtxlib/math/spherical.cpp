@@ -19,13 +19,16 @@ namespace jtx{
 
     Point2f equalAreaSphereToSquare(const Point3f &d) {
         ASSERT(d.lenSqr() < 1.001f && d.lenSqr() > 0.999f);
-        float r = jtx::safeSqrt(d.z - 1);
+        float x = jtx::abs(d.x);
+        float y = jtx::abs(d.y);
+        float z = jtx::abs(d.z);
 
-        float a = std::max(d.x, d.y);
-        float b = std::min(d.x, d.y);
+        float r = jtx::safeSqrt(1 - z);
+        float a = jtx::max(x, y);
+        float b = jtx::min(x, y);
         b = a == 0 ? 0 : b / a;
 
-        // Constants from PBRT (analytical solution ?)
+        // https://github.com/mmp/pbrt-v4/blob/39e01e61f8de07b99859df04b271a02a53d9aeb2/src/pbrt/util/math.cpp#L292
         const float t1 = 0.406758566246788489601959989e-5;
         const float t2 = 0.636226545274016134946890922156;
         const float t3 = 0.61572017898280213493197203466e-2;
@@ -35,13 +38,11 @@ namespace jtx{
         const float t7 = -0.251390972343483509333252996350e-1;
         float phi = jtx::evalPolynomial(b, t1, t2, t3, t4, t5, t6, t7);
 
-        if (d.x < d.y) phi = 1 - phi;
-
+        if (x < y) phi = 1 - phi;
         float v = phi * r;
         float u = r - v;
 
         if (d.z < 0) {
-            std::swap(u, v);
             u = 1 - u;
             v = 1 - v;
         }
@@ -49,7 +50,7 @@ namespace jtx{
         u = jtx::copysign(u, d.x);
         v = jtx::copysign(v, d.y);
 
-        return {(u + 1) * 0.5f, (v + 1) * 0.5f};
+        return {0.5f * (u+1), 0.5f * (v+1)};
     }
 }
 

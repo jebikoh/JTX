@@ -61,5 +61,57 @@ TEST_CASE("Octahedral Vec Constructor - Valid Input", "[Octahedral]") {
 //endregion
 
 //region Square-Sphere Conversions
+TEST_CASE("Equal Area Square To Sphere", "[Spherical]") {
+    SECTION("Center") {
+        Vec3f v = equalAreaSquareToSphere(Vec2f(0.5f, 0.5f));
+        REQUIRE(v.equals(Vec3f(0, 0, 1), T_EPS));
+    }
 
+    SECTION("Top") {
+        Vec3f v = equalAreaSquareToSphere(Vec2f(0.5f, 1.0f));
+        REQUIRE(v.equals(Vec3f(0, 1, 0), T_EPS));
+    }
+
+    SECTION("Bottom") {
+        Vec3f v = equalAreaSquareToSphere(Vec2f(0.5f, 0.0f));
+        REQUIRE(v.equals(Vec3f(0, -1, 0), T_EPS));
+    }
+
+    SECTION("Right") {
+        Vec3f v = equalAreaSquareToSphere(Vec2f(1.0f, 0.5f));
+        REQUIRE(v.equals(Vec3f(1, 0, 0), T_EPS));
+    }
+}
+
+TEST_CASE("Equal Area Sphere to Square", "[Spherical]") {
+    const float eps = 1e-3;
+    SECTION("Center") {
+        Vec2f v = equalAreaSphereToSquare(Vec3f(0, 0, 1));
+        REQUIRE_THAT(v.x, Catch::Matchers::WithinRel(0.5f, eps));
+        REQUIRE_THAT(v.y, Catch::Matchers::WithinRel(0.5f, eps));
+    }
+
+    SECTION("Top") {
+        Vec2f v = equalAreaSphereToSquare(Vec3f(0, 1, 0));
+        REQUIRE(v.equals(Vec2f(0.5f, 1.0f), T_EPS));
+    }
+
+    SECTION("Bottom") {
+        Vec2f v = equalAreaSphereToSquare(Vec3f(0, -1, 0));
+        REQUIRE(v.equals(Vec2f(0.5f, 0.0f), T_EPS));
+    }
+
+    SECTION("Right") {
+        Vec2f v = equalAreaSphereToSquare(Vec3f(1, 0, 0));
+        REQUIRE(v.equals(Vec2f(1.0f, 0.5f), T_EPS));
+    }
+}
+
+TEST_CASE("Point to square to sphere to square preserves point", "[Spherical]") {
+    const float eps = 1e-3;
+    Point2f p(0.25f, 0.75f);
+    Vec3f v = equalAreaSquareToSphere(p);
+    Point2f p2 = equalAreaSphereToSquare(v);
+    REQUIRE(p.equals(p2, eps));
+}
 //endregion

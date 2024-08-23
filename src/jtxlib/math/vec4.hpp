@@ -239,7 +239,7 @@ namespace jtx {
         //endregion
 
         //region Member functions
-        JTX_HOSTDEV bool equals(const Vec4 &other, float epsilon = EPSILON) {
+        JTX_HOSTDEV bool equals(const Vec4 &other, float epsilon = EPSILON) const {
             return jtx::equals(x, other.x, epsilon) && jtx::equals(y, other.y, epsilon) &&
                    jtx::equals(z, other.z, epsilon) && jtx::equals(w, other.w, epsilon);
         }

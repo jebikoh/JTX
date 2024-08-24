@@ -34,6 +34,8 @@ namespace jtx {
 
         explicit Transform(const float mat[4][4]) : Transform(Mat4(mat)) {};
 
+        explicit Transform(const Frame &f) : Transform(Mat4(f)) {};
+
         ~Transform() = default;
         //endregion
 

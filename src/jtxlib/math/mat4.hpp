@@ -79,6 +79,11 @@ namespace jtx {
             }
         }
 
+        JTX_HOSTDEV explicit Mat4(const Frame &f) : Mat4(f.x.x, f.y.x, f.z.x, 0.0f,
+                                                        f.x.y, f.y.y, f.z.y, 0.0f,
+                                                        f.x.z, f.y.z, f.z.z, 0.0f,
+                                                        0.0f, 0.0f, 0.0f, 1.0f) {}
+
         JTX_HOSTDEV ~Mat4() = default;
 
         JTX_HOSTDEV static Mat4 identity() {

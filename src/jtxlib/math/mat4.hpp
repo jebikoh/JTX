@@ -218,7 +218,7 @@ namespace jtx {
         //endregion
 
         //region In-line Methods
-        JTX_HOSTDEV bool equals(const Mat4 &other, float epsilon = EPSILON) {
+        JTX_HOSTDEV bool equals(const Mat4 &other, float epsilon = EPSILON) const {
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
                     if (jtx::abs(data[i][j] - other[i][j]) > epsilon) {
@@ -538,5 +538,9 @@ namespace jtx {
     //endregion
 
     JTX_HOST std::string toString(const Mat4 &mat);
+
+    JTX_HOSTDEV JTX_INLINE bool equals(const Mat4 &a, const Mat4 &b, float epsilon = EPSILON) {
+        return a.equals(b, epsilon);
+    }
 }
 #pragma clang diagnostic pop

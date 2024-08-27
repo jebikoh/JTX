@@ -77,5 +77,9 @@ namespace jtx {
         float sxoxTheta = sinXOverX(theta);
         return (sinXOverX(1 - t * theta) / sxoxTheta) * (1 - t) * q1 + (sinXOverX(t * theta) / sxoxTheta) * t * q2;
     }
+
+    JTX_HOSTDEV JTX_INLINE bool equals(const Quaternion &a, const Quaternion &b, float epsilon = EPSILON) {
+        return a.equals(b, epsilon);
+    }
     //endregion
 }

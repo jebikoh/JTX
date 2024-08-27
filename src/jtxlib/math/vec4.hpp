@@ -313,6 +313,11 @@ namespace jtx {
     typedef Point4<int> Point4i;
     typedef Point4<float> Point4f;
 
+    JTX_NUM_ONLY_T
+    JTX_HOSTDEV JTX_INLINE bool equals(const Vec4<T> &a, const Vec4<T> &b, float epsilon = EPSILON) {
+        return a.equals(b, epsilon);
+    }
+
     JTX_HOST JTX_INLINE std::string toString(const Vec4f &vec) {
         return "Vec4f(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ", " +
                std::to_string(vec.w) + ")";

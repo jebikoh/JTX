@@ -388,6 +388,11 @@ namespace jtx {
         res.pmax = a.pmax - delta;
         return res;
     }
+
+    JTX_NUM_ONLY_T
+    JTX_HOSTDEV JTX_INLINE bool equals(const AABB3<T> &a, const AABB3<T> &b, T epsilon = EPSILON) {
+        return a.equals(b, epsilon);
+    }
     //endregion
 
     //region AABB2 functions
@@ -460,6 +465,11 @@ namespace jtx {
         res.pmin = a.pmin + delta;
         res.pmax = a.pmax - delta;
         return res;
+    }
+
+    JTX_NUM_ONLY_T
+    JTX_HOSTDEV JTX_INLINE bool equals(const AABB2<T> &a, const AABB2<T> &b, T epsilon = EPSILON) {
+        return a.equals(b, epsilon);
     }
     //endregion
 

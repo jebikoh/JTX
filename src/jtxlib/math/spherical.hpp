@@ -10,11 +10,11 @@
 
 namespace jtx {
     //region Spherical coordinates
-    inline float sphericalTriangleArea(Vec3f &a, Vec3f &b, Vec3f &c) {
+    JTX_INLINE float sphericalTriangleArea(Vec3f &a, Vec3f &b, Vec3f &c) {
         return jtx::abs(2 * jtx::atan2(a.dot(b.cross(c)), 1 + a.dot(b) + b.dot(c) + c.dot(a)));
     }
 
-    inline float sphericalQuadArea(Vec3f &a, Vec3f &b, Vec3f &c, Vec3f &d) {
+    JTX_INLINE float sphericalQuadArea(Vec3f &a, Vec3f &b, Vec3f &c, Vec3f &d) {
         Vec3f ab = a.cross(b);
         Vec3f bc = b.cross(c);
         Vec3f cd = c.cross(d);
@@ -34,7 +34,7 @@ namespace jtx {
     /**
      * Parameters should be given in radians
      */
-    inline Vec3f sphericalToCartesian(float sinTheta, float cosTheta, float phi) {
+    JTX_INLINE Vec3f sphericalToCartesian(float sinTheta, float cosTheta, float phi) {
         return {
                 jtx::clamp(sinTheta, -1.0f, 1.0f) * jtx::cos(phi),
                 jtx::clamp(sinTheta, -1.0f, 1.0f) * jtx::sin(phi),
@@ -42,41 +42,41 @@ namespace jtx {
         };
     }
 
-    inline float sphericalTheta(const Vec3f &v) {
+    JTX_INLINE float sphericalTheta(const Vec3f &v) {
         ASSERT(v.lenSqr() == 1.0f);
         return jtx::clampAcos(v.z);
     }
 
-    inline float sphericalPhi(const Vec3f &v) {
+    JTX_INLINE float sphericalPhi(const Vec3f &v) {
         float p = jtx::atan2(v.y, v.x);
         return (p < 0) ? p + 2 * PI_F : p;
     }
 
-    inline float cosTheta(const Vec3f &w) { return w.z; }
+    JTX_INLINE float cosTheta(const Vec3f &w) { return w.z; }
 
-    inline float cos2Theta(const Vec3f &w) { return w.z * w.z; }
+    JTX_INLINE float cos2Theta(const Vec3f &w) { return w.z * w.z; }
 
-    inline float absCosTheta(const Vec3f &w) { return jtx::abs(w.z); }
+    JTX_INLINE float absCosTheta(const Vec3f &w) { return jtx::abs(w.z); }
 
-    inline float sin2Theta(const Vec3f &w) { return jtx::max(0.0f, 1.0f - cos2Theta(w)); }
+    JTX_INLINE float sin2Theta(const Vec3f &w) { return jtx::max(0.0f, 1.0f - cos2Theta(w)); }
 
-    inline float sinTheta(const Vec3f &w) { return jtx::sqrt(sin2Theta(w)); }
+    JTX_INLINE float sinTheta(const Vec3f &w) { return jtx::sqrt(sin2Theta(w)); }
 
-    inline float tanTheta(const Vec3f &w) { return sinTheta(w) / cosTheta(w); }
+    JTX_INLINE float tanTheta(const Vec3f &w) { return sinTheta(w) / cosTheta(w); }
 
-    inline float tan2Theta(const Vec3f &w) { return sin2Theta(w) / cos2Theta(w); }
+    JTX_INLINE float tan2Theta(const Vec3f &w) { return sin2Theta(w) / cos2Theta(w); }
 
-    inline float cosPhi(const Vec3f &w) {
+    JTX_INLINE float cosPhi(const Vec3f &w) {
         float s = sinTheta(w);
         return (s == 0) ? 1 : jtx::clamp(w.x / s, -1.0f, 1.0f);
     }
 
-    inline float sinPhi(const Vec3f &w) {
+    JTX_INLINE float sinPhi(const Vec3f &w) {
         float s = sinTheta(w);
         return (s == 0) ? 0 : jtx::clamp(w.y / s, -1.0f, 1.0f);
     }
 
-    inline float cosDPhi(const Vec3f &wa, const Vec3f &wb) {
+    JTX_INLINE float cosDPhi(const Vec3f &wa, const Vec3f &wb) {
         auto waXY = wa.x * wa.x + wa.y * wa.y;
         auto wbXY = wb.x * wb.x + wb.y * wb.y;
         if (waXY == 0 || wbXY == 0) return 1;
@@ -115,9 +115,9 @@ namespace jtx {
         }
 
     private:
-        static inline float sign(float f) { return jtx::copysign(1.0f, f); }
+        static JTX_INLINE float sign(float f) { return jtx::copysign(1.0f, f); }
 
-        static inline uint16_t encode(float f) {
+        static JTX_INLINE uint16_t encode(float f) {
             return static_cast<uint16_t>(jtx::round(jtx::clamp((f + 1) / 2, 0, 1) * BITS_16));
         }
 
@@ -130,7 +130,7 @@ namespace jtx {
 
     Point2f equalAreaSphereToSquare(const Point3f &d);
 
-    inline Point2f wrapEqualAreaSquare(Point2f p) {
+    JTX_INLINE Point2f wrapEqualAreaSquare(Point2f p) {
         if (p.x < 0) {
             p.x = -p.x;
             p.y = 1 - p.y;
@@ -155,7 +155,7 @@ namespace jtx {
         jtx::Vec3f dir;
         float cosTheta = jtx::INFINITY_F;
 
-        [[nodiscard]] inline bool isEmpty() const { return cosTheta == jtx::INFINITY_F; }
+        [[nodiscard]] JTX_INLINE bool isEmpty() const { return cosTheta == jtx::INFINITY_F; }
 
         //region Constructors
         DirectionCone() = default;
@@ -165,22 +165,22 @@ namespace jtx {
         explicit DirectionCone(const jtx::Vec3f &dir) : DirectionCone(dir, 1.0f) {}
         //endregion
 
-        inline bool operator==(const DirectionCone &other) const {
+        JTX_INLINE bool operator==(const DirectionCone &other) const {
             return dir == other.dir && cosTheta == other.cosTheta;
         }
 
-        [[nodiscard]] inline bool equals(const DirectionCone &other, float epsilon) const {
+        [[nodiscard]] JTX_INLINE bool equals(const DirectionCone &other, float epsilon) const {
             return dir.equals(other.dir, epsilon) && jtx::equals(cosTheta, other.cosTheta, epsilon);
         }
 
         static DirectionCone entireSphere() { return {Vec3f(0, 0, 0), -1}; }
     };
 
-    inline bool inside(const DirectionCone &cone, const Vec3f &v) {
+    JTX_INLINE bool inside(const DirectionCone &cone, const Vec3f &v) {
         return !cone.isEmpty() && cone.dir.dot(v) >= cone.cosTheta;
     }
 
-    inline DirectionCone boundSubtendedDirection(const BBox3f &bounds, const Vec3f &p) {
+    JTX_INLINE DirectionCone boundSubtendedDirection(const BBox3f &bounds, const Vec3f &p) {
         float r;
         Point3f c;
         bounds.boundingSphere(&c, &r);
@@ -190,7 +190,7 @@ namespace jtx {
         return {w, jtx::safeSqrt(1 - (r * r) / jtx::distanceSqr(p, c))};
     }
 
-    inline DirectionCone merge(const DirectionCone &a, const DirectionCone &b) {
+    JTX_INLINE DirectionCone merge(const DirectionCone &a, const DirectionCone &b) {
         if (a.isEmpty()) return b;
         if (b.isEmpty()) return a;
 
@@ -211,6 +211,10 @@ namespace jtx {
         if (wr.lenSqr() == 0) return DirectionCone::entireSphere();
         auto w = jtx::rotate(jtx::degrees(theta_r), wr).applyToVec(a.dir);
         return {w, jtx::cos(theta_o)};
+    }
+
+    JTX_HOSTDEV JTX_INLINE bool equals(const DirectionCone &a, const DirectionCone &b, float epsilon = EPSILON) {
+        return a.equals(b, epsilon);
     }
     //endregion
 }

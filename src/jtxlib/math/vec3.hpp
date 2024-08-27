@@ -341,6 +341,11 @@ namespace jtx {
         return "Vec3(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ")";
     }
 
+    JTX_NUM_ONLY_T
+    JTX_HOSTDEV JTX_INLINE bool equals(const Vec3<T> &a, const Vec3<T> &b, float epsilon = EPSILON) {
+        return a.equals(b, epsilon);
+    }
+
     //region Vector Frame
     JTX_NUM_ONLY_T
     JTX_HOSTDEV JTX_INLINE void coordinateSystem(const Vec3<T> v1, Vec3<T> *v2, Vec3<T> *v3) {

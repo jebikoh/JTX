@@ -204,7 +204,7 @@ namespace jtx {
         //endregion
 
         //region Member functions
-        JTX_HOSTDEV bool equals(const Vec2 &other, float epsilon = EPSILON) const {
+        [[nodiscard]] JTX_HOSTDEV bool equals(const Vec2 &other, float epsilon = EPSILON) const {
             return jtx::equals(x, other.x, epsilon) && jtx::equals(y, other.y, epsilon);
         }
 
@@ -277,5 +277,10 @@ namespace jtx {
 
     JTX_HOST JTX_INLINE std::string toString(const Vec2i &vec) {
         return "Vec2i(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ")";
+    }
+
+    JTX_NUM_ONLY_T
+    JTX_HOSTDEV JTX_INLINE bool equals(const Vec2<T> &a, const Vec2<T> &b, T epsilon = EPSILON) {
+        return a.equals(b, epsilon);
     }
 }// namespace jtx

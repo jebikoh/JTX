@@ -124,4 +124,15 @@ namespace jtx {
         return jtx::toString(ray.origin) + " + t * " + jtx::toString(ray.dir) + " (t = " + std::to_string(ray.time) +
                ")";
     }
+
+    JTX_NUM_ONLY_T
+    JTX_HOSTDEV JTX_INLINE bool equals(const Ray<T> &a, const Ray<T> &b, T epsilon = EPSILON) {
+        return a.equals(b, epsilon);
+    }
+
+    JTX_NUM_ONLY_T
+    JTX_HOSTDEV JTX_INLINE bool equals(const RayDifferential<T> &a, const RayDifferential<T> &b, T epsilon = EPSILON) {
+        return a.equals(b, epsilon);
+    }
+
 }// namespace jtx

@@ -6,6 +6,7 @@ add_executable(tests
         test_bbox.cpp
         test_spherical.cpp
         test_mat4.cpp
+        test_quat.cpp
 )
 
 target_link_libraries(tests PRIVATE jtxlib Catch2WithMain)

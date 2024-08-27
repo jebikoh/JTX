@@ -35,6 +35,8 @@ namespace jtx {
         JTX_HOSTDEV Quaternion &operator/=(const float s) { ASSERT(s > 0.0f); w /= s; v /= s; return *this; }
 
         JTX_HOSTDEV friend Quaternion operator*(const float s, const Quaternion& q) { return q * s; }
+
+        JTX_HOSTDEV bool operator==(const Quaternion& q) const { return w == q.w && v == q.v; }
         //endregion
 
         //region Member functions
@@ -56,6 +58,10 @@ namespace jtx {
             float theta = 2.0f * jtx::clampAsin((q - (*this)).len() / 2);
             if (dot(q) < 0) return jtx::PI_F - theta;
             return theta;
+        }
+
+        [[nodiscard]] JTX_HOSTDEV bool equals(const Quaternion &q, float epsilon = EPSILON) const {
+            return jtx::equals(w, q.w, epsilon) && v.equals(q.v, epsilon);
         }
         //endregion
     };

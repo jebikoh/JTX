@@ -76,6 +76,7 @@ set(JTXLIB_HEADERS
         src/jtxlib/util.hpp
         src/jtxlib/util/rand.hpp
         src/jtxlib/math/vector.hpp
+        src/jtxlib/math/quaternion.hpp
 )
 
 add_library(jtxlib STATIC

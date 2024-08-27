@@ -206,6 +206,11 @@ namespace jtx {
         return jtx::acos(jtx::clamp(theta, -1.0, 1.0));
     }
 
+    JTX_HOSTDEV JTX_INLINE float sinXOverX(float theta) {
+        if (1.0f + theta * theta == 1.0f) return 1.0f;
+        return jtx::sin(theta) / theta;
+    }
+
     JTX_HOSTDEV JTX_INLINE float radians(float deg) {
         return deg * PI_F / 180.0f;
     }

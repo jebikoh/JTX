@@ -1,35 +1,22 @@
 cmake_minimum_required(VERSION 3.27)
+set(CMAKE_CXX_STANDARD 20)
+
 project(JTX)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CBLAS_DIR /opt/homebrew/opt/openblas)
+# Build flags
+if (CMAKE_BUILD_TYPE STREQUAL "Test")
+    add_definitions(-DJTX_TEST)
+else (CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_definitions(-DJTX_NDEBUG)
+endif ()
 
-include_directories(${CBLAS_DIR}/include/)
-link_directories(${CBLAS_DIR}/lib/)
+# Catch2
+add_subdirectory("lib/Catch2")
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/Catch2/extras)
+include(CTest)
+include(Catch)
 
-add_library(JTX
-        JTX/util/util.hpp
-        JTX/util/vec3.hpp
-        JTX/util/mat4.cpp
-        JTX/util/mat4.hpp
-        JTX/core/primitive.cpp
-        JTX/core/primitive.hpp
-        JTX/core/core.hpp
-        JTX/core/lights.hpp
-        JTX/core/scene.hpp
-        JTX/core/camera.hpp
-        JTX/core/renderer.cpp
-        JTX/core/renderer.hpp
-        JTX/core/shader.cpp
-        JTX/core/shader.hpp
-        JTX/util/vec4.hpp
-        JTX/util/vec2.hpp
-)
+# Subdirectories
+add_subdirectory("src")
+add_subdirectory("tests")
 
-add_library(fpng STATIC external/fpng.cpp)
-target_include_directories(fpng PRIVATE external)
-
-target_include_directories(JTX PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(JTX PRIVATE openblas fpng)
-
-add_subdirectory(tests)

@@ -1,5 +1,8 @@
 # JTX
 
-A physically-based rendering engine based on PBR (4th edition) and PBRTv4. Has a built-in mini-rasterizer and UI. 
+This is my long term offline phyiscally-based ray tracer (building it as I go through Physically Based Rendering, 4th edition)
 
-I plan on extending the functionality much farther and adding CUDA support.
+Current progress is being written in these repositories:
+ - [JTXLib](https://github.com/jebikoh/jtxlib)
+ - [Ray Tracing](https://github.com/jebikoh/raytracing)
+ - [Cuda Ray Tracing](https://github.com/jebikoh/cudart)

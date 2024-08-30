@@ -17,16 +17,16 @@ if(USE_CUDA)
         enable_language(CUDA)
         set(CUDA_ENABLED TRUE)
 
-        message(STATUS "[JTX] CUDA compiler: ${CMAKE_CUDA_COMPILER}")
-        message(STATUS "[JTX] CUDA compiler version: ${CMAKE_CUDA_COMPILER_VERSION}")
-        message(STATUS "[JTX] CUDA include directory: ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}")
+        message(STATUS "[JTXLib] CUDA compiler: ${CMAKE_CUDA_COMPILER}")
+        message(STATUS "[JTXLib] CUDA compiler version: ${CMAKE_CUDA_COMPILER_VERSION}")
+        message(STATUS "[JTXLib] CUDA include directory: ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}")
     else()
-        message(FATAL_ERROR "[JTX] CUDA compiler not found, but CUDA support was requested")
+        message(FATAL_ERROR "[JTXLib] CUDA compiler not found, but CUDA support was requested")
     endif()
 else()
     set(CUDA_ENABLED FALSE)
-    message(STATUS "[JTX] CUDA support is disabled")
-    message(STATUS "[JTX] Enabling CPU optimizations")
+    message(STATUS "[JTXLib] CUDA support is disabled")
+    message(STATUS "[JTXLib] Enabling CPU optimizations")
 #    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 #        add_compile_options(-O3 -mavx2)
 #    elseif(MSVC)
@@ -95,7 +95,7 @@ set_target_properties(jtxlib PROPERTIES
 
 set(CUDA_ARCH "75" CACHE STRING "CUDA architecture (e.g. 75 for SM 7.5)")
 if(CUDA_ENABLED)
-    message(STATUS "[JTX] Building for CUDA architecture ${CUDA_ARCH}")
+    message(STATUS "[JTXLib] Building for CUDA architecture ${CUDA_ARCH}")
     set_target_properties(jtxlib PROPERTIES
             CUDA_SEPARABLE_COMPILATION ON
             CUDA_ARCHITECTURES ${CUDA_ARCH}

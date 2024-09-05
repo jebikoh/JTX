@@ -251,6 +251,31 @@ namespace jtx {
 #endif
     }
 
+    // pow
+#if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+    template <int n>
+    JTX_HOSTDEV JTX_INLINE float pow(float v) {
+        return ::powf(v, n);
+    }
+#else
+    template <int n>
+    JTX_HOSTDEV JTX_INLINE float pow(float v) {
+        if constexpr (n < 0) return 1 / pow<-n>(v);
+        float n2 = pow<n / 2>(v);
+        return n2 * n2 * pow<n & 1>(v);
+    }
+
+    template <>
+    JTX_HOSTDEV JTX_INLINE float pow<1>(float v) {
+        return v;
+    }
+
+    template <>
+    JTX_HOSTDEV JTX_INLINE float pow<0>(float v) {
+        return 1;
+    }
+#endif
+
     JTX_FP_ONLY_T
     JTX_HOSTDEV JTX_INLINE T safeSqrt(T v) {
         return jtx::sqrt(jtx::max(0.0f, v));
@@ -273,6 +298,29 @@ namespace jtx {
     constexpr T evalPolynomial(T t, C c, Coeffs... coeffs) {
         return jtx::fma(t, evalPolynomial(t, coeffs...), c);
     }
+
+#if defined(CUDA_ENABLED) && defined(__CUDA_ARCH__)
+    JTX_HOSTDEV JTX_INLINE float fastExp(float x) {
+        return ::expf(x);
+    }
+#else
+    // Straight from PBRTv4
+    JTX_HOST JTX_INLINE float fastExp(float x) {
+        float xp = x * 1.442695041f;
+        float fxp = jtx::floor(xp);
+        float f = xp - fxp;
+        int i = (int) fxp;
+        float twoToF = evalPolynomial(f, 1.0f, 0.695556856f, 0.226173572f, 0.0781455737f);
+
+        int exponent = i;
+        if (exponent < -126) return 0;
+        if (exponent > 127) return INFINITY_F;
+        uint32_t bits = floatToBits(twoToF);
+        bits &= 0b10000000011111111111111111111111u;
+        bits |= (exponent + 127) << 23;
+        return bitsToFloat(bits);
+    }
+#endif
 
     //region EFT
     struct FloatEFT {

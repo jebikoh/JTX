@@ -8,6 +8,7 @@
 #include <cmath>
 #include <jtxlib.hpp>
 #include <jtxlib/math/constants.hpp>
+#include <cstdint>
 
 #define JTX_NUM_ONLY(TypeName) template<typename TypeName = T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
 
@@ -97,5 +98,13 @@ namespace jtx {
 #else
         return std::round(v);
 #endif
+    }
+
+    JTX_HOST JTX_INLINE uint32_t floatToBits(float v) {
+        return std::bit_cast<uint32_t>(v);
+    }
+
+    JTX_HOST JTX_INLINE float bitsToFloat(uint32_t v) {
+        return std::bit_cast<float>(v);
     }
 } // jtx

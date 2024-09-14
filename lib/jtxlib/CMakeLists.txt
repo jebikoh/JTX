@@ -77,6 +77,7 @@ set(JTXLIB_HEADERS
         src/jtxlib/util/rand.hpp
         src/jtxlib/math/vector.hpp
         src/jtxlib/math/quaternion.hpp
+        src/jtxlib/util/taggedptr.hpp
 )
 
 add_library(jtxlib STATIC

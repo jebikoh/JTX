@@ -1,8 +1,11 @@
-# JTX
+# JTXLib
 
-This is my long term offline phyiscally-based ray tracer (building it as I go through Physically Based Rendering, 4th edition)
+This just a compilation of classes and functions that I was using commonly between my graphics projects.
 
-Current progress is being written in these repositories:
- - [JTXLib](https://github.com/jebikoh/jtxlib)
- - [Ray Tracing](https://github.com/jebikoh/raytracing)
- - [Cuda Ray Tracing](https://github.com/jebikoh/cudart)
+Much of this is based of [PBRTv4](https://github.com/mmp/pbrt-v4) and [EDXUtil](https://github.com/behindthepixels/EDXUtil)/[EDXRay](https://github.com/behindthepixels/EDXRay)
+
+Other useful resources:
+ - [PBR Book](http://www.pbr-book.org/)
+ - [The Right Way to Calculate Stuff](http://www.plunk.org/~hatch/rightway.html)
+
+Quick note on building tests: use build type "TEST" as it will enable test assertions that don't abort the program

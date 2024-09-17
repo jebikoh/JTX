@@ -6,3 +6,6 @@ Current progress is being written in these repositories:
  - [JTXLib](https://github.com/jebikoh/jtxlib)
  - [Ray Tracing](https://github.com/jebikoh/raytracing)
  - [Cuda Ray Tracing](https://github.com/jebikoh/cudart)
+
+If you want to push or pull updates from JTXLib, use this after you clone the repo:
+`git remote add jtxlib https://github.com/jebikoh/jtxlib.git`

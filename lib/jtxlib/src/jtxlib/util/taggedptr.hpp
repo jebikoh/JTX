@@ -8,6 +8,11 @@
  * This is a similar approach to the tagged pointer pattern used in PBRTv4.
  * The main difference is I do not store/mask the tag in the pointer itself.
  * https://github.com/mmp/pbrt-v4/blob/39e01e61f8de07b99859df04b271a02a53d9aeb2/src/pbrt/util/taggedptr.h
+ *
+ * TODO:
+ *  - Look into using std::variant
+ *  - Look into using std::forward and std::visit
+ *  - Profile on CUDA
 */
 namespace jtx {
     namespace detail {
@@ -262,6 +267,43 @@ namespace jtx {
             }
         }
         //endregion
+
+        template<typename... Ts>
+        struct IsSameType;
+
+        template<>
+        struct IsSameType<> {
+            static constexpr bool val = true;
+        };
+
+        template<typename T>
+        struct IsSameType<T> {
+            static constexpr bool val = true;
+        };
+
+        template<typename T, typename U, typename...Ts>
+        struct IsSameType<T, U, Ts...> {
+            static constexpr bool val = (std::is_same_v<T, U> && IsSameType<U, Ts...>::val);
+        };
+
+        template<typename... Ts>
+        struct SameType;
+
+        template<typename T, typename... Ts>
+        struct SameType<T, Ts...> {
+            using type = T;
+            static_assert(IsSameType<T, Ts...>::val, "Not all types are the same");
+        };
+
+        template<typename F, typename ...Ts>
+        struct ReturnType {
+            using type = typename SameType<typename std::invoke_result_t<F, Ts *>...>::type;
+        };
+
+        template<typename F, typename... Ts>
+        struct ReturnTypeConst {
+            using type = typename SameType<typename std::invoke_result_t<F, const Ts *>...>::type;
+        };
     }
 
     template<typename... Ts>
@@ -311,9 +353,9 @@ namespace jtx {
 
         template<typename F>
         decltype(auto) dispatch(F &&f) {
-            //
+            using R = typename detail::ReturnType<F, Ts...>::type;
+            return detail::dispatch<F, R, Ts...>(f, ptr, tag - 1);
         }
-
     private:
         void *ptr;
         unsigned int tag;

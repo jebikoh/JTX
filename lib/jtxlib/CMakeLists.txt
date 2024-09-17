@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.27)
 
 option(USE_CUDA "Enable CUDA support" OFF)
 if(USE_CUDA)

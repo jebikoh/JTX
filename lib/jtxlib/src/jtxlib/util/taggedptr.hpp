@@ -309,8 +309,6 @@ namespace jtx {
     template<typename... Ts>
     class TaggedPtr {
     public:
-        using Types = std::tuple<Ts...>;
-
         TaggedPtr() = default;
 
         template<typename T>
@@ -352,7 +350,7 @@ namespace jtx {
         }
 
         template<typename F>
-        decltype(auto) dispatch(F &&f) {
+        JTX_HOSTDEV decltype(auto) dispatch(F &&f) {
             using R = typename detail::ReturnType<F, Ts...>::type;
             return detail::dispatch<F, R, Ts...>(f, ptr, tag - 1);
         }

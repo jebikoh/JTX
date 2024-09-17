@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.27)
 
 option(USE_CUDA "Enable CUDA support" OFF)
 if(USE_CUDA)
@@ -67,6 +67,8 @@ set(JTXLIB_SIMD
 
 set(JTXLIB_UTIL
         src/jtxlib/util/assert.hpp
+        src/jtxlib/util/taggedptr.hpp
+        src/jtxlib/util/rand.hpp
 )
 
 set(JTXLIB_HEADERS
@@ -74,7 +76,6 @@ set(JTXLIB_HEADERS
         src/jtxlib/math.hpp
         src/jtxlib/simd.hpp
         src/jtxlib/util.hpp
-        src/jtxlib/util/rand.hpp
         src/jtxlib/math/vector.hpp
         src/jtxlib/math/quaternion.hpp
 )

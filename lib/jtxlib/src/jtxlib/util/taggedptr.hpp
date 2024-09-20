@@ -5,14 +5,8 @@
 #include <jtxlib/util/assert.hpp>
 
 /**
- * This is a similar approach to the tagged pointer pattern used in PBRTv4.
- * The main difference is I do not store/mask the tag in the pointer itself.
- * https://github.com/mmp/pbrt-v4/blob/39e01e61f8de07b99859df04b271a02a53d9aeb2/src/pbrt/util/taggedptr.h
- *
- * TODO:
- *  - Look into using std::variant
- *  - Look into using std::forward and std::visit
- *  - Profile on CUDA
+ * This the same fat pointer implementation used in PBRTv4 with minor changes
+ * https://github.com/mmp/pbrt-v4/blob/39e01e61f8de07b99859df04b271a02a53d9aeb2/src/pbrt/util/taggedptr.h#L736
 */
 namespace jtx {
     namespace detail {
@@ -20,7 +14,7 @@ namespace jtx {
         template<typename F, typename R, typename T>
         JTX_HOSTDEV R dispatch(F &&f, const void *ptr, int tag) {
             ASSERT(tag == 0);
-            return func((const T *)ptr);
+            return f((const T *)ptr);
         }
 
         template<typename F, typename R, typename T0, typename T1>
@@ -146,7 +140,7 @@ namespace jtx {
         template<typename F, typename R, typename T>
         JTX_HOSTDEV R dispatch(F &&f, void *ptr, int tag) {
             ASSERT(tag == 0);
-            return func((T *)ptr);
+            return f((T *)ptr);
         }
 
         template<typename F, typename R, typename T0, typename T1>
@@ -273,17 +267,17 @@ namespace jtx {
 
         template<>
         struct IsSameType<> {
-            static constexpr bool val = true;
+            static constexpr bool value = true;
         };
 
         template<typename T>
         struct IsSameType<T> {
-            static constexpr bool val = true;
+            static constexpr bool value = true;
         };
 
         template<typename T, typename U, typename...Ts>
         struct IsSameType<T, U, Ts...> {
-            static constexpr bool val = (std::is_same_v<T, U> && IsSameType<U, Ts...>::val);
+            static constexpr bool value = (std::is_same_v<T, U> && IsSameType<U, Ts...>::value);
         };
 
         template<typename... Ts>
@@ -292,77 +286,138 @@ namespace jtx {
         template<typename T, typename... Ts>
         struct SameType<T, Ts...> {
             using type = T;
-            static_assert(IsSameType<T, Ts...>::val, "Not all types are the same");
-        };
-
-        template<typename F, typename ...Ts>
-        struct ReturnType {
-            using type = typename SameType<typename std::invoke_result_t<F, Ts *>...>::type;
+            static_assert(IsSameType<T, Ts...>::value, "Not all types are the same");
         };
 
         template<typename F, typename... Ts>
-        struct ReturnTypeConst {
-            using type = typename SameType<typename std::invoke_result_t<F, const Ts *>...>::type;
+        struct ReturnType {
+            using type = typename SameType<typename std::invoke_result_t<F, Ts *>...>::type;
         };
     }
 
-    template<typename... Ts>
+    template <typename ...Ts>
     class TaggedPtr {
     public:
-        TaggedPtr() = default;
+      //region Constructors
+      JTX_HOSTDEV TaggedPtr() = default;
+      JTX_HOSTDEV TaggedPtr(const TaggedPtr &p) : fptr(p.fptr) {}
+      JTX_HOSTDEV explicit TaggedPtr(std::nullptr_t ptr) {};
 
-        template<typename T>
-        JTX_HOSTDEV TaggedPtr(T *ptr) : ptr(ptr), tag(tagIndex<T>()) {}
+      template <typename T>
+      JTX_HOSTDEV explicit TaggedPtr(T* ptr) {
+        auto p = reinterpret_cast<uint64_t>(ptr);
+        ASSERT((p & PTR_MASK)  == p);
+            constexpr unsigned int type = tagIndex<T>();
+        fptr = p | ((uint64_t) type << TAG_SHIFT);
+      }
+      //endregion
 
-        JTX_HOSTDEV TaggedPtr(std::nullptr_t ptr) : ptr(nullptr), tag(0) {}
+      //region Operators
+      JTX_HOSTDEV TaggedPtr &operator=(const TaggedPtr &p) {
+        fptr = p.fptr;
+        return *this;
+      }
 
-        JTX_HOSTDEV TaggedPtr(const TaggedPtr &other) : ptr(other.ptr), tag(other.tag) {}
+      JTX_HOSTDEV bool operator==(const TaggedPtr &p) const {
+        return fptr == p.fptr;
+      }
 
-        JTX_HOSTDEV TaggedPtr &operator=(const TaggedPtr &other) {
-            this->ptr = other.ptr;
-            this->tag = other.tag;
-            return *this;
-        }
+      JTX_HOSTDEV bool operator!=(const TaggedPtr &p) const {
+        return fptr != p.fptr;
+      }
+      //endregion
 
-        [[nodiscard]] JTX_HOSTDEV unsigned int getTag() const { return tag; }
+      //region Getters
+      [[nodiscard]] JTX_HOSTDEV unsigned int getTag() const {
+        return (fptr & TAG_MASK) >> TAG_SHIFT;
+      }
 
-        template<typename T>
-        [[nodiscard]] JTX_HOSTDEV bool is() const {
-            return tag == tagIndex<T>();
-        }
+      [[nodiscard]] JTX_HOSTDEV void *getPtr() {
+        return reinterpret_cast<void *>(fptr & PTR_MASK);
+      }
 
-        JTX_HOSTDEV bool operator==(const TaggedPtr &other) const {
-            return ptr == other.ptr && tag == other.tag;
-        }
+      [[nodiscard]] JTX_HOSTDEV const void *getPtr() const {
+        return reinterpret_cast<const void *>(fptr & PTR_MASK);
+      }
+      //endregion
 
-        JTX_HOSTDEV bool operator!=(const TaggedPtr &other) const {
-            return ptr != other.ptr || tag != other.tag;
-        }
+      template <typename T>
+      [[nodiscard]] JTX_HOSTDEV bool is() const {
+        return getTag() == tagIndex<T>();
+      }
 
-        JTX_HOSTDEV void *getPtr() { return ptr; }
-        [[nodiscard]] JTX_HOSTDEV void *getPtr() const { return ptr; }
+      //region Casting
+      template <typename T>
+      JTX_HOSTDEV T *cast() {
+        ASSERT(is<T>());
+        return reinterpret_cast<T *>(getPtr());
+      }
 
-        template<typename T>
-        [[nodiscard]] JTX_HOSTDEV constexpr unsigned int tagIndex() const {
-            using type = std::remove_cv_t<T>;
-            if constexpr (std::is_same_v<type, std::nullptr_t>) return 0;
-            else return 1 + getTagIndex<type, Ts...>();
-        }
+      template <typename T>
+      JTX_HOSTDEV const T *cast() const {
+        ASSERT(is<T>());
+        return reinterpret_cast<const T *>(getPtr());
+      }
 
-        template<typename F>
-        JTX_HOSTDEV decltype(auto) dispatch(F &&f) {
-            using R = typename detail::ReturnType<F, Ts...>::type;
-            return detail::dispatch<F, R, Ts...>(f, ptr, tag - 1);
-        }
+      template<typename T>
+      JTX_HOSTDEV T *castOrNp() {
+        if (is<T>()) { return reinterpret_cast<T *>(getPtr()); }
+        else { return nullptr; }
+      }
+
+      template<typename T>
+      JTX_HOSTDEV const T *castOrNp() const {
+          if (is<T>()) { return reinterpret_cast<const T *>(getPtr()); }
+          else { return nullptr; }
+      }
+      //endregion
+
+      template <typename T>
+      JTX_HOSTDEV static constexpr unsigned int tagIndex() {
+        using Tp = typename std::remove_cv_t<T>;
+        if constexpr (std::is_same_v<Tp, std::nullptr_t>) return 0;
+        else return 1 + getTagIndex<Tp, Ts...>();
+      }
+
+      template <typename F>
+      JTX_HOSTDEV decltype(auto) dispatch(F &&f) {
+        ASSERT(getPtr() != nullptr);
+        using R = typename detail::ReturnType<F, Ts...>::type;
+        return detail::dispatch<F, R, Ts...>(f, getPtr(), getTag() - 1);
+      }
+
+      template <typename F>
+      JTX_HOSTDEV decltype(auto) dispatch(F &&f) const {
+        ASSERT(getPtr() != nullptr);
+        using R = typename detail::ReturnType<F, Ts...>::type;
+        return detail::dispatch<F, R, Ts...>(f, getPtr(), getTag() - 1);
+      }
+
     private:
-        void *ptr;
-        unsigned int tag;
+      /*
+       * TAG_MASK visualization
+       * 1. 0b0000000000000000000000000000000000000000000000000000000000000001
+       * 2. 0b0000000000000000000000000000000000000000000000000000000010000000
+       * 3. 0b0000000000000000000000000000000000000000000000000000000001111111
+       * 4. 0b1111111000000000000000000000000000000000000000000000000000000000
+       */
+      static constexpr int TAG_SHIFT     = 57;
+      static constexpr int TAG_BITS      = 64 - TAG_SHIFT;
+      static constexpr uint64_t TAG_MASK = ((1ull << TAG_BITS) - 1) << TAG_SHIFT;
+      static constexpr uint64_t PTR_MASK = ~TAG_MASK;
 
-        template<typename T, typename U, typename...Rest>
-        [[nodiscard]] JTX_HOSTDEV constexpr unsigned int tagIndex() const {
-            if constexpr (std::is_same_v<T, U>) return 0;
-            else if constexpr (sizeof...(Rest) == 0) return -1;
-            else return 1 + getTagIndex<T, Rest...>();
-        }
+      template <typename T, typename U, typename ...Us>
+      JTX_HOSTDEV static constexpr int getTagIndex() {
+        if constexpr (std::is_same_v<T, U>) return 0;
+        else return 1 + getTagIndex<T, Us...>();
+      }
+
+      template <typename T>
+      JTX_HOSTDEV static constexpr int getTagIndex() {
+        static_assert(!std::is_same_v<T, T>, "Type not found in list");
+        return 0;
+      }
+
+      uint64_t fptr = 0;
     };
 }

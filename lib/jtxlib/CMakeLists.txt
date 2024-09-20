@@ -117,8 +117,9 @@ endif()
 #endregion
 
 #region Tests
-option(BUILD_TESTS "Build tests" OFF)
-if (CMAKE_BUILD_TYPE STREQUAL "Test")
+option(BUILD_TESTS "Build tests" ON)
+if (BUILD_TESTS)
+    message(STATUS "[JTXLib] Building tests")
     add_subdirectory("lib/Catch2")
     list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/Catch2/extras)
     include(CTest)

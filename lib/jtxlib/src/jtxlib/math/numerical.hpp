@@ -9,6 +9,7 @@
 #include <jtxlib.hpp>
 #include <jtxlib/math/constants.hpp>
 #include <cstdint>
+#include <bit>
 
 #define JTX_NUM_ONLY(TypeName) template<typename TypeName = T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
 

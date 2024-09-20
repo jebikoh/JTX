@@ -8,6 +8,7 @@ add_executable(tests
         test_mat4.cpp
         test_quat.cpp
         test_math.cpp
+        test_tptr.cpp
 )
 
 target_link_libraries(tests PRIVATE jtxlib Catch2WithMain)

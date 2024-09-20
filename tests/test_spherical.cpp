@@ -25,7 +25,7 @@ TEST_CASE("Spherical Quad Area", "[Spherical]") {
 TEST_CASE("Spherical To Cartesian", "[Spherical]") {
     float theta = jtx::radians(90.0f);
     float phi = jtx::radians(0.0f);
-    Vec3f v = sphericalToCartesian(sin(theta), cos(theta), phi);
+    Vec3f v = sphericalToCartesian(jtx::sin(theta), jtx::cos(theta), phi);
     REQUIRE_THAT(v.len(), Catch::Matchers::WithinRel(1.0f, T_EPS));
     REQUIRE(v.equals(Vec3f{1.0f, 0.0f, 0.0f}, T_EPS));
 }

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.27)
 
 option(USE_CUDA "Enable CUDA support" OFF)
 if(USE_CUDA)
@@ -67,6 +67,8 @@ set(JTXLIB_SIMD
 
 set(JTXLIB_UTIL
         src/jtxlib/util/assert.hpp
+        src/jtxlib/util/taggedptr.hpp
+        src/jtxlib/util/rand.hpp
 )
 
 set(JTXLIB_HEADERS
@@ -74,7 +76,6 @@ set(JTXLIB_HEADERS
         src/jtxlib/math.hpp
         src/jtxlib/simd.hpp
         src/jtxlib/util.hpp
-        src/jtxlib/util/rand.hpp
         src/jtxlib/math/vector.hpp
         src/jtxlib/math/quaternion.hpp
 )
@@ -116,8 +117,9 @@ endif()
 #endregion
 
 #region Tests
-option(BUILD_TESTS "Build tests" OFF)
-if (CMAKE_BUILD_TYPE STREQUAL "Test")
+option(BUILD_TESTS "Build tests" ON)
+if (BUILD_TESTS)
+    message(STATUS "[JTXLib] Building tests")
     add_subdirectory("lib/Catch2")
     list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/Catch2/extras)
     include(CTest)

@@ -59,6 +59,8 @@ set(JTXLIB_MATH
         src/jtxlib/math/math.hpp
         src/jtxlib/math/bounds.hpp
         src/jtxlib/math/constants.hpp
+        src/jtxlib/math/vector.hpp
+        src/jtxlib/math/quaternion.hpp
 )
 
 set(JTXLIB_SIMD
@@ -71,19 +73,29 @@ set(JTXLIB_UTIL
         src/jtxlib/util/rand.hpp
 )
 
+set(JTXLIB_CONTAINERS
+        src/jtxlib/containers/inlinedvec.hpp
+)
+
+set(JTXLIB_STD
+        src/jtxlib/std/memory_resource.hpp
+)
+
 set(JTXLIB_HEADERS
         src/jtxlib.hpp
         src/jtxlib/math.hpp
         src/jtxlib/simd.hpp
         src/jtxlib/util.hpp
-        src/jtxlib/math/vector.hpp
-        src/jtxlib/math/quaternion.hpp
+        src/jtxlib/containers.hpp
+        src/jtxlib/std.hpp
 )
 
 add_library(jtxlib STATIC
         ${JTXLIB_MATH}
         ${JTXLIB_SIMD}
         ${JTXLIB_UTIL}
+        ${JTXLIB_CONTAINERS}
+        ${JTXLIB_STD}
         ${JTXLIB_HEADERS}
 )
 #endregion

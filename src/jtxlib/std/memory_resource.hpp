@@ -32,14 +32,16 @@ public:
     do_deallocate(p, bytes, alignment);
   }
 
-  void is_equal(const memory_resource &other) const noexcept {
-    do_is_equal(other);
+  [[nodiscard]]
+  bool is_equal(const memory_resource &other) const noexcept {
+    return do_is_equal(other);
   }
 
 private:
   virtual void *do_allocate(size_t bytes, size_t alignment) = 0;
   virtual void  do_deallocate(void *p, size_t bytes, size_t alignment) = 0;
-  virtual void  do_is_equal(const memory_resource &other) const noexcept = 0;
+  [[nodiscard]]
+  virtual bool  do_is_equal(const memory_resource &other) const noexcept = 0;
 };
 
 [[nodiscard]]
@@ -51,6 +53,21 @@ inline bool operator==(const memory_resource &a, const memory_resource &b) noexc
 inline bool operator!=(const memory_resource &a, const memory_resource &b) noexcept {
   return !(a == b);
 }
+
+/**
+ * Global memory resources
+ */
+[[nodiscard]]
+memory_resource *new_delete_resource() noexcept;
+
+[[nodiscard]]
+memory_resource *null_memory_resource() noexcept;
+
+[[nodiscard]]
+memory_resource *set_default_resource(memory_resource *r) noexcept;
+
+[[nodiscard]]
+memory_resource *get_default_resource() noexcept;
 
 /**
  * Implementation of the C++17 polymorphic allocator interface.
@@ -68,7 +85,6 @@ public:
   using value_type = Tp;
 
   polymorphic_allocator() noexcept {
-    extern memory_resource *get_default_resource();
     m_resource = get_default_resource();
   }
 

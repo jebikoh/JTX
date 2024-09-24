@@ -43,6 +43,35 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Test")
 endif ()
 #endregion
 
+#region Check CXX compilation
+# Taken from PBRTv4 CMake
+include (CheckCXXSourceCompiles)
+
+set(CMAKE_REQUIRED_QUIET ON)
+check_cxx_source_compiles ( "
+#include <malloc.h>
+int main() { void * ptr = _aligned_malloc(1024, 32); }
+" HAVE__ALIGNED_MALLOC )
+check_cxx_source_compiles ( "
+#include <stdlib.h>
+int main() {
+  void *ptr;
+  posix_memalign(&ptr, 32, 1024);
+} " HAVE_POSIX_MEMALIGN )
+set(CMAKE_REQUIRED_QUIET OFF)
+
+if (HAVE__ALIGNED_MALLOC)
+    add_compile_definitions(JTX__ALIGNED_MALLOC)
+    message(STATUS "[JTXLib] Using _aligned_malloc() for memory alignment.")
+elseif (HAVE_POSIX_MEMALIGN)
+    add_compile_definitions(JTX_POSIX_MEMALIGN)
+    message(STATUS "[JTXLib] Using posix_memalign() for memory alignment.")
+else ()
+    message (SEND_ERROR "[JTXLib] No memory alignment function found. Defaulting to memalign().")
+endif ()
+
+#endregion
+
 #region Library Files
 set(JTXLIB_MATH
         src/jtxlib/math/vec2.hpp
@@ -79,6 +108,7 @@ set(JTXLIB_CONTAINERS
 
 set(JTXLIB_STD
         src/jtxlib/std/memory_resource.hpp
+        src/jtxlib/std/memory_resource.cpp
 )
 
 set(JTXLIB_HEADERS

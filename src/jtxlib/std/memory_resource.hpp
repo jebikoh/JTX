@@ -10,6 +10,7 @@
 #include <utility>
 
 namespace jtx::pmr {
+
 #pragma region Memory Resource
 /**
  * Implementation of the C++17 polymorphic memory resource interface.
@@ -176,6 +177,7 @@ static const int PMR_VECTOR_GROWTH_FACTOR = 2;
 
 /**
  * Implementation of the C++17 polymorphic vector interface.
+ * Note, a few methods are left unimplemented,
  *
  * References:
  *  - https://en.cppreference.com/w/cpp/container/vector

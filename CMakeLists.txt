@@ -109,6 +109,7 @@ set(JTXLIB_CONTAINERS
 set(JTXLIB_STD
         src/jtxlib/std/memory_resource.hpp
         src/jtxlib/std/memory_resource.cpp
+        src/jtxlib/std/std.hpp
 )
 
 set(JTXLIB_HEADERS

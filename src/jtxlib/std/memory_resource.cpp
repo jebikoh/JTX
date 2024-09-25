@@ -3,9 +3,9 @@
 #include <new>
 
 #if defined(JTX__ALIGNED_MALLOC)
-#include <malloc.h> // NOLINT(*-deprecated-headers)
+#include <malloc.h>// NOLINT(*-deprecated-headers)
 #elif defined(JTX_POSIX_MEMALIGN)
-#include <stdlib.h> // NOLINT(*-deprecated-headers)
+#include <stdlib.h>// NOLINT(*-deprecated-headers)
 #endif
 
 namespace jtx::pmr {
@@ -13,14 +13,14 @@ namespace jtx::pmr {
 class newdel_res_t final : public memory_resource {
     void *do_allocate(size_t bytes, size_t alignment) override {
 #if defined(JTX__ALIGNED_MALLOC)
-            return _aligned_malloc(bytes, alignment);
+        return _aligned_malloc(bytes, alignment);
 #elif defined(JTX_POSIX_MEMALIGN)
-            void *ptr;
-            if (alignment < sizeof(void *)) return malloc(bytes);
-            if (posix_memalign(&ptr, alignment, bytes) != 0) ptr = nullptr;
-            return ptr;
+        void *ptr;
+        if (alignment < sizeof(void *)) return malloc(bytes);
+        if (posix_memalign(&ptr, alignment, bytes) != 0) ptr = nullptr;
+        return ptr;
 #else
-            return memalign(alignment, size);
+        return memalign(alignment, size);
 #endif
     }
 
@@ -40,12 +40,12 @@ class newdel_res_t final : public memory_resource {
 };
 
 class null_res_t final : public memory_resource {
-  void *do_allocate(size_t bytes, size_t alignment) override { std::__throw_bad_alloc(); }
+    void *do_allocate(size_t bytes, size_t alignment) override { std::__throw_bad_alloc(); }
 
-  void do_deallocate(void *p, size_t bytes, size_t alignment) noexcept override {}
+    void do_deallocate(void *p, size_t bytes, size_t alignment) noexcept override {}
 
-  [[nodiscard]]
-  bool do_is_equal(const memory_resource &other) const noexcept override {return this == &other;}
+    [[nodiscard]]
+    bool do_is_equal(const memory_resource &other) const noexcept override { return this == &other; }
 };
 
 static newdel_res_t *newdel_res;
@@ -53,21 +53,21 @@ static null_res_t *null_res;
 static memory_resource *def = newdel_res;
 
 memory_resource *new_delete_resource() noexcept {
-  if (!newdel_res) newdel_res = new newdel_res_t;
-  return newdel_res;
+    if (!newdel_res) newdel_res = new newdel_res_t;
+    return newdel_res;
 }
 
 memory_resource *null_memory_resource() noexcept {
-  if (!null_res) null_res = new null_res_t;
-  return null_res;
+    if (!null_res) null_res = new null_res_t;
+    return null_res;
 }
 
 memory_resource *set_default_resource(memory_resource *r) noexcept {
-  memory_resource *old = def;
-  def = r;
-  return old;
+    memory_resource *old = def;
+    def = r;
+    return old;
 }
 
 memory_resource *get_default_resource() noexcept { return def; }
 
-} // namespace jtx::pmr
+}// namespace jtx::pmr

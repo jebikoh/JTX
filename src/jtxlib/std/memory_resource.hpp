@@ -23,7 +23,6 @@ namespace jtx::pmr {
  */
 class memory_resource {
     static constexpr size_t max_align = alignof(std::max_align_t);
-
 public:
     memory_resource() = default;
     memory_resource(const memory_resource &) = delete;

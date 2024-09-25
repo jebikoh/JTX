@@ -50,7 +50,7 @@ class null_res_t final : public memory_resource {
 
 static newdel_res_t *newdel_res;
 static null_res_t *null_res;
-static memory_resource *def = newdel_res;
+static memory_resource *def = new_delete_resource();
 
 memory_resource *new_delete_resource() noexcept {
     if (!newdel_res) newdel_res = new newdel_res_t;

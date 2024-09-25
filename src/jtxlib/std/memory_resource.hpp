@@ -1,5 +1,10 @@
 #pragma once
+#include "jtxlib.hpp"
+#include <jtxlib/util/assert.hpp>
+
 #include <cstddef>
+#include <iterator>
+#include <stdexcept>
 #include <utility>
 
 namespace jtx::pmr {
@@ -141,8 +146,14 @@ public:
 
   template <class Up>
   void delete_object(Up *p) {
-    p->~Up();
+    destroy(p);
     deallocate_object(p);
+  }
+
+  // This is not std, but PBRT does this for a small optimization in pmr::vector
+  template <class Up>
+  void destroy(Up *p) {
+    p->~Up();
   }
 
   [[nodiscard]]
@@ -163,5 +174,245 @@ template <typename Tp1, typename Tp2>
 bool operator!=(const polymorphic_allocator<Tp1> &a, const polymorphic_allocator<Tp2> &b) noexcept {
   return !(a == b);
 }
+
+#pragma region PMR Vector
+/**
+ * Implementation of the C++17 polymorphic vector interface.
+ *
+ * References:
+ *  - https://en.cppreference.com/w/cpp/container/vector
+ *  - https://github.com/mmp/pbrt-v4/blob/39e01e61f8de07b99859df04b271a02a53d9aeb2/src/pbrt/util/pstd.h#L701
+ *  - https://gcc.gnu.org/onlinedocs/gcc-4.6.3/libstdc++/api/a01115_source.html
+ * @tparam Tp The type of the object to allocate.
+ * @tparam Allocator The allocator to use.
+ */
+template <typename Tp, class Allocator = polymorphic_allocator<Tp>>
+class vector {
+public:
+#pragma region Typedefs
+  using value_type = Tp;
+  using allocator_type = Allocator;
+  using size_type = std::size_t;
+  using difference_type = std::ptrdiff_t;
+  using reference = value_type &;
+  using const_reference = const value_type &;
+  using pointer = Tp *;
+  using const_pointer = const Tp *;
+  using iterator = Tp *;
+  using const_iterator = const Tp *;
+  using reverse_iterator = std::reverse_iterator<iterator>;
+  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+#pragma endregion Typedefs
+
+#pragma region Element access
+  JTX_HOSTDEV
+  reference at(size_type pos) {
+    ASSERT(pos < numStored);
+    return ptr[pos];
+  }
+
+  JTX_HOSTDEV
+  const_reference at(size_type pos) const {
+    ASSERT(pos < numStored);
+    return ptr[pos];
+  }
+
+  JTX_HOSTDEV
+  reference operator[](size_type pos) {
+    ASSERT(pos < numStored);
+    return ptr[pos];
+  }
+
+  JTX_HOSTDEV
+  const_reference operator[](size_type pos) const {
+    ASSERT(pos < numStored);
+    return ptr[pos];
+  }
+
+  JTX_HOSTDEV
+  reference front() {
+    ASSERT(numStored > 0);
+    return ptr[0];
+  }
+
+  JTX_HOSTDEV
+  const_reference front() const {
+    ASSERT(numStored > 0);
+    return ptr[0];
+  }
+
+  JTX_HOSTDEV
+  reference back() {
+    ASSERT(numStored > 0);
+    return ptr[numStored - 1];
+  }
+
+  JTX_HOSTDEV
+  const_reference back() const {
+    ASSERT(numStored > 0);
+    return ptr[numStored - 1];
+  }
+
+  JTX_HOSTDEV
+  Tp *data() noexcept { return ptr; }
+
+  JTX_HOSTDEV
+  const Tp *data() const noexcept { return ptr; }
+#pragma endregion Element access
+
+#pragma region Iterators
+  JTX_HOSTDEV
+  iterator begin() { return ptr; }
+
+  JTX_HOSTDEV
+  const_iterator begin() const { return ptr; }
+
+  JTX_HOSTDEV
+  const_iterator cbegin() const { return ptr; }
+
+  JTX_HOSTDEV
+  const_iterator end() const { return ptr + numStored; }
+
+  JTX_HOSTDEV
+  iterator end() { return ptr + numStored; }
+
+  JTX_HOSTDEV
+  const_iterator cend() const { return ptr + numStored; }
+
+  JTX_HOSTDEV
+  iterator rbegin() { return reverse_iterator(end()); }
+
+  JTX_HOSTDEV
+  const_iterator rbegin() const { return const_reverse_iterator(end()); }
+
+  JTX_HOSTDEV
+  const_iterator crbegin() const { return const_reverse_iterator(end()); }
+
+  JTX_HOSTDEV
+  iterator rend() { return reverse_iterator(begin()); }
+
+  JTX_HOSTDEV
+  const_iterator rend() const { return const_reverse_iterator(begin()); }
+
+  JTX_HOSTDEV
+  const_iterator crend() const { return const_reverse_iterator(begin()); }
+#pragma endregion Iterators
+
+#pragma region Capacity
+  [[nodiscard]]
+  JTX_HOSTDEV
+  bool empty() const { return numStored == 0; }
+
+  [[nodiscard]]
+  JTX_HOSTDEV
+  size_t size() const { return numStored; }
+
+  // ReSharper disable once CppMemberFunctionMayBeStatic
+  [[nodiscard]]
+  JTX_HOSTDEV
+  size_t max_size() const { return static_cast<size_t>(-1); }
+
+  // Allocators cannot be used on the GPU
+  JTX_HOST
+  void reserve(size_t n) {
+    if (numAlloc >= n) return;
+    Tp *newPtr = alloc.template allocate_object<Tp>(n);
+    for (int i = 0; i < numStored; ++i) {
+      alloc.template construct<Tp>(newPtr + i, std::move(ptr[i]));
+      alloc.destroy(begin() + i);
+    }
+    alloc.deallocate_object(ptr, numAlloc);
+    numAlloc = n;
+    ptr = newPtr;
+  }
+
+  [[nodiscard]]
+  JTX_HOSTDEV
+  size_t capacity() const { return numAlloc; }
+
+#pragma endregion Capacity
+
+#pragma region Modifiers
+  JTX_HOST
+  void clear() noexcept {
+    for (int i = 0; i < numStored; ++i) {
+      alloc.destroy(&ptr[i]);
+    }
+    numStored = 0;
+  }
+
+  JTX_HOST
+  iterator insert(const_iterator pos, const Tp &value) {
+    // Shift elements to the right
+  }
+
+  JTX_HOST
+  iterator insert(const_iterator pos, Tp &&value) {
+    ASSERT(false);
+  }
+
+  JTX_HOST
+  iterator insert(const_iterator pos, size_type count, const Tp &value) {
+    ASSERT(false);
+  }
+
+  JTX_HOST
+  template <class InputIt>
+  iterator insert(const_iterator pos, InputIt first, InputIt last) {
+    ASSERT(false);
+  }
+
+  iterator insert(const_iterator pos, std::initializer_list<Tp> ilist) {
+    ASSERT(false);
+  }
+
+  JTX_HOST
+  void resize(size_type count) {
+    if (count < size()) {
+      for (size_t i = count; i < size(); ++i) {
+        alloc.destroy(ptr + i);
+      }
+      if (count == 0) {
+        alloc.deallocate_object(ptr, numAlloc);
+        ptr = nullptr;
+        numAlloc = 0;
+      }
+    } else if (count > size()) {
+      reserve(count);
+      for (size_t i = numStored; i < count; ++i) {
+        alloc.construct(ptr + i);
+      }
+    }
+    numStored = count;
+  }
+
+  JTX_HOST
+  void resize(size_type count, const value_type &value) {
+    if (count < size()) {
+      for (size_t i = count; i < size(); ++i) {
+        alloc.destroy(ptr + i);
+      }
+      if (count == 0) {
+        alloc.deallocate_object(ptr, numAlloc);
+        ptr = nullptr;
+        numAlloc = 0;
+      }
+    } else if (count > size()) {
+      reserve(count);
+      for (size_t i = numStored; i < count; ++i) {
+        alloc.construct(ptr + i, value);
+      }
+    }
+    numStored = count;
+  }
+#pragma endregion Modifiers
+
+private:
+  Allocator alloc;
+  Tp *ptr = nullptr;
+  size_t numAlloc  = 0;
+  size_t numStored = 0;
+};
+#pragma endregion PMR Vector
 
 } // namespace jtx::pmr

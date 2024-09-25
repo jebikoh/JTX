@@ -110,12 +110,12 @@ public:
         m_resource->deallocate(p, n * sizeof(Tp), alignof(Tp));
     }
 
-    [[nodiscard]] void *allocate_bytes(size_t n) {
-        return m_resource->allocate(n, alignof(std::max_align_t));
+    [[nodiscard]] void *allocate_bytes(size_t n, size_t alignment = alignof(std::max_align_t)) {
+        return m_resource->allocate(n, alignment);
     }
 
-    void deallocate_bytes(void *p, size_t n) {
-        m_resource->deallocate(p, n, alignof(std::max_align_t));
+    void deallocate_bytes(void *p, size_t n, size_t alignment = alignof(std::max_align_t)) {
+        m_resource->deallocate(p, n, alignment);
     }
 
     template<typename Up>

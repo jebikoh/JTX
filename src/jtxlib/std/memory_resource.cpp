@@ -12,6 +12,7 @@ namespace jtx::pmr {
 
 class newdel_res_t final : public memory_resource {
     void *do_allocate(size_t bytes, size_t alignment) override {
+        if (bytes == 0) return nullptr;
 #if defined(JTX__ALIGNED_MALLOC)
         return _aligned_malloc(bytes, alignment);
 #elif defined(JTX_POSIX_MEMALIGN)

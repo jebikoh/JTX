@@ -1,5 +1,7 @@
 #pragma once
 #include "jtxlib.hpp"
+#include "jtxlib/math/vecmath.hpp"
+
 #include <jtxlib/util/assert.hpp>
 
 #include <cstddef>
@@ -8,6 +10,7 @@
 #include <utility>
 
 namespace jtx::pmr {
+#pragma region Memory Resource
 /**
  * Implementation of the C++17 polymorphic memory resource interface.
  *
@@ -27,8 +30,7 @@ public:
 
     memory_resource &operator=(const memory_resource &) = default;
 
-    [[nodiscard]]
-    void *allocate(size_t bytes, size_t alignment = max_align) {
+    [[nodiscard]] void *allocate(size_t bytes, size_t alignment = max_align) {
         if (bytes == 0) return nullptr;
         return do_allocate(bytes, alignment);
     }
@@ -38,43 +40,39 @@ public:
         do_deallocate(p, bytes, alignment);
     }
 
-    [[nodiscard]]
-    bool is_equal(const memory_resource &other) const noexcept {
+    [[nodiscard]] bool is_equal(const memory_resource &other) const noexcept {
         return do_is_equal(other);
     }
 
 private:
     virtual void *do_allocate(size_t bytes, size_t alignment) = 0;
     virtual void do_deallocate(void *p, size_t bytes, size_t alignment) = 0;
-    [[nodiscard]]
-    virtual bool do_is_equal(const memory_resource &other) const noexcept = 0;
+    [[nodiscard]] virtual bool do_is_equal(const memory_resource &other) const noexcept = 0;
 };
 
-[[nodiscard]]
-inline bool operator==(const memory_resource &a, const memory_resource &b) noexcept {
+[[nodiscard]] inline bool operator==(const memory_resource &a, const memory_resource &b) noexcept {
     return &a == &b || a.is_equal(b);
 }
 
-[[nodiscard]]
-inline bool operator!=(const memory_resource &a, const memory_resource &b) noexcept {
+[[nodiscard]] inline bool operator!=(const memory_resource &a, const memory_resource &b) noexcept {
     return !(a == b);
 }
+#pragma endregion Memory Resource
 
+#pragma region Global Memory Resources
 /**
  * Global memory resources
  */
-[[nodiscard]]
-memory_resource *new_delete_resource() noexcept;
+[[nodiscard]] memory_resource *new_delete_resource() noexcept;
 
-[[nodiscard]]
-memory_resource *null_memory_resource() noexcept;
+[[nodiscard]] memory_resource *null_memory_resource() noexcept;
 
-[[nodiscard]]
-memory_resource *set_default_resource(memory_resource *r) noexcept;
+[[nodiscard]] memory_resource *set_default_resource(memory_resource *r) noexcept;
 
-[[nodiscard]]
-memory_resource *get_default_resource() noexcept;
+[[nodiscard]] memory_resource *get_default_resource() noexcept;
+#pragma endregion Global Memory Resources
 
+#pragma region Polymorphic Allocator
 /**
  * Implementation of the C++17 polymorphic allocator interface.
  *
@@ -104,8 +102,7 @@ public:
 
     polymorphic_allocator &operator=(const polymorphic_allocator &other) = delete;
 
-    [[nodiscard]]
-    Tp *allocate(size_t n) {
+    [[nodiscard]] Tp *allocate(size_t n) {
         return static_cast<Tp *>(m_resource->allocate(n * sizeof(Tp), alignof(Tp)));
     }
 
@@ -113,8 +110,7 @@ public:
         m_resource->deallocate(p, n * sizeof(Tp), alignof(Tp));
     }
 
-    [[nodiscard]]
-    void *allocate_bytes(size_t n) {
+    [[nodiscard]] void *allocate_bytes(size_t n) {
         return m_resource->allocate(n, alignof(std::max_align_t));
     }
 
@@ -123,8 +119,7 @@ public:
     }
 
     template<typename Up>
-    [[nodiscard]]
-    Up *allocate_object(size_t n = 1) {
+    [[nodiscard]] Up *allocate_object(size_t n = 1) {
         return static_cast<Up *>(allocate_bytes(n * sizeof(Up), alignof(Up)));
     }
 
@@ -157,24 +152,22 @@ public:
         p->~Up();
     }
 
-    [[nodiscard]]
-    memory_resource *resource() const noexcept { return m_resource; }
+    [[nodiscard]] memory_resource *resource() const noexcept { return m_resource; }
 
 private:
     memory_resource *m_resource;
 };
 
 template<typename Tp1, typename Tp2>
-[[nodiscard]]
-bool operator==(const polymorphic_allocator<Tp1> &a, const polymorphic_allocator<Tp2> &b) noexcept {
+[[nodiscard]] bool operator==(const polymorphic_allocator<Tp1> &a, const polymorphic_allocator<Tp2> &b) noexcept {
     return a.resource() == b.resource();
 }
 
 template<typename Tp1, typename Tp2>
-[[nodiscard]]
-bool operator!=(const polymorphic_allocator<Tp1> &a, const polymorphic_allocator<Tp2> &b) noexcept {
+[[nodiscard]] bool operator!=(const polymorphic_allocator<Tp1> &a, const polymorphic_allocator<Tp2> &b) noexcept {
     return !(a == b);
 }
+#pragma endregion Polymorphic Allocator
 
 #pragma region PMR Vector
 
@@ -208,6 +201,142 @@ public:
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 #pragma endregion Typedefs
+
+#pragma region Constructors/destructors
+    JTX_HOST
+    explicit vector(const Allocator &alloc = {}) noexcept : alloc(alloc) {}
+
+    JTX_HOST
+    vector(size_type count, const Tp &value, const Allocator &alloc = {}) : alloc(alloc) {
+        reserve(count);
+        for (size_t i = 0; i < count; ++i) {
+            this->alloc.template construct<Tp>(ptr + i, value);
+        }
+        numStored = count;
+    }
+
+    JTX_HOST
+    explicit vector(size_type count, const Allocator &alloc = {}) : vector(count, Tp{}, alloc) {}
+
+    JTX_HOST
+    template<class InputIt>
+    vector(InputIt first, InputIt last, const Allocator &alloc = {}) : alloc(alloc) {
+        reserve(last - first);
+        size_t i = 0;
+        for (InputIt iter = first; iter != last; ++iter, ++i) {
+            this->alloc.template construct<Tp>(ptr + i, *iter);
+        }
+        numStored = numAlloc;
+    }
+
+    JTX_HOST
+    vector(const vector &other) : alloc(other.alloc) {
+        numStored = other.numStored;
+        numAlloc = other.numAlloc;
+        ptr = other.ptr;
+
+        other.numStored = other.numAlloc = 0;
+        other.ptr = nullptr;
+    }
+
+    JTX_HOST
+    vector(const vector &other, const Allocator &alloc) : alloc(alloc) {
+        if (alloc == other.alloc) {
+            ptr = other.ptr;
+            numAlloc = other.numAlloc;
+            numStored = other.numStored;
+
+            other.numStored = other.numAlloc = 0;
+            other.ptr = nullptr;
+        } else {
+            reserve(other.size());
+            for (size_t i = 0; i < other.size(); ++i) {
+                alloc.template construct<Tp>(ptr + i, std::move(other[i]));
+            }
+            numStored = other.size();
+        }
+    }
+
+    JTX_HOST
+    vector(std::initializer_list<Tp> ilist, const Allocator &alloc = {}) : vector(ilist.begin(), ilist.end(), alloc) {}
+
+    JTX_HOST
+    ~vector() {
+        clear();
+        alloc.deallocate_object(ptr, numAlloc);
+    }
+#pragma endregion Constructors / destructors
+
+    JTX_HOST
+    void assign(size_type count, const Tp &value) {
+        clear();
+        reserve(count);
+        for (size_t i = 0; i < count; ++i) {
+            push_back(value);
+        }
+    }
+
+    JTX_HOST
+    template<class InputIt>
+    void assign(InputIt first, InputIt last) {
+        clear();
+        reserve(last - first);
+        for (auto iter = first; iter != last; ++iter) {
+            push_back(*iter);
+        }
+    }
+
+    JTX_HOST
+    void assign(std::initializer_list<Tp> ilist) {
+        assign(ilist.begin(), ilist.end());
+    }
+
+    JTX_HOST
+    allocator_type get_allocator() const noexcept { return alloc; }
+
+    JTX_HOST
+    vector &operator=(const vector &other) {
+        if (this == &other) return *this;
+        clear();
+        reserve(other.size());
+        for (size_t i = 0; i < other.size(); ++i) {
+            alloc.template construct<Tp>(ptr + i, other[i]);
+        }
+        numStored = other.size();
+        return *this;
+    }
+
+    JTX_HOST
+    vector &operator=(vector &&other) noexcept {
+        if (this == &other) return *this;
+        clear();
+
+        if (alloc == other.alloc) {
+            std::swap(ptr, other.ptr);
+            std::swap(numAlloc, other.numAlloc);
+            std::swap(numStored, other.numStored);
+        } else {
+            clear();
+            reserve(other.size());
+            for (size_t i = 0; i < other.size(); ++i) {
+                alloc.template construct<Tp>(ptr + i, std::move(other[i]));
+            }
+            numStored = other.size();
+        }
+        return *this;
+    }
+
+    JTX_HOST
+    vector &operator=(std::initializer_list<Tp> &init) {
+        reserve(init.size());
+        clear();
+        iterator iter = begin();
+        for (const auto &value: init) {
+            *iter = value;
+            ++iter;
+        }
+        return *this;
+    }
 
 #pragma region Element access
     JTX_HOSTDEV
@@ -304,17 +433,16 @@ public:
 #pragma endregion Iterators
 
 #pragma region Capacity
-    [[nodiscard]]
-    JTX_HOSTDEV bool empty() const { return numStored == 0; }
+    [[nodiscard]] JTX_HOSTDEV bool empty() const { return numStored == 0; }
 
-    [[nodiscard]]
-    JTX_HOSTDEV
-            size_t size() const { return numStored; }
+    [[nodiscard]] JTX_HOSTDEV
+            size_t
+            size() const { return numStored; }
 
     // ReSharper disable once CppMemberFunctionMayBeStatic
-    [[nodiscard]]
-    JTX_HOSTDEV
-            size_t max_size() const { return static_cast<size_t>(-1); }
+    [[nodiscard]] JTX_HOSTDEV
+            size_t
+            max_size() const { return static_cast<size_t>(-1); }
 
     // Allocators cannot be used on the GPU
     JTX_HOST
@@ -330,9 +458,9 @@ public:
         ptr = newPtr;
     }
 
-    [[nodiscard]]
-    JTX_HOSTDEV
-            size_t capacity() const { return numAlloc; }
+    [[nodiscard]] JTX_HOSTDEV
+            size_t
+            capacity() const { return numAlloc; }
 
 #pragma endregion Capacity
 
@@ -387,18 +515,59 @@ public:
 
     JTX_HOST
     iterator insert(const_iterator pos, size_type count, const Tp &value) {
-        ASSERT(false);
+        ASSERT(pos >= begin() && pos <= end());
+        if (count == 0) return pos;
+        if (numStored == numAlloc) {
+            reserve(numAlloc == 0 ? std::max(PMR_VECTOR_EMPTY_RESERVE, static_cast<int>(count)) : std::max(numAlloc * PMR_VECTOR_GROWTH_FACTOR, count));
+        }
+        size_t index = pos - begin();
+        for (size_t i = numStored + count - 1; i > index + count - 1; --i) {
+            alloc.construct(ptr + i, std::move(ptr[i - count]));
+            alloc.destroy(ptr + i - count);
+        }
+        for (size_t i = index; i < index + count; ++i) {
+            alloc.construct(ptr + i, value);
+        }
+        numStored += count;
+        return ptr + index;
     }
 
+    /**
+     * Not implemented; will be implemented if needed
+     */
     JTX_HOST
     template<class InputIt>
     iterator insert(const_iterator pos, InputIt first, InputIt last) {
         ASSERT(false);
     }
 
+    /**
+     * Not implemented; will be implemented if needed
+     */
     JTX_HOST
     iterator insert(const_iterator pos, std::initializer_list<Tp> ilist) {
         ASSERT(false);
+    }
+
+    JTX_HOST
+    template<class... Args>
+    iterator emplace(const_iterator pos, Args &&...args) {
+        ASSERT(pos >= begin() && pos <= end());
+        if (pos == end()) {
+            emplace_back(std::forward<Args>(args)...);
+            return end() - 1;
+        }
+        if (numStored == numAlloc) {
+            reserve(numAlloc == 0 ? PMR_VECTOR_EMPTY_RESERVE : numAlloc * PMR_VECTOR_GROWTH_FACTOR);
+        }
+        size_t index = pos - begin();
+        for (size_t i = numStored; i > index; --i) {
+            alloc.construct(ptr + i, std::move(ptr[i - 1]));
+            alloc.destroy(ptr + i - 1);
+        }
+        alloc.construct(ptr + index, std::forward<Args>(args)...);
+        ++numStored;
+        return begin() + index;
     }
 
     JTX_HOST

@@ -3,6 +3,7 @@
 
 // Unit tests written o1-mini with manual revisions
 
+using namespace jtx;
 using namespace jtx::pmr;
 
 static constexpr size_t max_align = alignof(std::max_align_t);
@@ -16,6 +17,9 @@ struct TestStruct {
     explicit TestStruct(const int v = 0) : value(v) {}
     ~TestStruct() = default;
 };
+
+template <typename T>
+using pmr_vector = vector<T, polymorphic_allocator<T>>;
 
 #pragma region memory_resource
 TEST_CASE("Singleton behavior of memory resources", "[memory_resource][singleton]") {
@@ -419,3 +423,113 @@ TEST_CASE("polymorphic_allocator exception handling", "[polymorphic_allocator][e
     }
 }
 #pragma endregion polymorphic_allocator
+
+#pragma region PMR vector
+
+TEST_CASE("Default Constructor", "[vector]") {
+    pmr_vector<int> vec;
+    REQUIRE(vec.size() == 0);
+    REQUIRE(vec.capacity() == 0);
+    REQUIRE(vec.empty());
+}
+
+TEST_CASE("Constructor via count", "[vector]") {
+    SECTION("Initialize via default constructors") {
+        pmr_vector<TestStruct> vec(5);
+        REQUIRE(vec.size() == 5);
+        REQUIRE(vec[0].value == 0);
+    }
+
+    SECTION("Initialize via reference") {
+        pmr_vector<TestStruct> vec(5, TestStruct(42));
+        REQUIRE(vec.size() == 5);
+        REQUIRE(vec[0].value == 42);
+    }
+}
+
+TEST_CASE("Constructor via first and last pointers", "[vector]") {
+    std::vector<int> std_vec = {1, 2, 3, 4, 5};
+    pmr_vector<int> vec(std_vec.begin(), std_vec.end());
+    REQUIRE(vec.size() == std_vec.size());
+
+    REQUIRE(vec[0] == vec[0]);
+}
+
+TEST_CASE("Copy constructor", "[vector]") {
+    SECTION("Copy allocator") {
+        memory_resource* mr = new_delete_resource();
+        polymorphic_allocator<int> alloc(mr);
+        pmr_vector<int> vec(5, alloc);
+        pmr_vector<int> copy_vec(vec);
+        REQUIRE(copy_vec.size() == 5);
+        REQUIRE(copy_vec[0] == 0);
+        REQUIRE(vec.empty());
+
+        REQUIRE(vec.get_allocator() == copy_vec.get_allocator());
+    }
+
+    SECTION("Allocator given, same allocator") {
+        memory_resource* mr = new_delete_resource();
+        polymorphic_allocator<TestStruct> alloc(mr);
+        pmr_vector<TestStruct> vec(5, alloc);
+        pmr_vector<TestStruct> copy_vec(vec, alloc);
+
+        REQUIRE(copy_vec.size() == 5);
+        REQUIRE(copy_vec[0].value == 0);
+        REQUIRE(vec.empty());
+    }
+
+    SECTION("Allocator given, different allocator") {
+        memory_resource *mr = new_delete_resource();
+        memory_resource *mr2 = null_memory_resource();
+
+        polymorphic_allocator<TestStruct> alloc(mr2);
+        polymorphic_allocator<TestStruct> alloc2(mr);
+
+        pmr_vector<TestStruct> vec(alloc);
+        pmr_vector<TestStruct> vec2(vec, alloc2);
+
+        REQUIRE(vec2.get_allocator() == alloc2);
+    }
+}
+
+TEST_CASE("Initializer list constructor", "[vector]") {
+    polymorphic_allocator<int> alloc(new_delete_resource());
+    pmr_vector<int> vec = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    REQUIRE(vec.size() == 10);
+    REQUIRE(vec[0] == 1);
+}
+
+TEST_CASE("Assign methods", "[vector]") {
+    polymorphic_allocator<int> alloc(new_delete_resource());
+    pmr_vector<TestStruct> vec(5, alloc);
+
+    SECTION("By count") {
+        TestStruct tmp{4};
+        vec.assign(4, tmp);
+        REQUIRE(vec.size() == 4);
+        REQUIRE(vec[0].value == 4);
+    }
+
+    SECTION("By iterators") {
+        TestStruct ts1{9};
+        TestStruct ts2{10};
+        std::vector<TestStruct> std_vec = {ts1, ts2};
+        vec.assign(std_vec.begin(), std_vec.end());
+        REQUIRE(vec.size() == 2);
+        REQUIRE(vec[0].value == 9);
+    }
+
+    SECTION("By initializer list") {
+        TestStruct ts1{21};
+        TestStruct ts2{22};
+        TestStruct ts3{23};
+        vec.assign({ts1, ts2, ts3});
+        REQUIRE(vec.size() == 3);
+        REQUIRE(vec[0].value == 21);
+    }
+}
+
+// We will write tests as use cases are implemented
+
+#pragma endregion PMR vector

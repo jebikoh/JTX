@@ -9,7 +9,8 @@
 #include <stdexcept>
 #include <utility>
 
-namespace jtx::pmr {
+namespace jtx {
+namespace pmr {
 
 #pragma region Memory Resource
 /**
@@ -129,7 +130,7 @@ public:
     }
 
     template<typename Up, typename... Args>
-    void construct(Up *p, Args &&...args) {
+    void construct(Up *p, Args &&...args) const {
         new (p) Up(std::forward<Args>(args)...);
     }
 
@@ -169,6 +170,8 @@ template<typename Tp1, typename Tp2>
 }
 #pragma endregion Polymorphic Allocator
 
+}
+
 #pragma region PMR Vector
 
 static const int PMR_VECTOR_EMPTY_RESERVE = 4;
@@ -185,7 +188,7 @@ static const int PMR_VECTOR_GROWTH_FACTOR = 2;
  * @tparam Tp The type of the object to allocate.
  * @tparam Allocator The allocator to use.
  */
-template<typename Tp, class Allocator = polymorphic_allocator<Tp>>
+template<typename Tp, class Allocator = pmr::polymorphic_allocator<Tp>>
 class vector {
 public:
 #pragma region Typedefs
@@ -231,7 +234,7 @@ public:
     }
 
     JTX_HOST
-    vector(const vector &other) : alloc(other.alloc) {
+    vector(vector &other) : alloc(other.alloc) {
         numStored = other.numStored;
         numAlloc = other.numAlloc;
         ptr = other.ptr;
@@ -241,7 +244,7 @@ public:
     }
 
     JTX_HOST
-    vector(const vector &other, const Allocator &alloc) : alloc(alloc) {
+    vector(vector &other, const Allocator &alloc) {
         if (alloc == other.alloc) {
             ptr = other.ptr;
             numAlloc = other.numAlloc;

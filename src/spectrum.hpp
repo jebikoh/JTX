@@ -1,78 +1,48 @@
 #pragma once
+#include "jtxlib/util/taggedptr.hpp"
+
+
 #include <jtxlib/math/math.hpp>
+#include <jtxlib/std/memory_resource.hpp>
 
 namespace jtx {
 
-    class SampledSpectrum {
+    class SampledSpectrum{};
+    class SampledWavelengths{};
 
-    };
-
-    class SampledWavelengths {
-
-    };
-
-    // PBRTv4 uses tagged pointers
-    // Those are nice, but I went with a CRTP pattern to simplify the approach
-    template<typename Derived>
-    class BaseSpectrum {
+    class Spectrum : public jtx::TaggedPtr<> {
     public:
+        using TaggedPtr::TaggedPtr;
+
+        JTX_HOSTDEV
         float operator()(float lambda) const {
-            return static_cast<const Derived *>(this)->operator()(lambda);
+            auto op = [&](auto ptr) { return (*ptr)(lambda); };
+            return dispatch(op);
         }
 
-        [[nodiscard]] SampledSpectrum sample(const SampledWavelengths &lambda) const {
-            return static_cast<const Derived *>(this)->sample(lambda);
+        [[nodiscard]]
+        JTX_HOSTDEV
+        float maxValue() const {
+            auto op = [&](auto ptr) { return ptr->maxValue(); };
+            return dispatch(op);
         }
 
-        [[nodiscard]] float maxValue() const {
-            return static_cast<const Derived *>(this)->maxValue();
+        JTX_HOSTDEV
+        SampledSpectrum sample(const SampledWavelengths &lambda) const {
+            auto op = [&](auto ptr) { return ptr->sample(lambda); };
+            return dispatch(op);
         }
-    protected:
-        // Prevents direct instantiation of the base class
-        ~BaseSpectrum() = default;
+
+        [[nodiscard]]
+        JTX_HOST
+        std::string toString() const {
+            if (getPtr() == nullptr) return "(nullptr)";
+
+            auto op = [&](auto ptr) { return ptr->toString(); };
+            return dispatch(op);
+        }
     };
 
-
-    //region General Spectral Distributions
-    class ConstantSpectrum : public BaseSpectrum<ConstantSpectrum> {
-    public:
-        explicit ConstantSpectrum(float v) : v(v) {}
-
-        float operator()(float lambda) const {
-            return v;
-        }
-
-        [[nodiscard]] SampledSpectrum sample(const SampledWavelengths &lambda) const {
-            return {};
-        }
-
-        [[nodiscard]] float maxValue() const { return v; }
-
-    private:
-        float v;
-    };
-
-
-    class DenselySampledSpectrum : public BaseSpectrum<DenselySampledSpectrum> {
-    public:
-        DenselySampledSpectrum(int lambdaMin, int lambdaMax) : lambdaMin(lambdaMin), lambdaMax(lambdaMax) {
-
-        }
-    private:
-        int lambdaMin, lambdaMax;
-    };
-    //endregion
-
-    //region Spectrum Wrapper
-    enum class SpectrumType {
-        Constant,
-        DenselySampled
-    };
-
-    class Spectrum {
-    public:
-
-    };
     //endregion
 
     float blackBody(float lambda, float temp) {

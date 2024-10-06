@@ -3,6 +3,7 @@ project(JTX)
 
 set(CMAKE_CXX_STANDARD 20)
 
+set(BUILD_TESTS OFF CACHE BOOL "Build tests for jtxlib" FORCE)
 add_subdirectory(lib/jtxlib)
 
 add_executable(JTX src/main.cpp

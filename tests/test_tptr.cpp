@@ -58,7 +58,7 @@ TEST_CASE("TaggedPtr dispatch", "[TaggedPtr]") {
   SECTION("Square: code == 2") {
     Square square{};
     TaggedPtr<Square, Circle> ptr{&square};
-    auto code = [&](auto ptr) { return ptr->code(); };
+    auto code = [&](auto p) { return p->code(); };
     auto i = ptr.dispatch(code);
     REQUIRE(i == 2);
   }
@@ -66,7 +66,7 @@ TEST_CASE("TaggedPtr dispatch", "[TaggedPtr]") {
   SECTION("Circle: code == 1") {
     Circle circle{};
     TaggedPtr<Square, Circle> ptr{&circle};
-    auto code = [&](auto ptr) { return ptr->code(); };
+    auto code = [&](auto p) { return p->code(); };
     auto i = ptr.dispatch(code);
     REQUIRE(i == 1);
   }

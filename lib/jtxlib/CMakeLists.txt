@@ -43,6 +43,35 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Test")
 endif ()
 #endregion
 
+#region Check CXX compilation
+# Taken from PBRTv4 CMake
+include (CheckCXXSourceCompiles)
+
+set(CMAKE_REQUIRED_QUIET ON)
+check_cxx_source_compiles ( "
+#include <malloc.h>
+int main() { void * ptr = _aligned_malloc(1024, 32); }
+" HAVE__ALIGNED_MALLOC )
+check_cxx_source_compiles ( "
+#include <stdlib.h>
+int main() {
+  void *ptr;
+  posix_memalign(&ptr, 32, 1024);
+} " HAVE_POSIX_MEMALIGN )
+set(CMAKE_REQUIRED_QUIET OFF)
+
+if (HAVE__ALIGNED_MALLOC)
+    add_compile_definitions(JTX__ALIGNED_MALLOC)
+    message(STATUS "[JTXLib] Using _aligned_malloc() for memory alignment.")
+elseif (HAVE_POSIX_MEMALIGN)
+    add_compile_definitions(JTX_POSIX_MEMALIGN)
+    message(STATUS "[JTXLib] Using posix_memalign() for memory alignment.")
+else ()
+    message (SEND_ERROR "[JTXLib] No memory alignment function found. Defaulting to memalign().")
+endif ()
+
+#endregion
+
 #region Library Files
 set(JTXLIB_MATH
         src/jtxlib/math/vec2.hpp
@@ -59,6 +88,8 @@ set(JTXLIB_MATH
         src/jtxlib/math/math.hpp
         src/jtxlib/math/bounds.hpp
         src/jtxlib/math/constants.hpp
+        src/jtxlib/math/vector.hpp
+        src/jtxlib/math/quaternion.hpp
 )
 
 set(JTXLIB_SIMD
@@ -71,19 +102,31 @@ set(JTXLIB_UTIL
         src/jtxlib/util/rand.hpp
 )
 
+set(JTXLIB_CONTAINERS
+        src/jtxlib/containers/inlinedvec.hpp
+)
+
+set(JTXLIB_STD
+        src/jtxlib/std/memory_resource.hpp
+        src/jtxlib/std/memory_resource.cpp
+        src/jtxlib/std/std.hpp
+)
+
 set(JTXLIB_HEADERS
         src/jtxlib.hpp
         src/jtxlib/math.hpp
         src/jtxlib/simd.hpp
         src/jtxlib/util.hpp
-        src/jtxlib/math/vector.hpp
-        src/jtxlib/math/quaternion.hpp
+        src/jtxlib/containers.hpp
+        src/jtxlib/std.hpp
 )
 
 add_library(jtxlib STATIC
         ${JTXLIB_MATH}
         ${JTXLIB_SIMD}
         ${JTXLIB_UTIL}
+        ${JTXLIB_CONTAINERS}
+        ${JTXLIB_STD}
         ${JTXLIB_HEADERS}
 )
 #endregion

@@ -1,16 +1,28 @@
 #pragma once
-#include "jtxlib/util/taggedptr.hpp"
-
-
 #include <jtxlib/math/math.hpp>
+#include <jtxlib/util/taggedptr.hpp>
 #include <jtxlib/std/memory_resource.hpp>
+#include <jtxlib/std/std.hpp>
 
 namespace jtx {
 
-    class SampledSpectrum{};
-    class SampledWavelengths{};
+    static constexpr int N_SPECTRUM_SAMPLES = 4;
 
-    class Spectrum : public jtx::TaggedPtr<> {
+    class SampledSpectrum {
+    public:
+        JTX_HOSTDEV
+        explicit SampledSpectrum(const float c) { data.fill(c); }
+
+
+    private:
+        array<float, N_SPECTRUM_SAMPLES> data;
+    };
+
+    class SampledWavelengths;
+
+    class ConstantSpectrum;
+
+    class Spectrum : public jtx::TaggedPtr<ConstantSpectrum> {
     public:
         using TaggedPtr::TaggedPtr;
 
@@ -43,16 +55,24 @@ namespace jtx {
         }
     };
 
-    //endregion
+    class ConstantSpectrum {
+    public:
+        JTX_HOSTDEV
+        explicit ConstantSpectrum(const float c) : c(c) {}
 
-    float blackBody(float lambda, float temp) {
-        if (temp <= 0) return 0;
+        JTX_HOSTDEV
+        float operator()(float lambda) const { return c; }
 
-        const float c = 299792458.0f;
-        const float h = 6.62606957e-34f;
-        const float kb = 1.3806488e-23f;
+        [[nodiscard]]
+        JTX_HOSTDEV
+        float maxValue() const { return c; }
+    private:
+        float c;
+    };
 
-        float l = lambda * 1e-9f;
-        return (2 * h * c * c) / (pow<5>(l) * (fastExp((h * c) / (l * kb * temp)) - 1));
-    }
+    class DenselySampledSpectrum {};
+
+    class PiecewiseLinearSpectrum {};
+
+    class BlackbodySpectrum {};
 }

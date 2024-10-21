@@ -367,8 +367,10 @@ namespace jtx {
         }
 
         JTX_HOSTDEV
-        float operator()(float lambda) const {
-            float l = jtx::(lambda);
+        float operator()(const float lambda) const {
+            const int l = jtx::lround(lambda) - lambda_min;
+            if (l < 0 || l >= values.size()) return 0;
+            return values[l];
         }
     };
 

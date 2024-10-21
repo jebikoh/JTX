@@ -5,7 +5,7 @@
 #include <jtxlib/std/std.hpp>
 
 namespace jtx {
-
+#pragma region SampledSpectrum
     static constexpr int N_SPECTRUM_SAMPLES = 4;
 
     class SampledSpectrum {
@@ -158,12 +158,33 @@ namespace jtx {
         JTX_HOSTDEV
         bool operator!=(const SampledSpectrum &other) const { return data != other.data; }
 
+        JTX_HOSTDEV
+        float minValue() const {
+            float result = data[0];
+            for (int i = 1; i < N_SPECTRUM_SAMPLES; ++i) result = jtx::min(result, data[i]);
+            return result;
+        }
+
+        JTX_HOSTDEV
+        float maxValue() const {
+            float result = data[0];
+            for (int i = 1; i < N_SPECTRUM_SAMPLES; ++i) result = jtx::max(result, data[i]);
+            return result;
+        }
+
+        JTX_HOSTDEV
+        float average() const {
+            float result = 0.0f;
+            for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) result += data[i];
+            return result / N_SPECTRUM_SAMPLES;
+        }
+
     private:
         array<float, N_SPECTRUM_SAMPLES> data;
     };
 
-    JTX_HOSTDEV
-    JTX_INLINE SampledSpectrum safeDiv(const SampledSpectrum &a, const SampledSpectrum &b) {
+    JTX_HOSTDEV JTX_INLINE
+    SampledSpectrum safeDiv(const SampledSpectrum &a, const SampledSpectrum &b) {
         SampledSpectrum result;
         for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) {
             if (b[i] != 0) result[i] = a[i] / b[i];
@@ -172,10 +193,68 @@ namespace jtx {
         return result;
     }
 
-    JTX_HOSTDEV
-    JTX_INLINE SampledSpectrum lerp(const SampledSpectrum &a, const SampledSpectrum &b, float t) {
-        return a * (1 - t) + b * t;
+    JTX_HOSTDEV JTX_INLINE
+    SampledSpectrum lerp(const SampledSpectrum &a, const SampledSpectrum &b, float t) {
+        return (1 - t) * a + b * t;
     }
+
+    JTX_HOSTDEV JTX_INLINE
+    SampledSpectrum sqrt(const SampledSpectrum &s) {
+        SampledSpectrum result;
+        for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) result[i] = jtx::sqrt(s[i]);
+        return result;
+    }
+
+    JTX_HOSTDEV JTX_INLINE
+    SampledSpectrum safeSqrt(const SampledSpectrum &s) {
+        SampledSpectrum result;
+        for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) result[i] = jtx::safeSqrt(s[i]);
+        return result;
+    }
+
+    JTX_HOSTDEV JTX_INLINE
+    SampledSpectrum pow(const SampledSpectrum &s, const float n) {
+        SampledSpectrum result;
+        for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) result[i] = jtx::pow(s[i], n);
+        return result;
+    }
+
+    JTX_HOSTDEV JTX_INLINE
+    SampledSpectrum exp(const SampledSpectrum &s) {
+        SampledSpectrum result;
+        for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) result[i] = jtx::exp(s[i]);
+        return result;
+    }
+
+    JTX_HOSTDEV JTX_INLINE
+    SampledSpectrum fastExp(const SampledSpectrum &s) {
+        SampledSpectrum result;
+        for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) result[i] = jtx::fastExp(s[i]);
+        return result;
+    }
+
+    JTX_HOSTDEV JTX_INLINE
+    SampledSpectrum clamp(const SampledSpectrum &s, const float lo, const float hi) {
+        SampledSpectrum result;
+        for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) result[i] = jtx::clamp(s[i], lo, hi);
+        return result;
+    }
+
+    JTX_HOSTDEV JTX_INLINE
+    SampledSpectrum clampZero(const SampledSpectrum &s) {
+        SampledSpectrum result;
+        for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) result[i] = jtx::clampZero(s[i]);
+    }
+
+    JTX_HOSTDEV JTX_INLINE
+    float minValue(const SampledSpectrum &s) { return s.minValue(); }
+
+    JTX_HOSTDEV JTX_INLINE
+    float maxValue(const SampledSpectrum &s) { return s.maxValue(); }
+
+    JTX_HOSTDEV JTX_INLINE
+    float average(const SampledSpectrum &s) { return s.average(); }
+#pragma endregion SampledSpectrum
 
     class SampledWavelengths;
 

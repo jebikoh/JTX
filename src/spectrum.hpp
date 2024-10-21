@@ -294,6 +294,8 @@ namespace jtx {
     };
 
     class ConstantSpectrum;
+    class DenselySampledSpectrum;
+    class PiecewiseLinearSpectrum;
 
     class Spectrum : public jtx::TaggedPtr<ConstantSpectrum> {
     public:
@@ -336,6 +338,11 @@ namespace jtx {
         JTX_HOSTDEV
         float operator()(float lambda) const { return c; }
 
+        JTX_HOSTDEV
+        SampledSpectrum Sample(const SampledWavelengths &lambda) const {
+            return SampledSpectrum(c);
+        }
+
         [[nodiscard]]
         JTX_HOSTDEV
         float maxValue() const { return c; }
@@ -343,7 +350,27 @@ namespace jtx {
         float c;
     };
 
-    class DenselySampledSpectrum {};
+    class DenselySampledSpectrum {
+        int lambda_min, lambda_max;
+        jtx::vector<float> values;
+    public:
+
+        JTX_HOST
+        DenselySampledSpectrum(Spectrum &s, const int lMin = LAMBDA_MIN, const int lMax = LAMBDA_MAX, Allocator alloc = {}) :
+        lambda_min(lMin),
+        lambda_max(lMax),
+        values(lambda_max - lambda_min + 1, alloc)
+        {
+            if (s) {
+                for (int i = lambda_min; i <= lambda_max; ++i) values[l - lambda_min] = s(l);
+            }
+        }
+
+        JTX_HOSTDEV
+        float operator()(float lambda) const {
+            float l = jtx::(lambda);
+        }
+    };
 
     class PiecewiseLinearSpectrum {};
 

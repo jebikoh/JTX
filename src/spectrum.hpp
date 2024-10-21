@@ -11,12 +11,171 @@ namespace jtx {
     class SampledSpectrum {
     public:
         JTX_HOSTDEV
-        explicit SampledSpectrum(const float c) { data.fill(c); }
+        explicit SampledSpectrum(const float c) { ASSERT(!jtx::isNaN(c)); data.fill(c); }
 
+        JTX_HOSTDEV
+        explicit SampledSpectrum(const jtx::span<const float> v) {
+            ASSERT(v.size() == N_SPECTRUM_SAMPLES);
+            for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) {
+                data[i] = v[i];
+            }
+        }
+
+        JTX_HOSTDEV
+        float operator[](const int i) const { return data[i]; }
+
+        JTX_HOSTDEV
+        float &operator[](const int i) { return data[i]; }
+
+        JTX_HOSTDEV
+        explicit operator bool() {
+            for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) if (data[i] != 0) return true;
+            return false;
+        }
+
+        JTX_HOSTDEV
+        SampledSpectrum &operator+=(const SampledSpectrum &other) {
+            for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) data[i] += other[i];
+            return *this;
+        }
+
+        JTX_HOSTDEV
+        SampledSpectrum &operator+=(const float c) {
+            ASSERT(!jtx::isNaN(c));
+            for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) data[i] += c;
+            return *this;
+        }
+
+        JTX_HOSTDEV
+        SampledSpectrum &operator-=(const SampledSpectrum &other) {
+            for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) data[i] -= other[i];
+            return *this;
+        }
+
+        JTX_HOSTDEV
+        SampledSpectrum &operator-=(const float c) {
+            ASSERT(!jtx::isNaN(c));
+            for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) data[i] -= c;
+            return *this;
+        }
+
+        JTX_HOSTDEV
+        SampledSpectrum &operator*=(const SampledSpectrum &other) {
+            for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) data[i] *= other[i];
+            return *this;
+        }
+
+        JTX_HOSTDEV
+        SampledSpectrum &operator*=(const float c) {
+            ASSERT(!jtx::isNaN(c));
+            for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) data[i] *= c;
+            return *this;
+        }
+
+        JTX_HOSTDEV
+        SampledSpectrum &operator/=(const SampledSpectrum &other) {
+            for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) {
+                ASSERT(other[i] != 0);
+                data[i] /= other[i];
+            }
+            return *this;
+        }
+
+        JTX_HOSTDEV
+        SampledSpectrum &operator/=(const float c) {
+            ASSERT(c != 0);
+            ASSERT(!jtx::isNaN(c));
+            for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) data[i] /= c;
+            return *this;
+        }
+
+        JTX_HOSTDEV
+        SampledSpectrum operator+(const SampledSpectrum &other) const {
+            SampledSpectrum result = *this;
+            return result += other;
+        }
+
+        JTX_HOSTDEV
+        SampledSpectrum operator+(const float c) const {
+            SampledSpectrum result = *this;
+            return result += c;
+        }
+
+        JTX_HOSTDEV
+        friend SampledSpectrum operator+(const float c, const SampledSpectrum &s) {
+            return s + c;
+        }
+
+        JTX_HOSTDEV
+        SampledSpectrum operator-(const SampledSpectrum &other) const {
+            SampledSpectrum result = *this;
+            return result -= c;
+        }
+
+        JTX_HOSTDEV
+        SampledSpectrum operator-(const float c) const {
+            SampledSpectrum result = *this;
+            return result -= c;
+        }
+
+        JTX_HOSTDEV
+        friend SampledSpectrum operator-(const float c, const SampledSpectrum &s) {
+            return s - c;
+        }
+
+        JTX_HOSTDEV
+        SampledSpectrum operator*(const SampledSpectrum &other) const {
+            SampledSpectrum result = *this;
+            return result *= other;
+        }
+
+        JTX_HOSTDEV
+        SampledSpectrum operator*(const float c) const {
+            SampledSpectrum result = *this;
+            return result *= c;
+        }
+
+        JTX_HOSTDEV
+        friend SampledSpectrum operator*(const float c, const SampledSpectrum &s) {
+            return s * c;
+        }
+
+        JTX_HOSTDEV
+        SampledSpectrum operator/(const SampledSpectrum &other) const {
+            SampledSpectrum result = *this;
+            return result /= other;
+        }
+
+        JTX_HOSTDEV
+        SampledSpectrum operator/(const float c) const {
+            SampledSpectrum result = *this;
+            return result /= c;
+        }
+
+        JTX_HOSTDEV
+        bool operator==(const SampledSpectrum &other) const { return data == other.data; }
+
+        JTX_HOSTDEV
+        bool operator!=(const SampledSpectrum &other) const { return data != other.data; }
 
     private:
         array<float, N_SPECTRUM_SAMPLES> data;
     };
+
+    JTX_HOSTDEV
+    JTX_INLINE SampledSpectrum safeDiv(const SampledSpectrum &a, const SampledSpectrum &b) {
+        SampledSpectrum result;
+        for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) {
+            if (b[i] != 0) result[i] = a[i] / b[i];
+            else result[i] = 0.0f;
+        }
+        return result;
+    }
+
+    JTX_HOSTDEV
+    JTX_INLINE SampledSpectrum lerp(const SampledSpectrum &a, const SampledSpectrum &b, float t) {
+        return a * (1 - t) + b * t;
+    }
 
     class SampledWavelengths;
 

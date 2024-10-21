@@ -5,8 +5,11 @@
 #include <jtxlib/std/std.hpp>
 
 namespace jtx {
+    static constexpr float LAMBDA_MIN = 360.0f;
+    static constexpr float LAMBDA_MAX = 830.0f;
+
     static constexpr int N_SPECTRUM_SAMPLES = 4;
-    
+
     class SampledSpectrum {
     private:
         array<float, N_SPECTRUM_SAMPLES> data;
@@ -256,6 +259,38 @@ namespace jtx {
     class SampledWavelengths {
     private:
         jtx::array<float, N_SPECTRUM_SAMPLES> lambda, pdf;
+    public:
+        static SampledWavelengths sampleUniform(const float u, const float lMin = LAMBDA_MIN, const float lMax = LAMBDA_MAX) {
+            SampledWavelengths r;
+            r.lambda[0] = jtx::lerp(lMin, lMax, u);
+            r.pdf[0] = 1 / (lMax - lMin);
+
+            float delta = (lMax - lMin) / N_SPECTRUM_SAMPLES;
+            for (int i = 1; i < N_SPECTRUM_SAMPLES; ++i) {
+                r.lambda[i] = r.lambda[i-1] + delta;
+                if (r.lambda[i] > lMax) r.lambda[i] = r.lambda[i] - lMax + lMin;
+                r.pdf[i] = r.pdf[0];
+            }
+            return r;
+        }
+
+        float operator[](const int i) const { return lambda[i]; }
+        float &operator[](const int i) { return lambda[i]; }
+        SampledSpectrum PDF() const { return SampledSpectrum(pdf); }
+
+        // Usually terminates early
+        bool secondTerminated() const {
+            for (int i = 1; i < N_SPECTRUM_SAMPLES; ++i) {
+                if (pdf[i] != 0) return false;
+            }
+            return true;
+        }
+
+        void terminateSecondary() {
+            if (secondTerminated()) return;
+            for (int i = 1; i < N_SPECTRUM_SAMPLES; ++i) pdf[i] = 0;
+            pdf[0] /= N_SPECTRUM_SAMPLES;
+        }
     };
 
     class ConstantSpectrum;

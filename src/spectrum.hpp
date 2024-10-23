@@ -351,30 +351,112 @@ namespace jtx {
     };
 
     class DenselySampledSpectrum {
-        int lambda_min, lambda_max;
+        int lambdaMin, lambdaMax;
         jtx::vector<float> values;
     public:
+        JTX_HOST
+        explicit DenselySampledSpectrum(int lambdaMin = LAMBDA_MIN, int lambdaMax = LAMBDA_MAX, const Allocator alloc = {}):
+            lamdaMin(lambdaMin),
+            lambdaMax(lambdaMax),
+            values(lambdaMax - lambdaMin + 1, alloc)
+        {}
 
         JTX_HOST
-        DenselySampledSpectrum(Spectrum &s, const int lMin = LAMBDA_MIN, const int lMax = LAMBDA_MAX, Allocator alloc = {}) :
-        lambda_min(lMin),
-        lambda_max(lMax),
-        values(lambda_max - lambda_min + 1, alloc)
+        DenselySampledSpectrum(const Spectrum &s, const Allocator alloc) : DenselySampledSpectrum(s, lambdaMin, lambdaMax, alloc) {};
+
+        JTX_HOST
+        explicit DenselySampledSpectrum(Spectrum s, int lambdaMin = LAMBDA_MIN, int lambdaMax = LAMBDA_MAX, const Allocator alloc = {}) :
+            lambdaMin(lambdaMin),
+            lambdaMax(lambdaMax),
+            values(lambdaMax - lambdaMin + 1, alloc)
         {
-            if (s) {
-                for (int i = lambda_min; i <= lambda_max; ++i) values[l - lambda_min] = s(l);
+            if (s) for (int lambda = lamdaMin; lambda <= lambdaMax; ++lambda) values[lambda - lambdaMin] = s(lambda);
+        }
+
+        JTX_HOST
+        DenselySampledSpectrum(const DenselySampledSpectrum &s, const Allocator alloc) :
+            lambdaMin(s.lambdaMin),
+            lambdaMax(s.lambdaMax),
+            values(s.values.begin(), s.values.end(), alloc)
+        {}
+
+        [[nodiscard]]
+        JTX_HOSTDEV
+        SampledSpectrum sample(const SampledWavelengths &lambda) const {
+            SampledSpectrum s;
+            for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) {
+                int offset = jtx::lround(lambda[i]) - lambdaMin;
+                if (offset < 0 || offset >= values.size()) s[i] = 0;
+                else s[i] = values[offset];
             }
+            return s;
         }
 
         JTX_HOSTDEV
-        float operator()(const float lambda) const {
-            const int l = jtx::lround(lambda) - lambda_min;
-            if (l < 0 || l >= values.size()) return 0;
-            return values[l];
+        void scale(const float s) { // NOLINT(*-convert-member-functions-to-static)
+            for (float v& : values) v *= s;
+        }
+
+        JTX_HOSTDEV
+        [[nodiscard]]
+        float maxValue() const { return *jtx::max_element(values.begin(), values.end()); }
+
+        JTX_HOSTDEV
+        float operator()(float lambda) const {
+            int offset = jtx::lround(lambda) - lambdaMin;
+            if (offset < 0 || offset >= values.size()) return 0;
+            return values[offset];
+        }
+
+        JTX_HOSTDEV
+        bool operator==(const DenselySampledSpectrum &s) const {
+            if (lambdaMin != s.lambdaMin || lambdaMax != s.lambdaMax || values.size() != s.values.size()) return false;
+            for (auto i = 0; i < values.size(); ++i) if (values[i] != s.values[i]) return false;
+            return true;
         }
     };
 
-    class PiecewiseLinearSpectrum {};
+    class PiecewiseLinearSpectrum {
+        jtx::vector<float> lambdas, values;
+    public:
+        JTX_HOST
+        PiecewiseLinearSpectrum(jtx::span<const float> lambda, jtx::span<const float> values, const Allocator alloc = {}) :
+            lambdas(lambda.begin(), lambda.end(), alloc),
+            values(values.begin(), values.end(), alloc)
+        {
+            ASSERT(lambda.size() == values.size());
+            for (int i = 0; i < lambda.size() - 1; ++i) ASSERT(lambda[i] < lambda[i + 1]);
+        }
+
+        JTX_HOST
+        PiecewiseLinearSpectrum() = default;
+
+        JTX_HOSTDEV
+        void scale(const float s) {
+            for (float v& : values) v *= s;
+        }
+
+        JTX_HOSTDEV
+        [[nodiscard]]
+        float maxValue() const {
+            if (values.empty()) return 0;
+            return *jtx::max_element(values.begin(), values.end());
+        }
+
+        JTX_HOSTDEV
+        float operator()(float lambda) const {
+            if (lambdas.empty() || lambdas < lambdas.front() || lambdas > lambdas.back()) return 0;
+            const int o = jtx::findInterval(lambdas.size(), [&](const int i) { return lambdas[i] <= lambdas; });
+            return jtx::lerp(values[o], values[o + 1], (lambda - lambdas[o]) / (lambdas[o + 1] - lambdas[o]));
+        }
+
+        JTX_HOSTDEV
+        SampledSpectrum sample(const SampledWavelengths &lambda) const {
+            SampledSpectrum s;
+            for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) s[i] = (*this)(lambda[i]);
+            return s;
+        }
+    };
 
     class BlackbodySpectrum {};
 }

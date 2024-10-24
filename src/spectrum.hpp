@@ -10,6 +10,20 @@ namespace jtx {
 
     static constexpr int N_SPECTRUM_SAMPLES = 4;
 
+    static constexpr float WEIN_DISPLACEMENT = 2.8977721e-3f;
+
+    JTX_HOSTDEV
+    float blackBody(const float lambda, const float temp) {
+        if (temp <= 0) return 0;
+
+        constexpr float c = 299792458.0f;
+        constexpr float h = 6.62606957e-34f;
+        constexpr float kb = 1.3806488e-23f;
+
+        float l = lambda * 1e-9f;
+        return (2 * h * c * c) / (pow<5>(l) * (fastExp((h * c) / (l * kb * temp)) - 1));
+    }
+
     class SampledSpectrum {
     private:
         array<float, N_SPECTRUM_SAMPLES> data;
@@ -458,5 +472,31 @@ namespace jtx {
         }
     };
 
-    class BlackbodySpectrum {};
+    class BlackbodySpectrum {
+        float t;
+        float normFactor;
+    public:
+        JTX_HOSTDEV
+        explicit BlackbodySpectrum(float t) : t(t) {
+            normFactor = 1 / jtx::blackBody((WEIN_DISPLACEMENT / t) * 1e9f, t);
+        }
+
+        JTX_HOSTDEV
+        float operator()(int lambda) const {
+            return blackBody(lambda, t) * normFactor;
+        }
+
+
+        JTX_HOSTDEV
+        [[nodiscard]]
+        SampledSpectrum sample(const SampledWavelengths &lambda) const {
+            SampledSpectrum s;
+            for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) s[i] = blackBody(lambda[i], t) * normFactor;
+            return s;
+        }
+
+        JTX_HOSTDEV
+        [[nodiscard]]
+        float maxValue() const { return 1.0f; } // NOLINT(*-convert-member-functions-to-static)
+    };
 }

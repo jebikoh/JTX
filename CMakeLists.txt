@@ -7,7 +7,9 @@ set(BUILD_TESTS OFF CACHE BOOL "Build tests for jtxlib" FORCE)
 add_subdirectory(lib/jtxlib)
 
 add_executable(JTX src/main.cpp
-        src/spectrum.hpp)
+        src/spectrum.hpp
+        src/color.hpp
+        src/spectrum.cpp)
 
 target_link_libraries(JTX PRIVATE jtxlib)
 target_include_directories(JTX PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib/jtxlib/src)

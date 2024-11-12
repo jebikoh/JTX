@@ -21,7 +21,7 @@ namespace jtx {
         constexpr float kb = 1.3806488e-23f;
 
         float l = lambda * 1e-9f;
-        return (2 * h * c * c) / (pow<5>(l) * (fastExp((h * c) / (l * kb * temp)) - 1));
+        return (2 * h * c * c) / (jtx::pow(l, 5) * (fastExp((h * c) / (l * kb * temp)) - 1));
     }
 
     class SampledSpectrum {
@@ -38,6 +38,8 @@ namespace jtx {
                 data[i] = v[i];
             }
         }
+
+        SampledSpectrum() = default;
 
         JTX_HOSTDEV
         float operator[](const int i) const { return data[i]; }
@@ -127,7 +129,7 @@ namespace jtx {
         JTX_HOSTDEV
         SampledSpectrum operator-(const SampledSpectrum &other) const {
             SampledSpectrum result = *this;
-            return result -= c;
+            return result -= other;
         }
 
         JTX_HOSTDEV
@@ -176,20 +178,23 @@ namespace jtx {
         JTX_HOSTDEV
         bool operator!=(const SampledSpectrum &other) const { return data != other.data; }
 
+        [[nodiscard]]
         JTX_HOSTDEV
         float minValue() const {
             float result = data[0];
-            for (int i = 1; i < N_SPECTRUM_SAMPLES; ++i) result = jtx::min(result, data[i]);
+            for (int i = 1; i < N_SPECTRUM_SAMPLES; ++i) result = min(result, data[i]);
             return result;
         }
 
+        [[nodiscard]]
         JTX_HOSTDEV
         float maxValue() const {
             float result = data[0];
-            for (int i = 1; i < N_SPECTRUM_SAMPLES; ++i) result = jtx::max(result, data[i]);
+            for (int i = 1; i < N_SPECTRUM_SAMPLES; ++i) result = max(result, data[i]);
             return result;
         }
 
+        [[nodiscard]]
         JTX_HOSTDEV
         float average() const {
             float result = 0.0f;
@@ -208,7 +213,7 @@ namespace jtx {
         }
 
         JTX_HOSTDEV
-        static SampledSpectrum lerp(const SampledSpectrum &a, const SampledSpectrum &b, float t) {
+        static SampledSpectrum lerp(const SampledSpectrum &a, const SampledSpectrum &b, const float t) {
             return (1 - t) * a + b * t;
         }
 
@@ -258,6 +263,7 @@ namespace jtx {
         static SampledSpectrum clampZero(const SampledSpectrum &s) {
             SampledSpectrum result;
             for (int i = 0; i < N_SPECTRUM_SAMPLES; ++i) result[i] = jtx::clampZero(s[i]);
+            return result;
         }
 
         JTX_HOSTDEV
@@ -271,15 +277,14 @@ namespace jtx {
     };
 
     class SampledWavelengths {
-    private:
-        jtx::array<float, N_SPECTRUM_SAMPLES> lambda, pdf;
+        array<float, N_SPECTRUM_SAMPLES> lambda, pdf;
     public:
         static SampledWavelengths sampleUniform(const float u, const float lMin = LAMBDA_MIN, const float lMax = LAMBDA_MAX) {
             SampledWavelengths r;
-            r.lambda[0] = jtx::lerp(lMin, lMax, u);
+            r.lambda[0] = lerp(lMin, lMax, u);
             r.pdf[0] = 1 / (lMax - lMin);
 
-            float delta = (lMax - lMin) / N_SPECTRUM_SAMPLES;
+            const float delta = (lMax - lMin) / N_SPECTRUM_SAMPLES;
             for (int i = 1; i < N_SPECTRUM_SAMPLES; ++i) {
                 r.lambda[i] = r.lambda[i-1] + delta;
                 if (r.lambda[i] > lMax) r.lambda[i] = r.lambda[i] - lMax + lMin;
@@ -290,9 +295,12 @@ namespace jtx {
 
         float operator[](const int i) const { return lambda[i]; }
         float &operator[](const int i) { return lambda[i]; }
+
+        [[nodiscard]]
         SampledSpectrum PDF() const { return SampledSpectrum(pdf); }
 
         // Usually terminates early
+        [[nodiscard]]
         bool secondTerminated() const {
             for (int i = 1; i < N_SPECTRUM_SAMPLES; ++i) {
                 if (pdf[i] != 0) return false;
@@ -311,7 +319,7 @@ namespace jtx {
     class DenselySampledSpectrum;
     class PiecewiseLinearSpectrum;
 
-    class Spectrum : public jtx::TaggedPtr<ConstantSpectrum> {
+    class Spectrum : public TaggedPtr<ConstantSpectrum, DenselySampledSpectrum, PiecewiseLinearSpectrum> {
     public:
         using TaggedPtr::TaggedPtr;
 
@@ -352,6 +360,7 @@ namespace jtx {
         JTX_HOSTDEV
         float operator()(float lambda) const { return c; }
 
+        [[nodiscard]]
         JTX_HOSTDEV
         SampledSpectrum Sample(const SampledWavelengths &lambda) const {
             return SampledSpectrum(c);
@@ -366,11 +375,11 @@ namespace jtx {
 
     class DenselySampledSpectrum {
         int lambdaMin, lambdaMax;
-        jtx::vector<float> values;
+        vector<float> values;
     public:
         JTX_HOST
-        explicit DenselySampledSpectrum(int lambdaMin = LAMBDA_MIN, int lambdaMax = LAMBDA_MAX, const Allocator alloc = {}):
-            lamdaMin(lambdaMin),
+        explicit DenselySampledSpectrum(const int lambdaMin = LAMBDA_MIN, const int lambdaMax = LAMBDA_MAX, const Allocator alloc = {}):
+            lambdaMin(lambdaMin),
             lambdaMax(lambdaMax),
             values(lambdaMax - lambdaMin + 1, alloc)
         {}
@@ -379,12 +388,12 @@ namespace jtx {
         DenselySampledSpectrum(const Spectrum &s, const Allocator alloc) : DenselySampledSpectrum(s, lambdaMin, lambdaMax, alloc) {};
 
         JTX_HOST
-        explicit DenselySampledSpectrum(Spectrum s, int lambdaMin = LAMBDA_MIN, int lambdaMax = LAMBDA_MAX, const Allocator alloc = {}) :
+        explicit DenselySampledSpectrum(const Spectrum& s, const int lambdaMin = LAMBDA_MIN, const int lambdaMax = LAMBDA_MAX, const Allocator alloc = {}) :
             lambdaMin(lambdaMin),
             lambdaMax(lambdaMax),
             values(lambdaMax - lambdaMin + 1, alloc)
         {
-            if (s) for (int lambda = lamdaMin; lambda <= lambdaMax; ++lambda) values[lambda - lambdaMin] = s(lambda);
+            if (s) for (int lambda = lambdaMin; lambda <= lambdaMax; ++lambda) values[lambda - lambdaMin] = s(lambda);
         }
 
         JTX_HOST
@@ -413,11 +422,11 @@ namespace jtx {
 
         JTX_HOSTDEV
         [[nodiscard]]
-        float maxValue() const { return *jtx::max_element(values.begin(), values.end()); }
+        float maxValue() const { return *max_element(values.begin(), values.end()); }
 
         JTX_HOSTDEV
-        float operator()(float lambda) const {
-            int offset = jtx::lround(lambda) - lambdaMin;
+        float operator()(const float lambda) const {
+            const int offset = jtx::lround(lambda) - lambdaMin;
             if (offset < 0 || offset >= values.size()) return 0;
             return values[offset];
         }
@@ -431,10 +440,10 @@ namespace jtx {
     };
 
     class PiecewiseLinearSpectrum {
-        jtx::vector<float> lambdas, values;
+        vector<float> lambdas, values;
     public:
         JTX_HOST
-        PiecewiseLinearSpectrum(jtx::span<const float> lambda, jtx::span<const float> values, const Allocator alloc = {}) :
+        PiecewiseLinearSpectrum(const span<const float> lambda, const span<const float> values, const Allocator alloc = {}) :
             lambdas(lambda.begin(), lambda.end(), alloc),
             values(values.begin(), values.end(), alloc)
         {
@@ -454,14 +463,14 @@ namespace jtx {
         [[nodiscard]]
         float maxValue() const {
             if (values.empty()) return 0;
-            return *jtx::max_element(values.begin(), values.end());
+            return *max_element(values.begin(), values.end());
         }
 
         JTX_HOSTDEV
-        float operator()(float lambda) const {
-            if (lambdas.empty() || lambdas < lambdas.front() || lambdas > lambdas.back()) return 0;
-            const int o = jtx::findInterval(lambdas.size(), [&](const int i) { return lambdas[i] <= lambdas; });
-            return jtx::lerp(values[o], values[o + 1], (lambda - lambdas[o]) / (lambdas[o + 1] - lambdas[o]));
+        float operator()(const float lambda) const {
+            if (lambdas.empty() || lambda < lambdas.front() || lambda > lambdas.back()) return 0;
+            const int o = findInterval(lambdas.size(), [&](const int i) { return lambdas[i] <= lambda; });
+            return lerp(values[o], values[o + 1], (lambda - lambdas[o]) / (lambdas[o + 1] - lambdas[o]));
         }
 
         JTX_HOSTDEV
@@ -499,4 +508,19 @@ namespace jtx {
         [[nodiscard]]
         float maxValue() const { return 1.0f; } // NOLINT(*-convert-member-functions-to-static)
     };
+
+    JTX_HOSTDEV
+    float innerProduct(const Spectrum &f, const Spectrum &g) {
+        float integral = 0;
+        for (float lambda = LAMBDA_MIN; lambda <= LAMBDA_MAX; ++lambda) {
+            integral += f(lambda) * g(lambda);
+        }
+        return integral;
+    }
+
+    namespace spectra {
+    inline const DenselySampledSpectrum &X();
+    inline const DenselySampledSpectrum &Y();
+    inline const DenselySampledSpectrum &Z();
+    }
 }

@@ -1,6 +1,6 @@
 # JTX
 
-This is my long term offline phyiscally-based ray tracer (building it as I go through Physically Based Rendering, 4th edition)
+This is my version of PBRT that I am writing as I go through PBRT 4th edition.
 
 Current progress is being written in these repositories:
 - [JTXLib](https://github.com/jebikoh/jtxlib)

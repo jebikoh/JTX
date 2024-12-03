@@ -66,10 +66,10 @@ public:
     const T &operator[](size_t i) const { return _data[i]; }
 
     JTX_HOSTDEV
-    T *data() { return data; }
+    T *data() { return _data; }
 
     JTX_HOSTDEV
-    const T *data() const { return data; }
+    const T *data() const { return _data; }
 
 private:
     T _data[N] = {};
@@ -99,7 +99,7 @@ constexpr auto GetData(C& c) noexcept  // NOLINT(runtime/references)
 // Detection idioms for size() and data().
 template <typename C>
 using HasSize =
-    std::is_integral<absl::decay_t<decltype(std::declval<C&>().size())>>;
+    std::is_integral<std::decay_t<decltype(std::declval<C&>().size())>>;
 
 // We want to enable conversion from vector<T*> to Span<const T* const> but
 // disable conversion from vector<Derived> to Span<Base>. Here we use
@@ -109,13 +109,13 @@ using HasSize =
 // which returns a reference.
 template <typename T, typename C>
 using HasData =
-    std::is_convertible<absl::decay_t<decltype(GetData(std::declval<C&>()))>*,
+    std::is_convertible<std::decay_t<decltype(GetData(std::declval<C&>()))>*,
                         T* const*>;
 
 // Extracts value type from a Container
 template <typename C>
 struct ElementType {
-  using type = typename absl::remove_reference_t<C>::value_type;
+  using type = typename std::remove_reference_t<C>::value_type;
 };
 
 template <typename T, size_t N>
@@ -158,13 +158,13 @@ struct IsView {
 
 template <typename T>
 struct IsView<
-    T, absl::void_t<decltype(span_internal::GetData(std::declval<const T&>()))>,
-    absl::void_t<decltype(span_internal::GetData(std::declval<T&>()))>> {
+    T, std::void_t<decltype(detail::GetData(std::declval<const T&>()))>,
+    std::void_t<decltype(detail::GetData(std::declval<T&>()))>> {
  private:
   using Container = std::remove_const_t<T>;
   using ConstData =
-      decltype(span_internal::GetData(std::declval<const Container&>()));
-  using MutData = decltype(span_internal::GetData(std::declval<Container&>()));
+      decltype(detail::GetData(std::declval<const Container&>()));
+  using MutData = decltype(detail::GetData(std::declval<Container&>()));
  public:
   static constexpr bool value = std::is_same<ConstData, MutData>::value;
 };
@@ -195,13 +195,13 @@ public:
     using difference_type = std::ptrdiff_t;
 private:
     template<typename C>
-    using EnableIfConvertibleForm = typename std::enable_if_t<detail::HasData<T, C>::value && detail::HasSize<C>::value>::type;
+    using EnableIfConvertibleFrom = typename std::enable_if_t<detail::HasData<T, C>::value && detail::HasSize<C>::value>;
 
     template <typename U>
-    using EnableIfValueIsConst = typename std::enable_if<std::is_const<T>::value, U>::type;
+    using EnableIfValueIsConst = typename std::enable_if_t<std::is_const_v<T>, U>;
 
     template <typename U>
-    using EnableIfValueIsMutable = typename std::enable_if<!std::is_const<T>::value, U>::type;
+    using EnableIfValueIsMutable = typename std::enable_if_t<!std::is_const_v<T>, U>;
 
     pointer _ptr;
     size_type len;
@@ -216,13 +216,13 @@ public:
 
     template <size_t N>
     JTX_HOSTDEV
-    constexpr span(T (&arr)[N]) noexcept : span(a, N) {} // NOLINT(runtime/explicit)
+    constexpr span(T (&arr)[N]) noexcept : span(arr, N) {} // NOLINT(runtime/explicit)
 
     JTX_HOSTDEV
     span(std::initializer_list<value_type> v) : span(v.begin(), v.size()) {};
 
     // Taken from PBRTv4
-    template <typename V, typename X = EnableIfConvertibleForm<V>, typename Y = EnableIfValueIsMutable<V>>
+    template <typename V, typename X = EnableIfConvertibleFrom<V>, typename Y = EnableIfValueIsMutable<V>>
     JTX_HOSTDEV
     explicit span(V &v) noexcept : span(v.data(), v.size()) {};
 
@@ -235,7 +235,7 @@ public:
     span(const std::vector<V> &v) noexcept : span(v.data(), v.size()) {};
 
     template <typename V, typename X = EnableIfConvertibleFrom<V>,
-              typename Y = EnableIfConstView<V>>
+              typename Y = EnableIfValueIsConst<V>>
     JTX_HOSTDEV
     constexpr span(const V &v) noexcept : span(v.data(), v.size()) {}
 #pragma endregion Constructors
@@ -244,16 +244,16 @@ public:
     constexpr pointer data() const noexcept { return _ptr; }
 
     JTX_HOSTDEV
-    constexpr size_type size() const noexcept { return len; }
+    [[nodiscard]] constexpr size_type size() const noexcept { return len; }
 
     JTX_HOSTDEV
-    constexpr size_type length() const noexcept { return size(); }
+    [[nodiscard]] constexpr size_type length() const noexcept { return size(); }
 
     JTX_HOSTDEV
-    constexpr bool empty() const noexcept { return size() == 0; }
+    [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
     JTX_HOSTDEV
-    constexpr reference operator[](size_type i) const {
+    constexpr reference operator[](size_type i) {
         ASSERT(i < size());
         return _ptr[i];
     }

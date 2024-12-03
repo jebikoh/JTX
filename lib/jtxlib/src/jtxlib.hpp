@@ -1,4 +1,5 @@
 #pragma once
+#include <cstddef>
 
 #ifdef CUDA_ENABLED
     #include <cuda_runtime.h>

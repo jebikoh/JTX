@@ -2,7 +2,7 @@
 
 This is my version of PBRT that I am writing as I go through PBRT 4th edition.
 
-Current progress is being written in these repositories:
+Current progress is being worked on in-parallel here:
 - [JTXLib](https://github.com/jebikoh/jtxlib)
 - [Ray Tracing](https://github.com/jebikoh/raytracing)
 - [Cuda Ray Tracing](https://github.com/jebikoh/cudart)
